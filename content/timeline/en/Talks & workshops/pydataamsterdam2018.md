@@ -1,10 +1,12 @@
-Title: Rod360
+Title: PyData Amsterdam 2018
 Icon: icon-code-outline
-Date: 2010-12-03 10:20
-Modified: 2010-12-05 19:30
+Date: 2018-1-1
 Tags: pelican, publishing
 Slug: rod360
 Authors: Rodrigo Agundez
 Summary: Short version for index and feeds
+Order: 1
+Timeline: yes
+
 
 ## Section

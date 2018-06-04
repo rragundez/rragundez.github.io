@@ -26,13 +26,13 @@ LOCALE = 'en_US'
 # content paths
 PATH = 'content'
 PAGE_PATHS = ['pages/en']
-ARTICLE_PATHS = ['blog/en']
+ARTICLE_PATHS = ['blog/en', 'timeline/en']
 
 # i18n
 I18N_SUBSITES = {
     'es': {
         'PAGE_PATHS': ['pages/es'],
-        'ARTICLE_PATHS': ['blog/es'],
+        'ARTICLE_PATHS': ['blog/es', 'timeline/es'],
         'LOCALE': 'es_ES'
     }
 }
@@ -101,23 +101,27 @@ ABOUT = {
 
 # navigation and homepage options
 DISPLAY_PAGES_ON_MENU = True
-DISPLAY_PAGES_ON_HOME = True
+DISPLAY_PAGES_ON_HOME = False
 DISPLAY_CATEGORIES_ON_MENU = False
 DISPLAY_TAGS_ON_MENU = False
 USE_FOLDER_AS_CATEGORY = True
 PAGE_ORDER_BY = 'order'
 
 MENUITEMS = [
-    ('Archive', 'archives.html'),
+    ('Timeline', 'timeline.html'),
+    ('Blog', 'blog.html'),
+    ('Categories', 'categories.html'),
+    ('Tags', 'tags.html'),
     ('Contact', 'contact.html')
 ]
 
 DIRECT_TEMPLATES = [
     'index',
-    'tags',
+    'timeline',
+    'blog',
     'categories',
+    'tags',
     'authors',
-    'archives',
     'search',  # needed for tipue_search plugin
     'contact'  # needed for the contact form
 ]

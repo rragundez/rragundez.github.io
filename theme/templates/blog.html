@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}{{ SITENAME }} - {{ _('Archive') }}{% endblock %}
+{% block title %}{{ SITENAME }} - {{ _('Blog') }}{% endblock %}
 {% block meta %}
-    <meta name="description" content="{{ SITENAME }} - {{ _('Archive') }}" />
+    <meta name="description" content="{{ SITENAME }} - {{ _('Blog') }}" />
 {% endblock %}
 
 {% block content %}
     <div class="fh5co-narrow-content">
-        <h1 class="fh5co-heading-colored">{{ _('Archive') }}</h1>
+        <h1 class="fh5co-heading-colored">{{ _('Blog') }}</h1>
         <div class="archive">
-            {% for article in articles %}
+            {% for article in articles if not article.timeline %}
                 <div class="animate-box" data-animate-effect="fadeInLeft">
                     <a href="{{ SITEURL }}/{{ article.url }}"><h2>{{ article.title }}</h2></a>
                     <div>{{ _('by') }}
