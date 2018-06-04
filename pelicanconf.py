@@ -6,7 +6,7 @@ import os
 AUTHOR = 'Rodrigo Agundez'
 SITENAME = 'Rodrigo Agundez'
 SITEDESCRIPTION = ''
-SITEURL = 'https://rragundez.github.io'
+SITEURL = ''
 
 # plugins
 PLUGIN_PATHS = ['plugins']
