@@ -1,38 +1,133 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- #
 from __future__ import unicode_literals
+import os
 
 AUTHOR = 'Rodrigo Agundez'
 SITENAME = 'Rodrigo Agundez'
-SITEURL = ''
+SITEDESCRIPTION = ''
+SITEURL = 'https://rragundez.github.io'
 
-PATH = 'content'
-OUTPUT_PATH = 'output'
-STATIC_PATHS = ['images']
+# plugins
+PLUGIN_PATHS = ['plugins']
+PLUGINS = ['i18n_subsites', 'tipue_search']
+JINJA_ENVIRONMENT = {'extensions': ['jinja2.ext.i18n']}
 
-TIMEZONE = 'Europe/Paris'
+# theme and theme localization
+THEME = 'theme'
+I18N_GETTEXT_LOCALEDIR = 'theme/locale/'
+I18N_GETTEXT_DOMAIN = 'messages'
+I18N_GETTEXT_NEWSTYLE = True
+TIMEZONE = 'Europe/Amsterdam'
+DEFAULT_DATE_FORMAT = '%a, %d %b %Y'
+I18N_TEMPLATES_LANG = 'en_US'
 DEFAULT_LANG = 'en'
+LOCALE = 'en_US'
 
-THEME = "themes/subtle"
+# content paths
+PATH = 'content'
+PAGE_PATHS = ['pages/en']
+ARTICLE_PATHS = ['blog/en']
 
-# Feed generation is usually not desired when developing
-FEED_ALL_ATOM = None
-CATEGORY_FEED_ATOM = None
-TRANSLATION_FEED_ATOM = None
-AUTHOR_FEED_ATOM = None
-AUTHOR_FEED_RSS = None
+# i18n
+I18N_SUBSITES = {
+  'de': {
+    'PAGE_PATHS': ['pages/de'],
+    'ARTICLE_PATHS': ['blog/de'],
+    'LOCALE': 'de_DE'
+  }
+}
 
-# Blogroll
-LINKS = (('Pelican', 'http://getpelican.com/'),
-         ('Python.org', 'http://python.org/'),
-         ('Jinja2', 'http://jinja.pocoo.org/'),
-         ('You can modify those links in your config file', '#'),)
+# logo path, needs to be stored in PATH Setting
+LOGO = '/images/logo.svg'
+
+# special content
+HERO = [
+  {
+    'image': '/images/hero/background-1.jpg',
+    # for multilanguage support, create a simple dict
+    'title': {
+      'en':'Some special content',
+      'de': 'Spezieller Inhalt'
+    },
+    'text': {
+      'en': 'Any special content you want to tease here',
+      'de': 'Jeglicher spezieller Inhalt den Sie hier bewerben möchten'
+    },
+    'links': [
+      {
+        'icon': 'icon-code',
+        'url': 'https://github.com/claudio-walser/pelican-fh5co-marble',
+        'text': 'Github'
+      }
+    ]
+  }, {
+    'image': '/images/hero/background-2.jpg',
+    # keep it a string if you dont need multiple languages
+    'title': 'Uh, special too',
+    # keep it a string if you dont need multiple languages
+    'text': 'Keep hero.text and hero.title a string if you dont need multilanguage.',
+    'links': []
+  }, {
+    'image': '/images/hero/background-3.jpg',
+    'title': 'No Blogroll yet',
+    'text': 'Because of space issues in the man-nav, i didnt implemented Blogroll links yet.',
+    'links': []
+  }, {
+    'image': '/images/hero/background-4.jpg',
+    'title': 'Ads missing as well',
+    'text': 'And since i hate any ads, this is not implemented as well',
+    'links': []
+  }
+]
 
 # Social widget
-SOCIAL = (('You can add links in your config file', '#'),
-          ('Another social link', '#'),)
+SOCIAL = (
+  ('Github', 'https://www.github.com/rragundez'),
+  ('Twitter', 'https://www.twitter.com/rragundez'),
+  ('LinkedIn', 'https://www.linkedin.com/in/rodrigo-agundez-2b727258')
+)
 
-DEFAULT_PAGINATION = 10
+ABOUT = {
+  'image': '/images/about/about.jpeg',
+  'mail': 'info@rragundez.io',
+  # keep it a string if you dont need multiple languages
+  'text': {
+    'en': 'Learn more about the creator of this theme or just drop a message.',
+    'de': 'Lernen Sie den Author kennen oder hinterlassen Sie einfach eine Nachricht'
+  },
+  'link': 'contact.html',
+  # the address is also taken for google maps
+  'address': 'Amsterdam, The Netherlands',
+  'phone': '+31-mexicano'
+}
 
-# Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+# navigation and homepage options
+DISPLAY_PAGES_ON_MENU = True
+DISPLAY_PAGES_ON_HOME = True
+DISPLAY_CATEGORIES_ON_MENU = False
+DISPLAY_TAGS_ON_MENU = False
+USE_FOLDER_AS_CATEGORY = True
+PAGE_ORDER_BY = 'order'
+
+MENUITEMS = [
+  ('Archive', 'archives.html'),
+  ('Contact', 'contact.html')
+]
+
+DIRECT_TEMPLATES = [
+  'index',
+  'tags',
+  'categories',
+  'authors',
+  'archives',
+  'search', # needed for tipue_search plugin
+  'contact' # needed for the contact form
+]
+
+# setup disqus
+DISQUS_SHORTNAME = 'gitcd-dev'
+DISQUS_ON_PAGES = False # if true its just displayed on every static page, like this you can still enable it per page
+
+# setup google maps
+GOOGLE_MAPS_KEY = 'AIzaSyCefOgb1ZWqYtj7raVSmN4PL2WkTrc-KyA'
