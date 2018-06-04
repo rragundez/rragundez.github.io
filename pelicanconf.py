@@ -7,10 +7,12 @@ SITENAME = 'Rodrigo Agundez'
 SITEURL = ''
 
 PATH = 'content'
+STATIC_PATHS = ['images']
 
 TIMEZONE = 'Europe/Paris'
-
 DEFAULT_LANG = 'en'
+
+THEME = THEME = "pelican-themes/subtle"
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
