@@ -1,0 +1,47 @@
+{% if ABOUT|length > 0 %}
+
+    <div id="get-in-touch">
+        <div class="fh5co-narrow-content">
+            <div class="row">
+                <div class="col-md-4 animate-box" data-animate-effect="fadeInLeft">
+                    <h2 class="fh5co-heading-colored">{{ _('Get in touch') }}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 col-md-pull-3 animate-box" data-animate-effect="fadeInLeft">
+                    <div class="wrapper">
+                        <div class="fh5co-feature">
+                            {% if 'image' in ABOUT %}
+                                <div class="fh5co-icon">
+                                    <img class="about-image" src="{{ ABOUT.image }}" />
+                                </div>
+                            {% else %}
+                                <div class="fh5co-icon">
+                                    <i class="icon-mail"></i>
+                                </div>
+                            {% endif %}
+
+                            <div class="fh5co-text">
+                                {% if 'mail' in ABOUT %}
+                                    <a href="mailto:{{ ABOUT.mail }}">{{ ABOUT.mail }}</a>
+                                {% endif %}
+
+                                {% if 'text' in ABOUT %}
+                                    {% if ABOUT.text is string %}
+                                        <p>{{ ABOUT.text }}</p>
+                                    {% elif DEFAULT_LANG in ABOUT.text %}
+                                        <p>{{ ABOUT.text[DEFAULT_LANG] }}</p>
+                                    {% endif %}
+
+                                {% endif %}
+                                {% if 'link' in ABOUT %}
+                                    <p><a href="{{ SITEURL }}/{{ ABOUT.link }}" class="btn btn-primary">{{ _('Contact me') }}</a></p>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

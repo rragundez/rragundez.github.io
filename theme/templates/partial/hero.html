@@ -1,0 +1,49 @@
+{% if HERO|length > 0 %}
+<aside id="fh5co-hero" class="js-fullheight">
+    <div class="flexslider js-fullheight">
+        <ul class="slides">
+            {% for hero in HERO %}
+                <li style="background-image: url({{ hero.image }});">
+                    <div class="overlay"></div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2 text-center js-fullheight slider-text">
+                                <div class="slider-text-inner">
+                                    {% if 'title' in hero %}
+                                        {% if hero.title is string %}
+                                            <h1>{{ hero.title }}</h1>
+                                        {% elif DEFAULT_LANG in hero.title %}
+                                            <h1>{{ hero.title[DEFAULT_LANG] }}</h1>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    {% if 'text' in hero %}
+                                        {% if hero.text is string %}
+                                            <h2>{{ hero.text }}</h2>
+                                        {% elif DEFAULT_LANG in hero.text %}
+                                            <h2>{{ hero.text[DEFAULT_LANG] }}</h2>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                    <p>
+                                        {% for link in hero.links %}
+                                            <a class="btn btn-primary" href="{{ link.url }}">
+                                                <i class="{{ link.icon }}"></i>
+                                                {% if link.text is string %}
+                                                    {{ link.text }}
+                                                {% elif DEFAULT_LANG in link.text %}
+                                                    {{ link.text[DEFAULT_LANG] }}
+                                                {% endif %}
+                                            </a>
+                                        {% endfor %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</aside>
+{% endif %}
