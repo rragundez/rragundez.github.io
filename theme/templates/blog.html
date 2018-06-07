@@ -12,11 +12,7 @@
             {% for article in articles if not article.timeline %}
                 <div class="animate-box" data-animate-effect="fadeInLeft">
                     <a href="{{ SITEURL }}/{{ article.url }}"><h2>{{ article.title }}</h2></a>
-                    <div>{{ _('by') }}
-                        {% for author in article.authors %}
-                            <a href="{{ author.url }}">{{ author }}</a>{% if not loop.last %}, {% endif %}
-                        {% endfor %} - {{ article.locale_date }}
-                    </div>
+                    {{ article.locale_date }}
                     {{ article.summary }}
                 </div>
             {% endfor %}

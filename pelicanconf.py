@@ -15,7 +15,7 @@ JINJA_ENVIRONMENT = {'extensions': ['jinja2.ext.i18n']}
 # theme and theme localization
 THEME = 'theme'
 TIMEZONE = 'Europe/Amsterdam'
-DEFAULT_DATE_FORMAT = '%a, %d %b %Y'
+DEFAULT_DATE_FORMAT = '%d %b %Y'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_US'
 STATIC_PATHS = ['images', 'CNAME']
