@@ -1,5 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Rodrigo Agundez</title><link href="/" rel="alternate"></link><link href="/feeds/all-en.atom.xml" rel="self"></link><id>/</id><updated>2018-05-13T00:00:00+02:00</updated><entry><title>Elitist shuffle for recommendation systems</title><link href="/elitist-shuffle.html" rel="alternate"></link><published>2018-05-13T00:00:00+02:00</published><updated>2018-05-13T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-05-13:/elitist-shuffle.html</id><summary type="html">&lt;p&gt;In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug &amp;amp; play without having to re-engineer your recommendation system.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://blog.godatadriven.com/rod-elitist-shuffle"&gt;This post was originally published in the GoDataDriven blog&lt;/a&gt;&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Rodrigo Agundez</title><link href="/" rel="alternate"></link><link href="/feeds/all-en.atom.xml" rel="self"></link><id>/</id><updated>2018-09-12T00:00:00+02:00</updated><entry><title>Big Data Expo</title><link href="/2018-09-12-big-data-expo.html" rel="alternate"></link><published>2018-09-12T00:00:00+02:00</published><updated>2018-09-12T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-09-12:/2018-09-12-big-data-expo.html</id><summary type="html">&lt;p&gt;I talked in the Big Data Expo conference in Utrecht&lt;/p&gt;</summary><content type="html">&lt;p&gt;https://www.bigdata-expo.nl/en/program/deep-learning-engine-ai-revolution&lt;/p&gt;
+&lt;p&gt;DEEP LEARNING, THE ENGINE OF THE AI REVOLUTION&lt;/p&gt;
+&lt;p&gt;We all remember the boom of Internet companies in the late 90s, then in the late 2000s mobile companies took center stage and have been dominating ever since. A new type is taken the spotlight, this is the era of AI companies, and like it has been before there are two options: adapt or fade away.&lt;/p&gt;
+&lt;p&gt;In order to adapt is very important to understand the basic concepts that underpinned Artificial Intelligence and grasp how Deep Learning became the catalyzer of the AI tech revolution.
+I’ll take you through a series of explanations with a historical overview of Deep Learning, and shine some light over question like: what’s the difference with classical Machine Learning? What can it do? What can’t it do? Why should my business care?
+I’ll give you concrete examples of revolutionary AI that have converge into products in the areas of  health care, drug discovery, Fin Tech, medicine, supply chain, marketing, recruiting, customer experience and e-commerce.&lt;/p&gt;
+&lt;p&gt;Finally, I’ll communicate my opinion on how the development of an AI feature, AI application or AI business should flow and give my advice on how you create something of value under the shadow of the AI giants like Google, Microsoft, Apple etc.&lt;/p&gt;</content><category term="deep learning"></category><category term="ai"></category></entry><entry><title>Spark + AI Summit</title><link href="/2018-06-06-spark-ai-summit.html" rel="alternate"></link><published>2018-06-06T00:00:00+02:00</published><updated>2018-06-06T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-06-06:/2018-06-06-spark-ai-summit.html</id><summary type="html">&lt;p&gt;AI talk at the Spark+AI summit in San Francisco&lt;/p&gt;</summary><content type="html">&lt;p&gt;https://databricks.com/session/operation-tulip-using-deep-learning-models-to-automate-auction-processes&lt;/p&gt;
+&lt;p&gt;Operation Tulip: Using Deep Learning Models to Automate Auction Processes
+We are using Deep Learning models to help Royal Flora Holland automate their auction processes. With over 100,000 transactions per day and 400,000 different types of flowers and plants, Royal Flora Holland is the biggest horticulture marketplace and knowledge center in the world. An essential part of their process is having the correct photographs of the flower or plants uploaded by suppliers. These photos are uploaded daily and could have requirements.&lt;/p&gt;
+&lt;p&gt;For example, some images require a ruler to be visible or a tray to be present. Manual inspection is practically impossible. Using Keras with a Tensorflow backend we implemented a Deep Neural Network (DNN) using transfer learning for each screening criteria. We also apply heuristics and business rules. The goal is to give real-time feedback at upload time, this challenged us to run multiple deep learning models in real-enough-time.&lt;/p&gt;
+&lt;p&gt;During the journey of building the Image Detection system we have used specific implementations that can be insightful and helpful to the audience. For example, our models are not only trained in parallel but transfer learning allows us to engineer a single 1st component for all models and then having the flow distribute over each of the DNN (~90% of the work is shared among the DNNs). Our models achieve above 95% accuracy and because of the component-like architecture it’s very flexible.&lt;/p&gt;
+&lt;p&gt;Session hashtag: #AISAIS11&lt;/p&gt;</content><category term="deep learning"></category><category term="ai"></category><category term="transfer learning"></category><category term="tensorflow"></category></entry><entry><title>Dutch Data Science Week 2018</title><link href="/2018-05-29-dutch-data-science-week.html" rel="alternate"></link><published>2018-05-29T00:00:00+02:00</published><updated>2018-05-29T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-05-29:/2018-05-29-dutch-data-science-week.html</id><summary type="html">&lt;p&gt;Face recognition workshop&lt;/p&gt;</summary><content type="html">&lt;p&gt;https://www.eventbrite.nl/e/tickets-training-special-deep-learning-dutch-data-science-week-2018-44832464107#&lt;/p&gt;
+&lt;p&gt;Deep learning Special with Python, Tensorflow and Keras with a focus on Recurrent Neural Networks and LSTMs.
+Every theory part is complemented by a hands-on session, the goal is that you become familiar with the theory but also learn the how to apply the theory in practice with several exercises.&lt;/p&gt;
+&lt;p&gt;Curriculum
+Deep Learning basics (Theory)&lt;/p&gt;
+&lt;p&gt;Keras API with image classification (Hands-on)&lt;/p&gt;
+&lt;p&gt;Neural networks in practice (Theory)&lt;/p&gt;
+&lt;p&gt;Predicting bank term deposits (Hands-on)&lt;/p&gt;
+&lt;p&gt;Recurrent Neural Networks (Theory)&lt;/p&gt;
+&lt;p&gt;Forecasting airline passengers with RNNs (Hands-on)&lt;/p&gt;
+&lt;p&gt;Long short-term memory (Theory)&lt;/p&gt;
+&lt;p&gt;Human activity recognition with LSTMs (Hands-on)&lt;/p&gt;
+&lt;p&gt;NLP sentiment classification with LSTMs (Hands-on)&lt;/p&gt;
+&lt;p&gt;Introduction to Gated recurrent units (Theory)&lt;/p&gt;
+&lt;p&gt;Q&amp;amp;A&lt;/p&gt;
+&lt;p&gt;Some of the things you will learn are:
+The Keras API&lt;/p&gt;
+&lt;p&gt;Pragmatic best practices when using Deep Learning models&lt;/p&gt;
+&lt;p&gt;Recognize cases when Recurrent Neural Networks are useful&lt;/p&gt;
+&lt;p&gt;Pre-process time-series data for an RNN or LSTM&lt;/p&gt;
+&lt;p&gt;Combine several time-series for a single RNN or LSTM model&lt;/p&gt;
+&lt;p&gt;Use many-to-one RNN and LSTM models&lt;/p&gt;
+&lt;p&gt;Use many-to-many RNN and LSTM models&lt;/p&gt;
+&lt;p&gt;Process text data for an RNN or LSTM model&lt;/p&gt;
+&lt;p&gt;Prerequisites
+Experience in Python is advised for the hands-on sessions&lt;/p&gt;
+&lt;p&gt;Experience with Machine Learning concepts (e.g. regularization, overfitting, feature scaling, hyperparameter optimization)&lt;/p&gt;
+&lt;p&gt;Basic familiarity with Deep Learning&lt;/p&gt;
+&lt;p&gt;Activities
+The course is dynamic with ideas exchanging and open communication. There are also some fun activities based on the course content.&lt;/p&gt;
+&lt;p&gt;Instructor
+The workshop will be given by Rodrigo Agundez. Data Maverick at GoDataDriven. Rodrigo has been giving training sessions and workshops for several years now, he gave a Deep Learning Tensorflow workshop during the Data Science Summit Europe 2016 in Israel, is one of the current trainers for the Data Science with Python, the time-series lecture and Deep Learning training (GoDataDriven).&lt;/p&gt;
+&lt;p&gt;In addition, as a consultant, he has seen many use cases and can help you with specific questions that relate to using Data Science in practice, productizing models, etc.&lt;/p&gt;
+&lt;p&gt;TAGS&lt;/p&gt;</content><category term="deep learning"></category><category term="lstm"></category><category term="rnn"></category></entry><entry><title>PyData Amsterdam 2018</title><link href="/2018-05-26-pydata-amsterdam.html" rel="alternate"></link><published>2018-05-26T00:00:00+02:00</published><updated>2018-05-26T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-05-26:/2018-05-26-pydata-amsterdam.html</id><summary type="html">&lt;p&gt;Deep learning workshop at the PyData Amsterdam conference&lt;/p&gt;</summary><content type="html">&lt;p&gt;https://pydata.org/amsterdam2018/schedule/presentation/30/&lt;/p&gt;
+&lt;p&gt;Hands-on introduction to Deep Learning with Keras and Tensorflow&lt;/p&gt;
+&lt;p&gt;Audience level:
+Novice
+Description
+Deep Learning has already conquered areas such as image recognition, NLP, voice recognition, and is a must-know tool for every Data Practitioner. This tutorial for aspiring Deep Learners will consist of a quick blunt Deep Learning overview followed by a hands-on tutorial that will teach you how to get started using Keras and Tesorflow.&lt;/p&gt;
+&lt;p&gt;Abstract
+Deep Learning has already conquered areas such as image recognition, NLP, voice recognition, and is a must-know tool for every Data Practitioner. This tutorial for aspiring Deep Learners will consist of a quick blunt Deep Learning overview followed by a hands-on tutorial that will teach you how to get started using Keras and Tesorflow.&lt;/p&gt;
+&lt;p&gt;This tutorial is for people that
+know the fundamentals of machine learning
+have a worked with the PyData stack
+have no deep learning hands-on experience with Keras
+Curriculum
+Deep Learning landscape
+Deep Learning tools in Python
+Blunt review of the Keras API (Hands-on)
+Build a deep learning model for an easy image classification dataset (Hands-on)
+Play around and optimize deep learning model for a harder dataset (Hands-on)
+Prerequisites
+Experience with Python and jupyter notebooks
+Keras or Tensroflow (version &amp;gt;= 1.4) installed
+Note: Some of the material is a repeat of the Code Breakfast Deep Learning session of January 17, 2018&lt;/p&gt;</content><category term="deep learning"></category><category term="keras"></category><category term="transfer learning"></category><category term="tensorflow"></category></entry><entry><title>Elitist shuffle for recommendation systems</title><link href="/elitist-shuffle.html" rel="alternate"></link><published>2018-05-13T00:00:00+02:00</published><updated>2018-05-13T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-05-13:/elitist-shuffle.html</id><summary type="html">&lt;p&gt;In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug &amp;amp; play without having to re-engineer your recommendation system.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://blog.godatadriven.com/rod-elitist-shuffle"&gt;This post was originally published in the GoDataDriven blog&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug &amp;amp; play without having to re-engineer your recommendation system.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="card shuffling" src="/images/blog/tech/elitist-shuffle/shuffle.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;The common practice to update recommended items is to have the recommendation system re-score the available items every period of time &lt;code&gt;T&lt;/code&gt;. This means that for a whole period &lt;code&gt;T&lt;/code&gt;, the end-user faces the same content in the application's entry screen. In today's high pace user experience if &lt;code&gt;T&lt;/code&gt; is even a few hours, let alone a day, the user can get bored of the same content displayed every time it opens the application during the period &lt;code&gt;T&lt;/code&gt;. There can be many ways this scenario can happen but imagine the user opens the application and doesn't like the recommended items and is too lazy or busy to scroll or search for something else. If the user opens the application again some minutes later to find exactly the same content as before this might have a big (negative) impact on the retention for this user.&lt;/p&gt;
@@ -586,7 +651,7 @@ $$&lt;/div&gt;
         "}";
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
-&lt;/script&gt;</content></entry><entry><title>PyData Amsterdam 2018</title><link href="/rod360.html" rel="alternate"></link><published>2018-01-01T00:00:00+01:00</published><updated>2018-01-01T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-01-01:/rod360.html</id><summary type="html">&lt;p&gt;Short version for index and feeds&lt;/p&gt;</summary><content type="html">&lt;h2&gt;Section&lt;/h2&gt;</content><category term="pelican"></category><category term="publishing"></category></entry><entry><title>"I Pity the fool", Deep Learning style</title><link href="/fool-neural-network.html" rel="alternate"></link><published>2017-11-05T00:00:00+01:00</published><updated>2017-11-05T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2017-11-05:/fool-neural-network.html</id><summary type="html">&lt;p&gt;With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://blog.godatadriven.com/rod-fool-neural-network"&gt;This post was originally published in the GoDataDriven blog&lt;/a&gt;&lt;/p&gt;
+&lt;/script&gt;</content></entry><entry><title>"I Pity the fool", Deep Learning style</title><link href="/fool-neural-network.html" rel="alternate"></link><published>2017-11-05T00:00:00+01:00</published><updated>2017-11-05T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2017-11-05:/fool-neural-network.html</id><summary type="html">&lt;p&gt;With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://blog.godatadriven.com/rod-fool-neural-network"&gt;This post was originally published in the GoDataDriven blog&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions.&lt;/p&gt;
 &lt;p&gt;&lt;img style="float: right;" src="/images/blog/tech/fooling-dnn/mr_t.png" width="350" hspace="20"&gt;&lt;/p&gt;
 &lt;p&gt;Several studies have been published on how to fool a deep neural network (DNN). The most famous study, which was published in 2015 used evolutionary
@@ -1079,4 +1144,57 @@ Remember that in practice this is just a model of an ensemble, is better to have
         "}";
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
-&lt;/script&gt;</content></entry></feed>
+&lt;/script&gt;</content></entry><entry><title>Data Science Summit Europe 2016</title><link href="/2016-06-06-data-science-summit-europe.html" rel="alternate"></link><published>2016-06-06T00:00:00+02:00</published><updated>2016-06-06T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2016-06-06:/2016-06-06-data-science-summit-europe.html</id><summary type="html">&lt;p&gt;Face recognition workshop&lt;/p&gt;</summary><content type="html"></content><category term="deep learning"></category><category term="keras"></category><category term="transfer learning"></category><category term="tensorflow"></category></entry><entry><title>Seminar Data Science &amp; Sports 2016</title><link href="/2016-04-07-seminar-data-science-and-sports.html" rel="alternate"></link><published>2016-04-07T00:00:00+02:00</published><updated>2016-04-07T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2016-04-07:/2016-04-07-seminar-data-science-and-sports.html</id><summary type="html">&lt;p&gt;Face recognition workshop&lt;/p&gt;</summary><content type="html">&lt;p&gt;Tools for Predicting Sports Outcomes based on Rankings&lt;/p&gt;
+&lt;p&gt;https://www.universiteitleiden.nl/nieuws/2016/04/data-science-and-sports-a-smart-combination&lt;/p&gt;</content><category term="elo rating"></category><category term="sports"></category></entry><entry><title>PyData Amsterdam 2016</title><link href="/2016-03-12-pydata-amsterdam.html" rel="alternate"></link><published>2016-03-12T00:00:00+01:00</published><updated>2016-03-12T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2016-03-12:/2016-03-12-pydata-amsterdam.html</id><summary type="html">&lt;p&gt;Deep learning workshop at the PyData Amsterdam conference&lt;/p&gt;</summary><content type="html">&lt;p&gt;https://pydata.org/amsterdam2016/schedule/presentation/21/index.html&lt;/p&gt;
+&lt;p&gt;Building a live face recognition system in the blink of a very slow eye&lt;/p&gt;
+&lt;p&gt;Description
+In this tutorial we will create a face recognition application from scratch, it will provide you hands-on experience on the basics of Face Recognition. We will use the OpenCV library which makes the tutorial accessible to beginners. Together, we'll go from building our face dataset to recognizing faces in a live video. If time permits we will use this face recognition system to classify banking da&lt;/p&gt;
+&lt;p&gt;Abstract
+Building a live face recognition system in the blink of a very slow eye&lt;/p&gt;
+&lt;p&gt;In this hands-on tutorial we will build a live face recognition system from scratch with the use of the OpenCV methods. Since face recognition is the main goal of this tutorial we will form teams of 2-3 people and recognize the faces in a live feed. We will make use of the OpenCV computer vision and machine learning library. OpenCV includes a comprehensive set of both classic and state-of-the-art computer vision and machine learning algorithms. These algorithms can be used to:&lt;/p&gt;
+&lt;p&gt;Detect Faces
+Recognize Faces
+Identify Objects
+Classify human actions in videos
+Track camera movement
+Track moving objects&lt;/p&gt;
+&lt;p&gt;Extract 3D models of objects
+Produce 3D point clouds from stereo cameras
+Stitch images together to produce a high resolution image of an entire scene
+Find similar images from an image database
+Remove red eyes from images taken using flash
+Follow eye movements
+OpenCV is a great tool to have in hand when dealing with data problems related to media. In the case you want to create your own tuned algorithm, due to its simplicity it lets you use the majority of your resources on developing the algorithm itself and not on the manipulation of the data, which can be a pain in the … .&lt;/p&gt;
+&lt;p&gt;OpenCV is not limited to Python but has C++, C, Java and MATLAB interfaces and supports Windows, Linux, Android and Mac OS.&lt;/p&gt;
+&lt;p&gt;Syllabus
+Basics of image and video manipulations
+Let’s take a picture
+OpenCV and Pyplot formats: GBR vs RGB
+Let’s take a video
+Write and read picture from file
+Detecting faces
+Using OpenCV methods to recognize faces in a video
+Draw output rectangle to recognize face
+Let’s take a video
+Extract the face detected
+Build our data set
+Defining image and video manipulation classes
+Normalizing the dataset
+Creating the directory skeleton with our data
+Take pictures of each person in the team
+Train the face recognition algorithm
+Brief in-depth description of algorithm
+Use dataset to train classification algorithm
+Recognize faces in a live video feed
+Apply trained model on detected face in live feed
+Remarks on other OpenCV face recognition methods
+Playing with the OpenCV face recognition algorithm on banking data
+Requiered Packages to follow hands-on
+cv2 (OpenCV)
+Numpy
+os
+matpotlib
+sys
+time
+IPython.display&lt;/p&gt;
+&lt;p&gt;To get the most of the tutorial is highly recommended to have OpenCV installed since compilation from source is required. See you there!&lt;/p&gt;</content><category term="opencv"></category><category term="face recognition"></category><category term="python"></category></entry></feed>
