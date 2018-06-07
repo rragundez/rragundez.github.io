@@ -18,7 +18,7 @@ TIMEZONE = 'Europe/Amsterdam'
 DEFAULT_DATE_FORMAT = '%a, %d %b %Y'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_US'
-STATIC_PATHS = ['images', 'extras']
+STATIC_PATHS = ['images', 'CNAME']
 
 # content paths
 PATH = 'content'
