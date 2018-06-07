@@ -9,7 +9,7 @@ SITEURL = ''
 
 # plugins
 PLUGIN_PATHS = ['plugins']
-PLUGINS = ['i18n_subsites', 'tipue_search']
+PLUGINS = ['render_math', 'i18n_subsites', 'tipue_search']
 JINJA_ENVIRONMENT = {'extensions': ['jinja2.ext.i18n']}
 
 # theme and theme localization
