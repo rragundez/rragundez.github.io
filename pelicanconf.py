@@ -14,28 +14,15 @@ JINJA_ENVIRONMENT = {'extensions': ['jinja2.ext.i18n']}
 
 # theme and theme localization
 THEME = 'theme'
-I18N_GETTEXT_LOCALEDIR = 'theme/locale/'
-I18N_GETTEXT_DOMAIN = 'messages'
-I18N_GETTEXT_NEWSTYLE = True
 TIMEZONE = 'Europe/Amsterdam'
 DEFAULT_DATE_FORMAT = '%a, %d %b %Y'
-I18N_TEMPLATES_LANG = 'en_US'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_US'
 
 # content paths
 PATH = 'content'
-PAGE_PATHS = ['pages/en']
-ARTICLE_PATHS = ['blog/en', 'timeline/en']
-
-# i18n
-I18N_SUBSITES = {
-    'es': {
-        'PAGE_PATHS': ['pages/es'],
-        'ARTICLE_PATHS': ['blog/es', 'timeline/es'],
-        'LOCALE': 'es_ES'
-    }
-}
+PAGE_PATHS = ['pages']
+ARTICLE_PATHS = ['blog', 'timeline']
 
 # logo path, needs to be stored in PATH Setting
 LOGO = '/images/logo.svg'
@@ -45,14 +32,8 @@ HERO = [
     {
         'image': '/images/hero/background-1.jpg',
         # for multilanguage support, create a simple dict
-        'title': {
-            'en': 'Some special content',
-            'es': 'Un contenido especial'
-        },
-        'text': {
-            'en': 'Any special content you want to tease here',
-            'es': 'Cualquier contenido especial que quieras mostrar aqui'
-        },
+        'title': 'Some special content',
+        'text': 'Any special content you want to tease here',
         'links': [{
             'icon': 'icon-code',
             'url': 'https://github.com/claudio-walser/pelican-fh5co-marble',
@@ -89,10 +70,7 @@ ABOUT = {
     'image': '/images/about/about.jpeg',
     'mail': 'info@rragundez.io',
     # keep it a string if you dont need multiple languages
-    'text': {
-        'en': 'Learn more about the creator of this theme or just drop a message.',
-        'es': 'Lernen Sie den Author kennen oder hinterlassen Sie einfach eine Nachricht'
-    },
+    'text': 'Learn more about the creator of this theme or just drop a message.',
     'link': 'contact.html',
     # the address is also taken for google maps
     'address': 'Amsterdam, The Netherlands',

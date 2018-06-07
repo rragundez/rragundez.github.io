@@ -137,7 +137,7 @@ class SitemapGenerator(object):
 
         if getattr(page, 'status', 'published') != 'published':
             return
-           
+
         if getattr(page, 'private', 'False') == 'True':
             return
 
