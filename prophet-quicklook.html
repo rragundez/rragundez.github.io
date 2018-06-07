@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Facebook's Prophet: Forecasting Stores Transactions</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="author" content="Rodrigo Agundez" />
+    <meta name="description" content="Quick look into the Prophet API for predicting the number of transactions in a shop." />
+    <meta name="keywords" content="">
+<!-- Facebook and Twitter integration -->
+<meta property="og:site_name" content="Rodrigo Agundez"/>
+<meta property="og:title" content="Facebook's Prophet: Forecasting Stores Transactions"/>
+<meta property="og:description" content="Quick look into the Prophet API for predicting the number of transactions in a shop."/>
+<meta property="og:url" content="/prophet-quicklook.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2017-02-25 00:00:00+01:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/rodrigo-agundez.html">
+<meta property="article:section" content="tech"/>
+    <meta property="og:image" content="//images/blog/tech/blog/life/snow-tent.jpg">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="/theme/css/animate.css">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="/theme/css/icomoon.css">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="/theme/css/bootstrap.css">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="/theme/css/flexslider.css">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="/theme/css/style.css">
+    <!-- Custom style  -->
+    <link rel="stylesheet" href="/theme/css/custom.css">
+    <!-- pygments code highlight -->
+    <link rel="stylesheet" href="/theme/css/pygments.css">
+    <!-- tipue search -->
+    <link rel="stylesheet" href="/theme/tipuesearch/css/tipuesearch.css">
+
+    <!-- Modernizr JS -->
+    <script src="/theme/js/modernizr-2.6.2.min.js"></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src="/theme/js/respond.min.js"></script>
+    <![endif]-->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rodrigo Agundez Atom">
+
+
+
+    </head>
+    <body>
+    <div id="fh5co-page">
+        <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+        <aside id="fh5co-aside" role="complementary" class="border js-fullheight">
+
+            <nav class="fh5co-main-menu" role="navigation">
+            </nav>
+            <div class="clearfix"></div>
+            <h1  id="fh5co-logo">
+                <a href="/index.html">
+                    <img src="/images/logo.svg" />
+                </a>
+            </h1>
+            <nav class="fh5co-main-menu" role="navigation">
+<ul>
+    <!-- home link -->
+    <li><a href="/">Home</a></li>
+
+    <!-- page links -->
+            <li><a href="/pages/rod360.html">Rod360</a></li>
+
+    <!-- additional menu items from config -->
+        <!-- <li class="nav-title">Misc</li> -->
+            <li><a href="/timeline.html">Timeline</a></li>
+            <li><a href="/blog.html">Blog</a></li>
+            <li><a href="/categories.html">Categories</a></li>
+            <li><a href="/tags.html">Tags</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+
+</ul><ul><li><form id="searchform" action="/search.html">
+    <input id="tipue_search_input" data-siteurl="" type="text" size="60" class="form-control search-field" name="q">
+
+    <button type="submit" class="btn btn-primary search-submit"><i class="icon-search4"></i></button>
+</form></li></ul>
+            </nav>
+
+<ul id="social">
+            <li><a href="https://www.github.com/rragundez" alt="Github"><i class="icon-github"></i></a></li>
+
+            <li><a href="https://www.twitter.com/rragundez" alt="Twitter"><i class="icon-twitter2"></i></a></li>
+
+            <li><a href="https://www.linkedin.com/in/rodrigo-agundez-2b727258" alt="LinkedIn"><i class="icon-linkedin2"></i></a></li>
+
+</ul>
+        </aside>
+
+        <div id="fh5co-main">
+
+    <div class="fh5co-narrow-content article-content">
+        <h1 class="fh5co-heading-colored">Facebook's Prophet: Forecasting Stores Transactions</h1>
+
+        <div>by
+                <a href="author/rodrigo-agundez.html">Rodrigo Agundez</a> - Sat, 25 Feb 2017
+        </div>
+
+
+        <div class="animate-box" data-animate-effect="fadeInLeft">
+            <p class="animate-box" data-animate-effect="fadeInLeft"><p><a href="https://blog.godatadriven.com/prophet-quicklook">This post was originally published in the GoDataDriven blog</a></p>
+<p>Yesterday <a href="https://godatadriven.com/players/giovanni-lanzani">Giovanni</a>, our Chief Scientist, mentioned this recently released (2 days ago in <a href="https://github.com/facebookincubator/prophet">github</a>) open source forecasting API by Facebook’s Core Data Science team, so I decided to give it a try during one of our famous GDD Fridays.</p>
+<p>In Prophet's own words: "<a href="https://facebookincubator.github.io/prophet/">Prophet</a> is a procedure for forecasting time series data. It is based on an additive model where non-linear trends are fit with yearly and weekly seasonality, plus holidays. It works best with daily periodicity data with at least one year of historical data. Prophet is robust to missing data, shifts in the trend, and large outliers". Prophet's algorithm explanation can be found in this <a href="https://facebookincubator.github.io/prophet/static/prophet_paper_20170113.pdf">article</a>.</p>
+<p>Prophet offers a R and Python API, I used the Pythton API of course.</p>
+<h2>Why bother?</h2>
+<p>The data belongs to a customer for which models are alreading in production. I wanted to see how Prophet's forecasts behave using the same data we use in one of these models developed by <a href="https://godatadriven.com/players/rogier-vandergeer">Rogier</a> and me.</p>
+<p>In reality, the forecast of the number of transactions in a shop is used as a part of an ensemble to predict products sales. Since Prophet does not accept features, it would be unfair to make a comparison at that level since, for example, price is a very important factor.</p>
+<h2>Data: transactions and holidays</h2>
+<p>The data is of a current client, therefore I won't be disclosing any details of it.</p>
+<p>Our models make forecasts for different shops of this company. In particular I took 2 shops, one which contains the easiest transactions to predict from all shops, and another with a somewhat more complicated history.</p>
+<p>The data consists of real transactions since 2014. Data is daily with the target being the number of transactions executed during a day. There are missing dates in the data when the shop closed, for example New Year's day and Christmas.</p>
+<p>The holidays provided to the API are the same I use in our model. They contain from school vacations or large periods, to single holidays like Christmas Eve. In total, the data contains 46 different holidays.</p>
+<h2>Code</h2>
+<p>If the data is in a nice format (this is a big if), Prophet provides a very easy to use API. In particular, once I cleaned, aggregated and dumped the data, the calculation consisted on these two pieces of code:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">tseries</span><span class="p">,</span> <span class="n">predict_date</span><span class="p">,</span> <span class="n">holidays</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Prophet</span><span class="p">(</span><span class="n">holidays</span><span class="o">=</span><span class="n">holidays</span><span class="p">)</span>
+    <span class="c1"># train on data until 3 days before</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tseries</span><span class="p">[</span><span class="n">tseries</span><span class="o">.</span><span class="n">ds</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">predict_date</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">))])</span>
+    <span class="n">forecast</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">make_future_dataframe</span><span class="p">(</span><span class="n">periods</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">forecast</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">forecast</span><span class="o">.</span><span class="n">ds</span> <span class="o">==</span> <span class="n">predict_date</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ds&#39;</span><span class="p">,</span> <span class="s1">&#39;yhat&#39;</span><span class="p">]]</span>
+
+<span class="n">pred</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">pred_holidays</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;2016-1-1&#39;</span><span class="p">,</span> <span class="s1">&#39;2016-12-31&#39;</span><span class="p">):</span>
+    <span class="n">pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">tseries_shop</span><span class="p">,</span> <span class="n">date</span><span class="p">))</span>
+    <span class="n">pred_holidays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">tseries_shop</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">holidays</span><span class="o">=</span><span class="n">holidays</span><span class="p">))</span>
+
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">pred_holidays</span><span class="p">),</span>
+                       <span class="n">on</span><span class="o">=</span><span class="s1">&#39;ds&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;_hol&#39;</span><span class="p">))</span>
+</pre></div>
+
+
+<p>The forecast is done for 2016 with and without holiday data. Our production model gets trained daily via an <a href="https://airflow.incubator.apache.org/">Airflow</a> job, to make a fair comparison, I train a Prophet model for each date in 2016 using the data until 3 days before the date to be forecast. This is because the order for a product needs to be submitted 2 days before, which means it uses the data available until then.</p>
+<p>Prophet leveraged the full capacity of my laptop using all 8 cores. The calculation took around 45 minutes per shop, which means a single day with or without holidays takes around 4 seconds.</p>
+<h2>Metric</h2>
+<p>The metric I used to measure the forecast performance is the <a href="https://en.wikipedia.org/wiki/Coefficient_of_determination">coefficient of determination (<span class="math">\(R^2\)</span> score)</a>. The <span class="math">\(R^2\)</span> score gives the proportion of the variance in the data that is explained by the forecast. A perfect forecast will give 1.0 and a constant prediction for every day will give 0.0.</p>
+<h2>Easy shop: Widushop</h2>
+<p>Using <a href="https://godatadriven.com/players/vincent-warmerdam">Vincent's</a> awesome <a href="http://tnaas.com/">Pokemon name generator</a>, I will call this shop Widushop. This is the transaction data for the 3 years,</p>
+<p><img alt="Widushop transaction history" src="/images/blog/tech/prophet-quicklook/widushop_history.png"></p>
+<p>The image shows a very similar pattern each year. Also, it shows some days that are definitely holidays where transactions drop or increase dramatically.</p>
+<p>Prophet produces a very accurate forecast, it scores 0.89 without using holidays and <strong>0.94</strong> using holidays. Below I show a comparison between the transactions (truth) and the forecast using holidays.</p>
+<p><img alt="Widushop forecast" src="/images/blog/tech/prophet-quicklook/widushop_forecast.png"></p>
+<p>Pretty nice!</p>
+<p>Overall it produces very good results, for holidays seems to overestimate (look at Christmas Eve), nevertheless that can be tuned by the parameter <code>holidays.prior.scale</code> as stated in the <a href="https://facebookincubator.github.io/prophet/docs/holiday_effects.html">documentation</a>.</p>
+<h2>Difficult shop: Qumashop</h2>
+<p>This time the shop name generated is Qumashop. The transaction history of Qumashop is more chaotic than the one for Widushop. Below I show the transaction history of Qumashop.</p>
+<p><img alt="Qumashop transaction history" src="/images/blog/tech/prophet-quicklook/qumashop_history.png"></p>
+<p>Holidays have a much greater impact. Look at that peak in the middle of July, this is a known event that draws a lot of people to the city (it is in the holidays data). Notice that transactions in 2016 are considerably higher than other years, specially from July until September. Not catching this uprise trend would mean losing a lot of potential sales.</p>
+<p>This time the Prophet forecast is not as good as for Widushop giving 0.64 without holiday data and a solid <strong>0.82</strong> using holidays. Below I show a comparison between the transactions (truth) and the forecast using holidays for Qumashop.</p>
+<p><img alt="Qumashop forecast" src="/images/blog/tech/prophet-quicklook/qumashop_forecast.png"></p>
+<p>Look at that! very nice. I am specially happy that it catched the mentioned trend between July and September. Moreover, the residuals on the week following the big peak in July, the second week in September and the two weeks at the end of October are too high.
+Remember that in practice this is just a model of an ensemble, is better to have a little overall bigger residual that can reduced by other models, than having weeks with such big errors.</p>
+<p>Perhaps the forecasts for the week after the big peak in July can improve by introducing a <a href="https://facebookincubator.github.io/prophet/docs/trend_changepoints.html"><code>changepoint</code></a> the last day of the peak holiday week.</p>
+<h2>Wrap-up</h2>
+<p>Prophet's out of the box results were impressive. The quality of the forecasts are comparable with those from our current model in production for these 2 shops.</p>
+<p>Calculations were parallelized over all 8 cores of my machine. Training plus prediction time for each date was about 4 seconds.</p>
+<p>The API is ridiculously easy to use and the documentation seems sufficient.</p>
+<p>For what I can read in the <a href="https://facebookincubator.github.io/prophet/docs/quick_start.html">documentation</a>, Prophet does not accept features. Nevertheless, Prophet's forecasts can be part of an ensemble that produces predictions with a higher granularity.</p>
+<p>It would be interesting to make a comparison for every shop. I was surprised by the result on the difficult shop history.</p>
+<p>There are also several hyperparameters that would be interesting to look into, among several, these in particular:</p>
+<ul>
+<li><a href="https://facebookincubator.github.io/prophet/docs/forecasting_growth.html"><code>cap</code></a>: the maximum possible value of the target.</li>
+<li><a href="https://facebookincubator.github.io/prophet/docs/trend_changepoints.html"><code>changepoint</code></a>: indicate where do we expect an abrupt change in the time series.</li>
+<li><a href="https://facebookincubator.github.io/prophet/docs/trend_changepoints.html"><code>changepoint_prior_scale</code></a>: related to how strongly should the model adjust to trends.</li>
+<li><a href="https://facebookincubator.github.io/prophet/docs/holiday_effects.html"><code>holidays_prior_scale</code></a>: adjust the importance of holiday effects.</li>
+<li><a href="https://facebookincubator.github.io/prophet/docs/uncertainty_intervals.html"><code>interval_width</code></a>: sets the uncertainty interval to produce a confidence interval around the forecast. This could be very useful for monitoring the quality of the forecast. Defaults to 80%.</li>
+</ul>
+<p>To anyone starting a project using time-series for forecasting, I really recommend taking a close look at this tool.</p>
+<p>Great work <a href="https://facebookincubator.github.io/prophet/">Prophet!</a></p>
+<p>I hope this blog has been helpful and please bother me <a href="https://twitter.com/rragundez">@rragundez</a> with your results of playing around with Prophet.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></p>
+        </div>
+    </div>
+
+<div class="fh5co-narrow-content">
+<div class="animate-box" data-animate-effect="fadeInLeft">
+    <h2><!-- <i class="icon-speech-bubble"></i>  -->Comments</h2>
+</div>
+<div class="animate-box" data-animate-effect="fadeInLeft">
+    <div id="disqus_thread"></div>
+</div>
+
+<script>
+var disqus_config = function () { 
+  this.language = "en";
+};
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://gitcd-dev.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript><a href="https://disqus.com/?ref_noscript">Please enable JavaScript to view the comments powered by Disqus.</a></noscript>
+<div class="fh5co-footer">
+    <p><small>&copy; 2016 Blend Free HTML5. All Rights Reserved.</span> <span>Designed by <a href="http://freehtml5.co/" target="_blank">FreeHTML5.co</a></span>
+    <br /><span>Pelican Theme by: <a href="https://github.com/claudio-walser/pelican-fh5co-marble" target="_blank">Claudio Walser</a></span></small></p>
+
+</div>                
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/theme/js/jquery.min.js"></script>
+    <!-- jQuery Easing -->
+    <script src="/theme/js/jquery.easing.1.3.js"></script>
+    <!-- Bootstrap -->
+    <script src="/theme/js/bootstrap.min.js"></script>
+    <!-- Waypoints -->
+    <script src="/theme/js/jquery.waypoints.min.js"></script>
+    <!-- Flexslider -->
+    <script src="/theme/js/jquery.flexslider-min.js"></script>
+
+
+    <!-- MAIN JS -->
+    <script src="/theme/js/main.js"></script>
+    </body>
+</html>

@@ -1,6 +1,6 @@
 /* =======================================================
 *
-* 	Template Style 
+* 	Template Style
 *	Edit this section
 *
 * ======================================================= */
@@ -95,8 +95,8 @@ figure figcaption {
   -o-transition: 0.5s;
   transition: 0.5s;
 }
-#fh5co-aside::-webkit-scrollbar { 
-    display: none; 
+#fh5co-aside::-webkit-scrollbar {
+    display: none;
 }
 
 @media screen and (max-width: 1200px) {
@@ -553,7 +553,9 @@ body.offcanvas #fh5co-main, body.offcanvas .fh5co-nav-toggle {
   -o-transform: scale(1);
   transform: scale(1);
 }
-
+img {
+  max-width: 100% !important;
+}
 .work {
   background-size: cover;
   background-position: center center;

@@ -1,5 +1,592 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Rodrigo Agundez</title><link href="/" rel="alternate"></link><link href="/feeds/all-en.atom.xml" rel="self"></link><id>/</id><updated>2018-02-12T20:47:00+01:00</updated><entry><title>Snowshoeing</title><link href="/snowshoeing.html" rel="alternate"></link><published>2018-02-12T20:47:00+01:00</published><updated>2018-02-12T20:47:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-02-12:/snowshoeing.html</id><summary type="html">&lt;p class="first last"&gt;Snowshoeing with camping&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Rodrigo Agundez</title><link href="/" rel="alternate"></link><link href="/feeds/all-en.atom.xml" rel="self"></link><id>/</id><updated>2018-05-13T00:00:00+02:00</updated><entry><title>Elitist shuffle for recommendation systems</title><link href="/elitist-shuffle.html" rel="alternate"></link><published>2018-05-13T00:00:00+02:00</published><updated>2018-05-13T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-05-13:/elitist-shuffle.html</id><summary type="html">&lt;p&gt;In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug &amp;amp; play without having to re-engineer your recommendation system.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://blog.godatadriven.com/rod-elitist-shuffle"&gt;This post was originally published in the GoDataDriven blog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug &amp;amp; play without having to re-engineer your recommendation system.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="card shuffling" src="/images/blog/tech/elitist-shuffle/shuffle.jpg"&gt;&lt;/p&gt;
+&lt;p&gt;The common practice to update recommended items is to have the recommendation system re-score the available items every period of time &lt;code&gt;T&lt;/code&gt;. This means that for a whole period &lt;code&gt;T&lt;/code&gt;, the end-user faces the same content in the application's entry screen. In today's high pace user experience if &lt;code&gt;T&lt;/code&gt; is even a few hours, let alone a day, the user can get bored of the same content displayed every time it opens the application during the period &lt;code&gt;T&lt;/code&gt;. There can be many ways this scenario can happen but imagine the user opens the application and doesn't like the recommended items and is too lazy or busy to scroll or search for something else. If the user opens the application again some minutes later to find exactly the same content as before this might have a big (negative) impact on the retention for this user.&lt;/p&gt;
+&lt;p&gt;An obvious solution to this problem is to shuffle the content in such a way that it remains relevant to the user while new content appears on the screen each time the user re-opens the application.&lt;/p&gt;
+&lt;p&gt;Below there are two screen shots from my YouTube account a couple of seconds apart with no interaction, just clicking the refresh button. We can notice several things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Content is still relevant.&lt;/li&gt;
+&lt;li&gt;Content is not the same.&lt;/li&gt;
+&lt;li&gt;Some content has changed position.&lt;/li&gt;
+&lt;li&gt;Some new content has appeared.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+    &lt;div style="float: left; width: 50%;"&gt;
+        &lt;img src="/images/blog/tech/elitist-shuffle/recommendations_0.png" style="width:100%"&gt;
+    &lt;/div&gt;
+    &lt;div style="float: left; width: 50%;"&gt;
+        &lt;img src="/images/blog/tech/elitist-shuffle/recommendations_1.png" style="width:100%"&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This can be because YouTube re-scores items in a very short time &lt;code&gt;T&lt;/code&gt; or runs an online algorithm.&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; What can you do to achieve something similar if your recommendation system has a &lt;code&gt;T&lt;/code&gt; in the order of hours?&lt;/p&gt;
+&lt;p&gt;In this blog post, I propose a simple solution based on a non-uniform shuffling algorithm that you can basically plug &amp;amp; play or build on top off.&lt;/p&gt;
+&lt;h3&gt;Example scenario&lt;/h3&gt;
+&lt;p&gt;Suppose you have 10,000 items in total that can be recommended to your user, you run the recommendation system over all the items and those 10,000 items get ranked in order of relevance of the content.&lt;sup id="fnref-2"&gt;&lt;a class="footnote-ref" href="#fn-2"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;The application shows 5 items on the entry screen. The first time the user opens the application after the re-scoring process the top 5 ranked items are shown. It is decided that from now on (based on user control groups, investigation, AB testing, etc.) until the next re-scoring process the entry screen should not be the same every time and remain relevant for the user.&lt;/p&gt;
+&lt;p&gt;Based on an investigation from the data scientist it turns out that somewhat relevant items appear until item 100.&lt;sup id="fnref-3"&gt;&lt;a class="footnote-ref" href="#fn-3"&gt;3&lt;/a&gt;&lt;/sup&gt; Then the idea is to somehow shuffle those 100 items such that the top 5 items shown are still relevant but not the same.&lt;/p&gt;
+&lt;p&gt;In order for the figures of this blog post to be more readable and understandable, I'll use a hypothetical threshold of &lt;strong&gt;20&lt;/strong&gt; items and not 100.&lt;/p&gt;
+&lt;h3&gt;Fisher–Yates shuffle / uniform&lt;/h3&gt;
+&lt;p&gt;Shuffling in Python is a very common action and can be done using the &lt;code&gt;random&lt;/code&gt; module which contains the &lt;a href="https://github.com/python/cpython/blob/master/Lib/random.py#L286"&gt;&lt;code&gt;shuffle&lt;/code&gt; function&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;inspect&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getsource&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;shuffle&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;shuffle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Shuffle list x in place, and return None.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    Optional argument random is a 0-argument function returning a&lt;/span&gt;
+&lt;span class="sd"&gt;    random float in [0.0, 1.0); if it is the default None, the&lt;/span&gt;
+&lt;span class="sd"&gt;    standard random.random will be used.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;random&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;randbelow&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_randbelow&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;reversed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;))):&lt;/span&gt;
+            &lt;span class="c1"&gt;# pick an element in x[:i+1] with which to exchange x[i]&lt;/span&gt;
+            &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;randbelow&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;_int&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;reversed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;))):&lt;/span&gt;
+            &lt;span class="c1"&gt;# pick an element in x[:i+1] with which to exchange x[i]&lt;/span&gt;
+            &lt;span class="n"&gt;j&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;_int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+            &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;j&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This shuffle method uses the optimized &lt;a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle"&gt;Fisher–Yates algorithm&lt;/a&gt; introduced by Richard Durstenfield in 1964 which reduced the running time from &lt;span class="math"&gt;\(O(n^2)\)&lt;/span&gt; to &lt;span class="math"&gt;\(O(n)\)&lt;/span&gt;. By default the algorithm produces a uniform shuffle of an array in which every permutation is equally likely. This means that an item has equal probability to end up in any position.&lt;sup id="fnref-4"&gt;&lt;a class="footnote-ref" href="#fn-4"&gt;4&lt;/a&gt;&lt;/sup&gt; Below you can find an animation of the results of the &lt;code&gt;random.shuffle&lt;/code&gt; default algorithm. I show the initial position of an item in red and the expected probability distribution of landing in any position after &lt;strong&gt;5000&lt;/strong&gt; shuffling simulations.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="random uniform shuffle" src="/images/blog/tech/elitist-shuffle/random_uniform_shuffle.gif"&gt;&lt;/p&gt;
+&lt;p&gt;This type of shuffle is not beneficial for our purpose as there is the same probability of the least recommended item to appear on top than any other, this is definitely not the way to go since we can end up with very poor recommendations on top.&lt;/p&gt;
+&lt;h3&gt;Fisher–Yates shuffle / non-uniform&lt;/h3&gt;
+&lt;p&gt;Notice that the &lt;a href="https://github.com/numpy/numpy/blob/d7d5cb3feccc1fc6cf57159e8b9fe0a733968706/numpy/random/mtrand/mtrand.pyx#L4778"&gt;&lt;code&gt;shuffle&lt;/code&gt; function&lt;/a&gt; shown above has the parameter &lt;code&gt;random&lt;/code&gt; which is described in the docstring as follows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;shuffle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Shuffle list x in place, and return None.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    Optional argument random is a 0-argument function returning a&lt;/span&gt;
+&lt;span class="sd"&gt;    random float in [0.0, 1.0); if it is the default None, the&lt;/span&gt;
+&lt;span class="sd"&gt;    standard random.random will be used.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;If you try to &lt;a href="https://eli.thegreenplace.net/2010/05/28/the-intuition-behind-fisher-yates-shuffling/"&gt;understand the Fisher-Yates algorithm&lt;/a&gt; and then look at the source code, you notice that the &lt;code&gt;random&lt;/code&gt; parameter affects the location where intermediate swaps will happen and that the effect of a non-uniform &lt;code&gt;random&lt;/code&gt; distribution parameter is quite difficult to predict. It kept my mind busy for some hours.&lt;/p&gt;
+&lt;p&gt;I tried different functions to pass to the &lt;code&gt;random&lt;/code&gt; parameter but they all behaved strange and unexpected in one way or another, for example let's try a &lt;a href="https://en.wikipedia.org/wiki/Beta_distribution"&gt;&lt;span class="math"&gt;\(\beta\)&lt;/span&gt; distribution&lt;/a&gt; such that the first draws are very likely to be swapped with elements at the end (higher probability near 1.0).&lt;sup id="fnref-5"&gt;&lt;a class="footnote-ref" href="#fn-5"&gt;5&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="beta distribution" src="/images/blog/tech/elitist-shuffle/beta_distribution.png"&gt;&lt;/p&gt;
+&lt;p&gt;The simulation below uses the &lt;span class="math"&gt;\(\beta\)&lt;/span&gt;-distribution as the &lt;code&gt;random&lt;/code&gt; parameter. This approach does allocate higher probabilities towards higher positions for higher initially ranked items, but the distribution is highly non-symmetrical and very different for different initial positions. I find it surprising that at some point the initial position does not have the maximum probability.&lt;sup id="fnref-6"&gt;&lt;a class="footnote-ref" href="#fn-6"&gt;6&lt;/a&gt;&lt;/sup&gt; Also, I find it very hard to explain the relation between the given &lt;span class="math"&gt;\(\beta\)&lt;/span&gt;-distribution and the resulting probability distribution . I played with the parameters and other distributions but still noticed strange behavior. This will make it quite difficult to explain the expected impact on the recommended items to the user.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="random uniform shuffle" src="/images/blog/tech/elitist-shuffle/random_non_uniform_shuffle.gif"&gt;&lt;/p&gt;
+&lt;h3&gt;Elitist shuffle&lt;/h3&gt;
+&lt;p&gt;This is actually a simple approach, I shuffle the items by choosing items with a weighted probability (this is the same as sampling from a &lt;a href="https://en.wikipedia.org/wiki/Multinomial_distribution"&gt;multinomial distribution&lt;/a&gt; without replacement). I won't go into the details but the function &lt;a href="https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.random.choice.html"&gt;&lt;code&gt;numpy.random.choice&lt;/code&gt;&lt;/a&gt; with the parameter &lt;code&gt;replace=False&lt;/code&gt; does what we want, it is just a matter of choosing the appropriate weight probabilities. In this case I choose to set the weights by transforming the reverse position as &lt;code&gt;np.linspace(1, 0, num=len(items), endpoint=False)&lt;/code&gt;.&lt;sup id="fnref-7"&gt;&lt;a class="footnote-ref" href="#fn-7"&gt;7&lt;/a&gt;&lt;/sup&gt; Then I introduce a parameter called &lt;code&gt;inequality&lt;/code&gt; as a knob to tune the weight probability difference between positions.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;inspect&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getsource&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;elitist_shuffle&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;elitist_shuffle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;inequality&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Shuffle array with bias over initial ranks&lt;/span&gt;
+
+&lt;span class="sd"&gt;    A higher ranked content has a higher probability to end up higher&lt;/span&gt;
+&lt;span class="sd"&gt;    ranked after the shuffle than an initially lower ranked one.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    Args:&lt;/span&gt;
+&lt;span class="sd"&gt;        items (numpy.array): Items to be shuffled&lt;/span&gt;
+&lt;span class="sd"&gt;        inequality (int/float): how biased you want the shuffle to be.&lt;/span&gt;
+&lt;span class="sd"&gt;            A higher value will yield a lower probabilty of a higher initially&lt;/span&gt;
+&lt;span class="sd"&gt;            ranked item to end up in a lower ranked position in the&lt;/span&gt;
+&lt;span class="sd"&gt;            sequence.&lt;/span&gt;
+&lt;span class="sd"&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;weights&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;power&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;linspace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;endpoint&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+        &lt;span class="n"&gt;inequality&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;weights&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;weights&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;linalg&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;norm&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;weights&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;ord&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;choice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;replace&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;weights&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;As the simulation below shows, this approach gives a clearer picture of what's going on and it let us tune the algorithm using the &lt;code&gt;inequality&lt;/code&gt; parameter according to the requirements of our application. This is an animation based on &lt;code&gt;5000&lt;/code&gt; simulations with &lt;code&gt;inequality=10&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="elitist shuffle" src="/images/blog/tech/elitist-shuffle/elitist_shuffle.gif"&gt;&lt;/p&gt;
+&lt;p&gt;From the animation we notice:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The maximum probability remains on the initial position.&lt;/li&gt;
+&lt;li&gt;Probability decays monotonically with the distance from the initial position.&lt;/li&gt;
+&lt;li&gt;The distribution is non-symmetrical but smoother than the previous example.&lt;/li&gt;
+&lt;li&gt;Higher ranked items have a higher chance of being moved from their initial position.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;A big win is that the &lt;code&gt;inequality&lt;/code&gt; parameter has a direct understandable impact on the resulting distributions, want higher items to be more probable to remain on top? Increase inequality. In addition, the behavior translates into the desired functionality:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Top content would still be relevant after shuffle.&lt;/li&gt;
+&lt;li&gt;Content is not the same.&lt;/li&gt;
+&lt;li&gt;Some content has changed position.&lt;/li&gt;
+&lt;li&gt;Some new content has appeared.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Drawback&lt;/h3&gt;
+&lt;p&gt;The &lt;code&gt;elitist_shuffle&lt;/code&gt; function is much slower than &lt;code&gt;np.random.shuffle&lt;/code&gt;, but still fast for a common application. Coming back to the example scenario where the items to shuffle are &lt;strong&gt;100&lt;/strong&gt;, the &lt;code&gt;elitist_shuffle&lt;/code&gt; function takes around &lt;strong&gt;1.8ms&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;If this is too slow for you I would recommend to first try &lt;a href="https://numba.pydata.org/"&gt;numba&lt;/a&gt; with the &lt;code&gt;no_python&lt;/code&gt; parameter enabled and then if necessary try a &lt;a href="http://cython.org/"&gt;Cython&lt;/a&gt; implementation.&lt;/p&gt;
+&lt;h3&gt;Adiós&lt;/h3&gt;
+&lt;p&gt;As final remarks, I advise you to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;First, discuss with your team if you need a feature like this. There are applications where the user might be expecting to find the same items it saw last time. Perhaps trigger this behavior if more than x seconds have passed.&lt;/li&gt;
+&lt;li&gt;Add the recommendation system scores to the calculation of the weight probabilities. This could just be setting the weights to the scores before the exponentiation and &lt;span class="math"&gt;\(l^1\)&lt;/span&gt; normalization 😉.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img style="float: right;" src="/images/blog/tech/elitist-shuffle/dog_developer.jpg" hspace="20"&gt;&lt;/p&gt;
+&lt;p&gt;As always I'm happy to discuss and answer any questions, just ping me on twitter &lt;a href="https://twitter.com/rragundez"&gt;@rragundez&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can find the code &lt;a href="https://github.com/rragundez/elitist-shuffle"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn-1"&gt;
+&lt;p&gt;Some other user similar to me might have done some actions that affect my recommendations, or simply not clicking on the items affects my own recommendations.&amp;#160;&lt;a class="footnote-backref" href="#fnref-1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-2"&gt;
+&lt;p&gt;There can be an exploration-exploitation step after.&amp;#160;&lt;a class="footnote-backref" href="#fnref-2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-3"&gt;
+&lt;p&gt;It can also be a dynamic threshold based on the scores from the recommendation system.&amp;#160;&lt;a class="footnote-backref" href="#fnref-3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-4"&gt;
+&lt;p&gt;This algorithm is also used by &lt;a href="https://github.com/numpy/numpy/blob/master/numpy/random/mtrand/mtrand.pyx#L4852"&gt;numpy&lt;/a&gt;.&amp;#160;&lt;a class="footnote-backref" href="#fnref-4" title="Jump back to footnote 4 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-5"&gt;
+&lt;p&gt;This is what we want since the algorithm first swaps elements from the end (look at &lt;code&gt;reversed&lt;/code&gt; in &lt;a href="https://github.com/python/cpython/blob/master/Lib/random.py#L303"&gt;line 303&lt;/a&gt;.&amp;#160;&lt;a class="footnote-backref" href="#fnref-5" title="Jump back to footnote 5 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-6"&gt;
+&lt;p&gt;It is not a matter of increasing the number of simulations. I did that and found the same behavior.&amp;#160;&lt;a class="footnote-backref" href="#fnref-6" title="Jump back to footnote 6 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-7"&gt;
+&lt;p&gt;You might be tempted to use &lt;code&gt;np.arange(len(items), 0, step=-1)&lt;/code&gt; which is not numerically robust for a big &lt;code&gt;inequality&lt;/code&gt; parameter.&amp;#160;&lt;a class="footnote-backref" href="#fnref-7" title="Jump back to footnote 7 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content></entry><entry><title>Multi-threshold Neuron Model</title><link href="/multi-threshold-neuron.html" rel="alternate"></link><published>2018-03-09T00:00:00+01:00</published><updated>2018-03-09T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-03-09:/multi-threshold-neuron.html</id><summary type="html">&lt;p&gt;Inspired by a new biological scientific research, I propose, build and train a Deep Neural Network using a novel neuron model.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://blog.godatadriven.com/rod-multi-threshold-neuron"&gt;This post was originally published in the GoDataDriven blog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Inspired by a new biological scientific research, I propose, build and train a Deep Neural Network using a novel neuron model.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="model proposal" src="/images/blog/tech/multi-threshold-neuron/model_proposal.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;sup&gt;Figure 0. Schematic diagrams of two neuron models. (Central-threshold neuron) The model on the left is the current employed model in artificial neural networks where the input signals are propagated if their sum is above a certain threshold. (Multi-threshold neuron) In contrast, in the right I show the new proposed model where each input signal goes through a threshold filter before summing them.&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;In this blog post I construct and train a simple Deep Neural Network based on a novel experimental driven neuron model proposed last year (2017) in July. This blog is separated as follows:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Scientific background&lt;ul&gt;
+&lt;li&gt;Summarize the article that lead me to this idea and explain some of the theory.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Concepts&lt;ul&gt;
+&lt;li&gt;Relate Deep Learning technical concepts to Neuroscience concepts mentioned in the paper.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Approximations&lt;ul&gt;
+&lt;li&gt;Introduce approximations I will make on the multi-threshold neuron model.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Discussion&lt;ul&gt;
+&lt;li&gt;Overview of mathematical and Deep Learning implications as a consequence of the multi-threshold neuron model.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Model &amp;amp; training&lt;ul&gt;
+&lt;li&gt;Tensorflow implementation and training of a simple fully-connected Deep Neural Network using the multi-threshold neuron model.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Results&lt;ul&gt;
+&lt;li&gt;Briefly show and explain results from training and testing the proposed model vs the commonly used one in Deep Neural Networks (DNNs).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Scientific background&lt;/h2&gt;
+&lt;p&gt;&lt;center&gt;&lt;img alt="article_title" src="/images/blog/tech/multi-threshold-neuron/article.png"&gt;&lt;/center&gt;&lt;/p&gt;
+&lt;p&gt;S. Sardi &lt;em&gt;et al.&lt;/em&gt; published in July last year (2017) an experimental work in &lt;a href="https://www.nature.com/articles/s41598-017-18363-1"&gt;Nature scientific reports&lt;/a&gt; which contradicts a century old assumption about how neurons work. The work was a combined effort between the Physics, Life Sciences and Neuroscience departments of Bar-Ilan University in Tel Aviv, Israel.&lt;/p&gt;
+&lt;p&gt;The authors proposed three different neuron models which they put to the test with different types of experiments. They describe each neuron model with, what they call, &lt;em&gt;neuronal equations&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;center&gt;&lt;img alt="neuron" src="/images/blog/tech/multi-threshold-neuron/neuron.jpg"&gt;&lt;/center&gt;
+&lt;sup&gt;Figure 1. Schematic representation of a neuron. The signal in a neural network flows from a neuron's axon to the dendrites of another one. That is, the signal in any neuron is incoming from its dendrites and outgoing to its axon.&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;Below I describe two of these neuron models in the paper. In particular the commonly used neuron model which I call "central-threshold" and the neuron model proposal in this blog "multi-threshold".&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Central-threshold neuron&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This is the current adopted computational description of neurons (&lt;a href="https://en.wikipedia.org/wiki/Artificial_neuron"&gt;artificial neurons&lt;/a&gt;), and the corner stone of Deep Learning. "A neuron consists of a unique centralized excitable mechanism". The signal reaching the neuron consists of a linear sum of the incoming signals from all the dendrites connected to the neuron, if this sum reaches a threshold, a spike signal is propagated through the axon to the other connected neurons.&lt;/p&gt;
+&lt;p&gt;The neuronal equation of this model is:&lt;/p&gt;
+&lt;div class="math"&gt;$$I = \Theta\Big(\sum_{i=1}^NW_i\cdot I_i - t\Big)$$&lt;/div&gt;
+&lt;p&gt;where&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(i\)&lt;/span&gt;: identifies any connected neuron&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(N\)&lt;/span&gt;: total number of connected neurons&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(W_i\)&lt;/span&gt;: is the weight (strength) associated to the connection with neuron &lt;span class="math"&gt;\(i\)&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(I_i\)&lt;/span&gt;: is the signal coming out of neuron &lt;span class="math"&gt;\(i\)&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(t\)&lt;/span&gt;: is the centralized single neuron threshold&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(\Theta\)&lt;/span&gt;: is the &lt;a href="https://en.wikipedia.org/wiki/Heaviside_step_function"&gt;Heaviside step function&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(I\)&lt;/span&gt;: signal output from the neuron&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Multi-threshold neuron&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;In this model the centralized threshold (&lt;span class="math"&gt;\(\Theta\)&lt;/span&gt;) is removed. The neuron can be independently excited by any signal coming from a dendrite given that this signal is above a threshold. This model describes a multi-threshold neuron and the mathematical representation can be written as:&lt;/p&gt;
+&lt;div class="math"&gt;$$I=\sum_{i=1}^N\Theta(W_i\cdot I_i - t_i)$$&lt;/div&gt;
+&lt;p&gt;where&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(i\)&lt;/span&gt;: identifies any connected neuron&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(N\)&lt;/span&gt;: total number of connected neurons&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(W_i\)&lt;/span&gt;: is the weight (strength) associated to the connection with neuron &lt;span class="math"&gt;\(i\)&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(I_i\)&lt;/span&gt;: is the signal coming out of neuron &lt;span class="math"&gt;\(i\)&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(t_i\)&lt;/span&gt;: is the threshold value for each neuron &lt;span class="math"&gt;\(i\)&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(\Theta\)&lt;/span&gt;: is the &lt;a href="https://en.wikipedia.org/wiki/Heaviside_step_function"&gt;Heaviside step function&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="math"&gt;\(I\)&lt;/span&gt;: signal output from the neuron&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Study conclusion&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Based on their experiments the authors conclude that the &lt;strong&gt;multi-threshold neuron&lt;/strong&gt; model explains best the data. The authors mention that the main reason for adopting the central-threshold neuron as the main model, is that technology did not allow for direct excitation of single neurons, which other model experiments require. Moreover, they state that these results could have been discovered using technology that existed since the 1980s.&lt;/p&gt;
+&lt;h2&gt;Concepts&lt;/h2&gt;
+&lt;p&gt;There are some main concepts in the Deep Learning domain that you should be familiar with before proceeding. If you are familiar with them skip this part.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;
+&lt;img align='left' src="/images/blog/tech/multi-threshold-neuron/artificial_neuron.png" width="300px"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Artificial neuron&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;A mathematical representation of a biological neuron. They are the corner stone of artificial neural networks and Deep Learning. The idea is that the artificial neuron receives input signals from other connected artificial neurons and via a non-linear transmission function emits a signal itself.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;img align='left' src="/images/blog/tech/multi-threshold-neuron/relu.png" width="300px"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Activation function&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The current understanding of a neuron is that it will transmit some signal only if the sum from incoming signals from other neurons exceeds a threshold. For an artificial neuron this threshold filter is applied via an activation function. There are many &lt;a href="https://en.wikipedia.org/wiki/Activation_function"&gt;activation functions&lt;/a&gt; but the &lt;a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)"&gt;Rectified Linear unit&lt;/a&gt; (ReLu) is one of the most broadly used in the Deep Learning community, and it's the one I will use in this notebook. The mathematical definition of the function is:&lt;/p&gt;
+&lt;div class="math"&gt;$$R(z) = max(0, z) =
+     \begin{cases}
+       0 &amp;amp;\quad\text{for } z\leq0 \\
+       z &amp;amp;\quad\text{for } z &amp;gt; 0
+     \end{cases}$$&lt;/div&gt;
+&lt;p&gt;You can check its implementation in the &lt;a href="https://github.com/tensorflow/tensorflow/blob/48be6a56d5c49d019ca049f8c48b2df597594343/tensorflow/compiler/tf2xla/kernels/relu_op.cc#L37"&gt;Tensorflow source code&lt;/a&gt; or in the &lt;a href="https://github.com/tensorflow/playground/blob/718a6c8f2f876d5450b105e269534ae58e70223d/nn.ts#L120"&gt;Tensorflow playground code&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;Approximations&lt;/h2&gt;
+&lt;p&gt;&lt;center&gt;&lt;img alt="cow" src="/images/blog/tech/multi-threshold-neuron/spherical_cow.gif"&gt;&lt;/center&gt;&lt;/p&gt;
+&lt;p&gt;I am a theoretical physicist and as such it's impossible for me to resist the &lt;a href="https://en.wikipedia.org/wiki/Spherical_cow"&gt;spherical cow&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Single threshold value&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The multi-threshold neuron model contains different threshold parameter values (&lt;span class="math"&gt;\(t_i\)&lt;/span&gt;). Mathematically a threshold has the same effect if I take it as a constant and instead the input signal is moved up or down by the connecting weight parameters. Hence, the neuronal equation becomes: &lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div class="math"&gt;$$I=\sum_{i=1}^N\Theta(W_i\cdot I_i - t)$$&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;ReLu activation function&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;I'll replace the Heaviside step function (&lt;span class="math"&gt;\(\Theta\)&lt;/span&gt;) with threshold &lt;span class="math"&gt;\(t\)&lt;/span&gt; by a &lt;a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)"&gt;Rectified Linear unit&lt;/a&gt; (&lt;span class="math"&gt;\(\mathcal{R}\)&lt;/span&gt;).&lt;/p&gt;
+&lt;div class="math"&gt;$$I=\sum_{i=1}^N\mathcal{R}(W_i\cdot I_i)$$&lt;/div&gt;
+&lt;p&gt;In general any activation function could replace the Heaviside step function.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Bias&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Notice that the proposed model equation contains no bias terms. I'll add a bias term to the equation since it's known to help neural networks fit better. It can also help with the threshold approximation, tuning the biases instead of the thresholds.&lt;/p&gt;
+&lt;div class="math"&gt;$$I=\sum_{i=1}^N\mathcal{R}(W_i\cdot I_i) + b$$&lt;/div&gt;
+&lt;h3&gt;Discussion&lt;/h3&gt;
+&lt;p&gt;The idea is to take the multi-threshold neuron model and try to write a Deep Learning implementation, a neural network consisting of multi-threshold neurons. Tensorflow is quite flexible and allows for writing user defined implementations.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Backpropagation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;In order for my neural network to be trained I need backpropagation, this means that the derivative of whatever I introduce is necessary. Luckily, I'm not changing the activation function itself, I can just use the already derivative of the ReLu function in Tensorflow:&lt;/p&gt;
+&lt;div class="math"&gt;$$\frac{d}{dz}\mathcal{R}(z)=
+     \begin{cases}
+       0 &amp;amp;\quad\text{for } z\leq0 \\
+       1 &amp;amp;\quad\text{for } z &amp;gt; 0
+     \end{cases}$$&lt;/div&gt;
+&lt;p&gt;You can check it out in the &lt;a href="https://github.com/tensorflow/tensorflow/blob/48be6a56d5c49d019ca049f8c48b2df597594343/tensorflow/compiler/tf2xla/kernels/relu_op.cc#L63"&gt;Tensorflow source code&lt;/a&gt; or in the &lt;a href="https://github.com/tensorflow/playground/blob/718a6c8f2f876d5450b105e269534ae58e70223d/nn.ts#L121"&gt;Tensorflow playground code&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Tensor multiplication&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;What I'm really changing is the architecture of the artificial neural network as seen in Figure 0, the activation function is no longer applied on the sum of all the inputs from the connected neurons, but instead on the input arriving from every single connected neuron. The sum operation is going from inside the activation function to outside of it:&lt;/p&gt;
+&lt;div class="math"&gt;$$\mathcal{R}\Big(\sum_{i=1}^NW_i\cdot I_i\Big) \rightarrow \sum_{i=1}^N\mathcal{R}(W_i\cdot I_i)$$&lt;/div&gt;
+&lt;p&gt;Do you see the implementation problem described by the equation above?&lt;/p&gt;
+&lt;p&gt;In the central-threshold model (left equation) the input to the activation function &lt;span class="math"&gt;\(\sum_iW_i\cdot I_i\)&lt;/span&gt; is exactly the dot product between vectors &lt;span class="math"&gt;\((W_1, W_2,\dots,W_N)\)&lt;/span&gt; and &lt;span class="math"&gt;\((I_1, I_2,\dots,I_N)\)&lt;/span&gt; and it's this fact which allows fast computation of input signals for many neurons and observations at once via a single matrix multiplication.&lt;/p&gt;
+&lt;p&gt;In the multi-threshold model this is no longer possible. I think this will be the biggest challenge when coming up with an implementation which can be trained efficiently and fast.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Suppose I have the following weight matrix connecting two neuron layers, the first layer has 3 neurons the second has 2:&lt;/p&gt;
+&lt;div class="math"&gt;$$W=
+\begin{bmatrix}
+    3 &amp;amp; -4 \\
+    -2&amp;amp; 2\\
+    0&amp;amp; 4
+\end{bmatrix}
+$$&lt;/div&gt;
+&lt;p&gt;and that the output signal from the neurons in the first layer are&lt;/p&gt;
+&lt;div class="math"&gt;$$I_0=
+\begin{bmatrix}
+    2 &amp;amp; 5 &amp;amp; 1
+\end{bmatrix}
+$$&lt;/div&gt;
+&lt;p&gt;with bias terms&lt;/p&gt;
+&lt;div class="math"&gt;$$b=
+\begin{bmatrix}
+    2 &amp;amp; -1
+\end{bmatrix}
+$$&lt;/div&gt;
+&lt;p&gt;Using the standard central-threshold neuron model, the output signal of the second layer is:&lt;/p&gt;
+&lt;div class="math"&gt;$$\mathcal{R}\Big(I_0\cdot W + b\Big) = \mathcal{R}\Big(
+\begin{bmatrix}
+    2 &amp;amp; 5 &amp;amp; 1
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+    3 &amp;amp; -4 \\
+    -2&amp;amp; 2\\
+    0&amp;amp; 4
+\end{bmatrix}
++
+\begin{bmatrix}
+    2 &amp;amp; -1
+\end{bmatrix}
+\Big)
+=
+$$&lt;/div&gt;
+&lt;div class="math"&gt;$$
+\mathcal{R}\Big(
+\begin{bmatrix}
+    -2 &amp;amp; 5
+\end{bmatrix}
+\Big)
+=
+\begin{bmatrix}
+    \mathcal{R}(-2)&amp;amp; \mathcal{R}(5)
+\end{bmatrix}
+\Big)
+=
+\begin{bmatrix}
+    0 &amp;amp; 5
+\end{bmatrix}
+$$&lt;/div&gt;
+&lt;p&gt;In the case of the multi-threshold neuron model proposed the output is&lt;/p&gt;
+&lt;div class="math"&gt;$$
+[\sum_{i=1}^N\mathcal{R}(W_{i1}\cdot I_i) + b_1, \sum_{i=1}^N\mathcal{R}(W_{i2}\cdot I_i) + b_2]=
+$$&lt;/div&gt;
+&lt;div class="math"&gt;$$
+\begin{bmatrix}
+    \mathcal{R}(6) + \mathcal{R}(-10) + \mathcal{R}(0) + 2 &amp;amp; \mathcal{R}(-8) + \mathcal{R}(10) + \mathcal{R}(4)  -1
+\end{bmatrix}
+=
+\begin{bmatrix}
+    8 &amp;amp; 13
+\end{bmatrix}
+$$&lt;/div&gt;
+&lt;p&gt;As the example shows, a fundamental difference is that in the multi-threshold case if any input output signal times the weight is positive then the output will be positive. This will greatly reduce the sparsity of the neurons firing throughout the network in comparison with the conventional central-threshold model.&lt;/p&gt;
+&lt;p&gt;I don't know all the implications but I expect that it will be more difficult for individual neurons (or parts of the network) to singly address a specific feature, therefore in principle reducing overfitting.&lt;/p&gt;
+&lt;p&gt;A known issue of most activation functions in Deep Neural Networks is the "vanishing gradient problem", it relates to the decreasing update value to the weights as the errors propagate through the network via backpropagation. In the standard central-threshold model the ReLu partially solves this problem by having a derivative equal to 1 if the neuron fires, this propagates the error without vanishing the gradient. On the other hand, if the neuron signal is negative and squashed by the ReLu (did not fire) the corresponding weights are not updated, since the ReLu derivate is zero i.e. neuron connections are not learning when the connecting neurons didn't fire. In the multi-threshold model, I expect this last issue to be reduced since sparsity reduces, more weights should be updated on each step in comparison with the central-threshold neuron.&lt;/p&gt;
+&lt;h2&gt;Model &amp;amp; training&lt;/h2&gt;
+&lt;p&gt;I first concentrate in replicating the example above using &lt;code&gt;tensorflow&lt;/code&gt;, it contains two built-in related &lt;code&gt;ReLu&lt;/code&gt; functions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;relu_layer&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;relu&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;code&gt;relu_layer&lt;/code&gt; function already assumes a layer architecture with central-threshold neurons. The &lt;code&gt;relu&lt;/code&gt; function on the other hand can operate on each entry of a tensor.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tensorflow&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;tf&lt;/span&gt;
+&lt;span class="n"&gt;sess&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;constant&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;constant&lt;/span&gt;&lt;span class="p"&gt;([[&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;]])&lt;/span&gt;
+&lt;span class="n"&gt;I_0&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;constant&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;I_1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reduce_sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;nn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;relu&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;multiply&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;I_0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;w&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="n"&gt;axis&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;
+&lt;span class="n"&gt;I_1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;eval&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;sess&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;array&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt; &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;dtype&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;int32&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Notice that &lt;code&gt;b&lt;/code&gt; and &lt;code&gt;I_0&lt;/code&gt; are one dimensional tensors, this allows me to take advantage of the &lt;code&gt;tensorflow&lt;/code&gt; broadcasting feature. Using the code above I can then define a neural network layer consisting of multi-threshold neurons&lt;sup id="fnref-2"&gt;&lt;a class="footnote-ref" href="#fn-2"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;multi_threshold_neuron_layer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_values&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;weights&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;nn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;relu&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reduce_sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;activation&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;multiply&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_values&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;weights&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="n"&gt;axis&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;strong&gt;MNIST - 2 hidden layer multi-threshold neural network&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;With this basic implementation, my goal was to see if the model is actually trainable. I just wanted to observe the loss decrease with each iteration. As you probably noticed, the &lt;code&gt;multi_threshold_neuron_layer&lt;/code&gt; can only take 1 example at a time, this is the complication I mentioned, simple matrix multiplication taking several observations is no longer possible for now. In part II of the blog I hope to expand to a more efficient implementation.&lt;/p&gt;
+&lt;p&gt;The multi-threshold neural network is then:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Construct model&lt;/span&gt;
+&lt;span class="n"&gt;I_0&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;placeholder&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;float&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;shape&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_size&lt;/span&gt;&lt;span class="p"&gt;,))&lt;/span&gt; &lt;span class="c1"&gt;# input layer&lt;/span&gt;
+
+&lt;span class="n"&gt;W_01&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Variable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;hidden_layers_sizes&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;input_size&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+&lt;span class="n"&gt;b_1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Variable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;hidden_layers_sizes&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;],)))&lt;/span&gt;
+&lt;span class="n"&gt;I_1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;multi_threshold_neuron_layer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;I_0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;W_01&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b_1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# 1st hidden layer&lt;/span&gt;
+
+&lt;span class="n"&gt;W_12&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Variable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;hidden_layers_sizes&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;hidden_layers_sizes&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;])))&lt;/span&gt;
+&lt;span class="n"&gt;b_2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Variable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;hidden_layers_sizes&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],)))&lt;/span&gt;
+&lt;span class="n"&gt;I_2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;multi_threshold_neuron_layer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;I_1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;W_12&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b_2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# 2nd hidden layer&lt;/span&gt;
+
+&lt;span class="n"&gt;W_23&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Variable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;number_of_classes&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hidden_layers_sizes&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])))&lt;/span&gt;
+&lt;span class="n"&gt;b_3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Variable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;random_normal&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;number_of_classes&lt;/span&gt;&lt;span class="p"&gt;,)))&lt;/span&gt;
+&lt;span class="n"&gt;output&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transpose&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;matmul&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;W_23&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reshape&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;I_2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;shape&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))))&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;b_3&lt;/span&gt; &lt;span class="c1"&gt;# output layer&lt;/span&gt;
+
+&lt;span class="c1"&gt;# truth&lt;/span&gt;
+&lt;span class="n"&gt;target&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;placeholder&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;float&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;shape&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;number_of_classes&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Using the digits MNIST data set I ran a comparison between a DNN using the conventional central-threshold neurons and the proposed multi-threshold neurons.&lt;sup id="fnref-3"&gt;&lt;a class="footnote-ref" href="#fn-3"&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;tensorflow.examples.tutorials.mnist&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;input_data&lt;/span&gt;
+&lt;span class="n"&gt;mnist&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;input_data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_data_sets&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/tmp&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;one_hot&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Results&lt;/h2&gt;
+&lt;p&gt;It is trainable! I actually though this would just crash and burn so I was very happy to see that loss go down :).&lt;/p&gt;
+&lt;p&gt;I calculated the cross-entropy loss and accuracy during training and final accuracy in a test set. It is very important to remember that to keep things fair the calculations for both models are using a batch of 1 observation.&lt;/p&gt;
+&lt;p&gt;The training period ran for &lt;code&gt;4 epochs&lt;/code&gt; with a training set of &lt;code&gt;55000 observations&lt;/code&gt;. Normally the loss and accuracy is calculated over the batch, in this case that makes no sense&lt;sup id="fnref-4"&gt;&lt;a class="footnote-ref" href="#fn-4"&gt;4&lt;/a&gt;&lt;/sup&gt;. Instead what I do is report the average loss and average accuracy over every &lt;code&gt;1100 observations&lt;/code&gt; &lt;sup id="fnref-5"&gt;&lt;a class="footnote-ref" href="#fn-5"&gt;5&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;The score of my model consisted of calculating the accuracy over a test set of &lt;code&gt;10000 observations&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Training loss and accuracy&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="accuracy_vs_rate_and_type" src="/images/blog/tech/multi-threshold-neuron/accuracy_and_loss_curves.png"&gt;&lt;/p&gt;
+&lt;p&gt;There are many things that can be discussed from Figure 2 but here are the main points:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Cross-entropy loss decreases with iterations which means the model is trainable.&lt;/li&gt;
+&lt;li&gt;When the &lt;code&gt;central-threshold&lt;/code&gt; model is performing well its loss is much lower than the &lt;code&gt;multi-threshold&lt;/code&gt;. Notice that this is the case since the beginning of the training period, a sort of a shift. This could be because our images contain consistent white areas (edges) where the cross-entropy benefits from having sparse activations in our neural network.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;multi-threshold&lt;/code&gt; model seems to be more robust against higher learning rates. Moreover, it seems to prefer higher learning rates.&lt;/li&gt;
+&lt;li&gt;As I mentioned before I would expect the &lt;code&gt;multi-threshold&lt;/code&gt; model to have less sparse activations which in turn should result in a faster learning &lt;sup id="fnref-6"&gt;&lt;a class="footnote-ref" href="#fn-6"&gt;6&lt;/a&gt;&lt;/sup&gt;. This can be observed for learning rate &lt;code&gt;.0005&lt;/code&gt; and &lt;code&gt;.001&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Test Accuracy&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="accuracy_vs_rate_and_type" src="/images/blog/tech/multi-threshold-neuron/accuracy_vs_rate_and_type.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;center&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align="center"&gt;Learning rate&lt;/th&gt;
+&lt;th align="center"&gt;Central-threshold&lt;/th&gt;
+&lt;th align="center"&gt;Multi-threshold&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align="center"&gt;0.0005&lt;/td&gt;
+&lt;td align="center"&gt;0.8571&lt;/td&gt;
+&lt;td align="center"&gt;0.8757&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align="center"&gt;0.001&lt;/td&gt;
+&lt;td align="center"&gt;0.8958&lt;/td&gt;
+&lt;td align="center"&gt;0.8879&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align="center"&gt;0.005&lt;/td&gt;
+&lt;td align="center"&gt;0.2554&lt;/td&gt;
+&lt;td align="center"&gt;0.9085&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align="center"&gt;0.01&lt;/td&gt;
+&lt;td align="center"&gt;0.1028&lt;/td&gt;
+&lt;td align="center"&gt;0.773&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;/center&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;As seen in the training report above, the &lt;code&gt;multi-threshold&lt;/code&gt; model seems to be more robust against higher learning rates. It could be that this is just a sort of shift and for even bigger learning rates it will show the same behavior as the &lt;code&gt;central-threshold&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;multi-threshold&lt;/code&gt; model does not overfit in these examples. Even more, for learning rate 0.005 it achieves a loss 2 orders of magnitude higher than the &lt;code&gt;central-threshold&lt;/code&gt; but a higher accuracy in the test set.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Adios&lt;/h2&gt;
+&lt;p&gt;This was a pretty fun blog to make. I have some final remarks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The proposed model is trainable, but I cannot say much of the specifics since that requires more investigation that I have not done.&lt;/li&gt;
+&lt;li&gt;A very important point is that since at the moment I can only use batches of 1, the training time is painfully slow, definitely not something for realistic applications.&lt;/li&gt;
+&lt;li&gt;Finally, I know that Figure 3 seems quite promising but let's not forget that this is done with a batch of a single observation.&lt;/li&gt;
+&lt;li&gt;In part II of this blog I'll try to come up with the functionality of having more observations per update and use a convolutional layer to make a more realistic comparison.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img style="float: right;" src="/images/blog/tech/ml-pyapp/dog_developer.jpg" hspace="20"&gt;&lt;/p&gt;
+&lt;p&gt;You can find the code &lt;a href="https://github.com/rragundez/multi-threshold-neuron"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you have any other questions just ping me in twitter &lt;a href="https://twitter.com/rragundez"&gt;@rragundez&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn-1"&gt;
+&lt;p&gt;This is also happening in the current neural network implementations, since in reality there is no reason for different neurons to have the same threshold, nevertheless commonly a single activation function is used on all neurons.&amp;#160;&lt;a class="footnote-backref" href="#fnref-1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-2"&gt;
+&lt;p&gt;It is a one line function, I know I know, but I can already sense there will be more to it later since this just works for a single input example.&amp;#160;&lt;a class="footnote-backref" href="#fnref-2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-3"&gt;
+&lt;p&gt;Since at the moment the multi-threshold neuron model uses only a single example at a time, to make a fair comparison both DNN weights are updated on each example (batches of size 1), &lt;code&gt;x, y = mnist.train.next_batch(1, shuffle=True)&lt;/code&gt;.&amp;#160;&lt;a class="footnote-backref" href="#fnref-3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-4"&gt;
+&lt;p&gt;If you do that the accuracy and loss will be all over the place as it will be dependent on a single observation. This could make difficult to assess if the model is indeed getting better on each iteration by seeing the loss monotonically decrease.&amp;#160;&lt;a class="footnote-backref" href="#fnref-4" title="Jump back to footnote 4 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-5"&gt;
+&lt;p&gt;You don't want this number to be too high since you expect an average lower loss and higher accuracy for observations at the end. If there are too many observations your standard deviation will increase and the reported average can be meaningless.&amp;#160;&lt;a class="footnote-backref" href="#fnref-5" title="Jump back to footnote 5 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-6"&gt;
+&lt;p&gt;The weights of a neural network using &lt;code&gt;relu&lt;/code&gt; activations where the neuron output is zero cannot learn because the back-propagated derivative is zero.&amp;#160;&lt;a class="footnote-backref" href="#fnref-6" title="Jump back to footnote 6 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content></entry><entry><title>Snowshoeing</title><link href="/snowshoeing.html" rel="alternate"></link><published>2018-02-12T20:47:00+01:00</published><updated>2018-02-12T20:47:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-02-12:/snowshoeing.html</id><summary type="html">&lt;p class="first last"&gt;Snowshoeing with camping&lt;/p&gt;
 </summary><content type="html">&lt;div class="section" id="snowshoeing-in-winter"&gt;
 &lt;h2&gt;Snowshoeing in winter&lt;/h2&gt;
 &lt;p&gt;Bacon ipsum dolor amet spare ribs burgdoggen turducken shankle pork loin. Ham kevin meatball turducken, hamburger flank pancetta jerky andouille rump doner cow boudin jowl. Tri-tip cow turducken buffalo kielbasa boudin tail short loin jerky jowl pork chop fatback venison. Burgdoggen short ribs kevin pork frankfurter meatloaf.
@@ -35,22 +622,497 @@ Leberkas ground round kevin chuck, shankle tail pork loin ham turducken meatloaf
 &lt;/div&gt;
 &lt;p&gt;Short ribs burgdoggen salami, chuck pork belly pork flank. Shankle leberkas porchetta prosciutto sirloin buffalo. Bresaola andouille chicken, brisket fatback boudin buffalo frankfurter porchetta shoulder beef meatloaf. Bresaola kevin rump, ground round pork belly pork shankle shank short loin strip steak salami. Biltong brisket alcatra sirloin venison bresaola drumstick ham hock tri-tip tenderloin strip steak pork meatball short loin. Leberkas ground round kevin chuck, shankle tail pork loin ham turducken meatloaf pork belly sausage capicola sirloin. Tri-tip biltong pork loin tongue. Tenderloin shank filet mignon capicola. Turducken bacon beef, tail landjaeger burgdoggen biltong beef ribs filet mignon shankle sirloin flank tongue drumstick pig. Leberkas ground round kevin chuck, shankle tail pork loin ham turducken meatloaf pork belly sausage capicola sirloin. Tri-tip biltong pork loin tongue. Tenderloin shank filet mignon capicola. Turducken bacon beef, tail landjaeger burgdoggen biltong beef ribs filet mignon shankle sirloin flank tongue drumstick pig.&lt;/p&gt;
 &lt;/div&gt;
-</content><category term="hiking"></category><category term="camping"></category><category term="mountain"></category></entry><entry><title>Hiking</title><link href="/test.html" rel="alternate"></link><published>2018-02-12T20:18:00+01:00</published><updated>2018-02-12T20:18:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-02-12:/test.html</id><summary type="html">&lt;p class="first last"&gt;Hiking in the swiss alps.&lt;/p&gt;
-</summary><content type="html">&lt;div class="section" id="hiking-in-the-mountains"&gt;
-&lt;h2&gt;Hiking in the Mountains&lt;/h2&gt;
-&lt;p&gt;Bacon ipsum dolor amet spare ribs burgdoggen turducken shankle pork loin. Ham kevin meatball turducken, hamburger flank pancetta jerky andouille rump doner cow boudin jowl. Tri-tip cow turducken buffalo kielbasa boudin tail short loin jerky jowl pork chop fatback venison. Burgdoggen short ribs kevin pork frankfurter meatloaf.
-Leberkas ground round kevin chuck, shankle tail pork loin ham turducken meatloaf pork belly sausage capicola sirloin. Tri-tip biltong pork loin tongue. Tenderloin shank filet mignon capicola. Turducken bacon beef, tail landjaeger burgdoggen biltong beef ribs filet mignon shankle sirloin flank tongue drumstick pig.&lt;/p&gt;
-&lt;div class="docutils container"&gt;
-&lt;img alt="" src="/images/blog/life/creek-1.jpg" style="width: 100%;" /&gt;
+</content><category term="hiking"></category><category term="camping"></category><category term="mountain"></category></entry><entry><title>PyData Amsterdam 2018</title><link href="/rod360.html" rel="alternate"></link><published>2018-01-01T00:00:00+01:00</published><updated>2018-01-01T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-01-01:/rod360.html</id><summary type="html">&lt;p&gt;Short version for index and feeds&lt;/p&gt;</summary><content type="html">&lt;h2&gt;Section&lt;/h2&gt;</content><category term="pelican"></category><category term="publishing"></category></entry><entry><title>"I Pity the fool", Deep Learning style</title><link href="/fool-neural-network.html" rel="alternate"></link><published>2017-11-05T00:00:00+01:00</published><updated>2017-11-05T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2017-11-05:/fool-neural-network.html</id><summary type="html">&lt;p&gt;With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://blog.godatadriven.com/rod-fool-neural-network"&gt;This post was originally published in the GoDataDriven blog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions.&lt;/p&gt;
+&lt;p&gt;&lt;img style="float: right;" src="/images/blog/tech/fooling-dnn/mr_t.png" width="350" hspace="20"&gt;&lt;/p&gt;
+&lt;p&gt;Several studies have been published on how to fool a deep neural network (DNN). The most famous study, which was published in 2015 used evolutionary
+algorithms or gradient ascent to produce the adversarial images.&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; A very recent study (October 2017) revealed that fooling a DNN could be achieved by changing a single pixel.&lt;sup id="fnref-2"&gt;&lt;a class="footnote-ref" href="#fn-2"&gt;2&lt;/a&gt;&lt;/sup&gt; This subject seems fun and all but has substantial implications on current and future applications of deep learning. I believe that understanding what makes these models tick is extremely important to be able to develop robust deep learning applications (and avoid another event like random forest mania).&lt;sup id="fnref-3"&gt;&lt;a class="footnote-ref" href="#fn-3"&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;A comprehensive and complete summary can be found in the &lt;a href="https://blog.acolyer.org/2017/02/28/when-dnns-go-wrong-adversarial-examples-and-what-we-can-learn-from-them/"&gt;When DNNs go wrong&lt;/a&gt; blog, which I recommend you to read.&lt;/p&gt;
+&lt;p&gt;All these amazing studies use state of the art deep learning techniques, which makes them (in my opinion) difficult to reproduce and to answer questions we might have as non-experts in this subject.&lt;/p&gt;
+&lt;p&gt;My intention in this blog is to bring the main concepts down to earth, to an easily reproducible setting where they are clear and actually visible. In addition, I hope this short blog can provide a better understanding of the limitations of discriminative models in general. The complete code used in this blog post can be found &lt;a href="https://gist.github.com/rragundez/9399f28a96541e00d02d23f2e3b86338"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;Discriminative what?&lt;/h2&gt;
+&lt;p&gt;Neural networks belong to the family of discriminative models, they model the dependence of an unobserved variable (target) based on observed input (features). In the language of probability this scenario is represented by the conditional probability and it is expressed as:&lt;/p&gt;
+&lt;div class="math"&gt;$$p(target|features)$$&lt;/div&gt;
+&lt;p&gt;it reads: the probability of the target given the features (e.g. the probability that it will rain based on yesterday's weather, temperature and pressure measurements).&lt;/p&gt;
+&lt;p&gt;Multinomial logistic regression models are also part of these discriminative models and they basically are a neural network without a hidden layer. Please don't be disappointed but I will start by demonstrating some concepts using multinomial logistic regression. Then I'll expand the concepts to a deep neural network.&lt;/p&gt;
+&lt;h2&gt;Fooling multinomial logistic regression&lt;/h2&gt;
+&lt;p&gt;As mentioned before a multinomial logistic regression can be seen as a neural network without a hidden layer. It models the probability of the target (&lt;span class="math"&gt;\(Y\)&lt;/span&gt;) being a certain category (&lt;span class="math"&gt;\(c\)&lt;/span&gt;), as a function (&lt;span class="math"&gt;\(F\)&lt;/span&gt;) that depends on the linear combination of the features (&lt;span class="math"&gt;\(X=(X_1, X_2,...,X_N)\)&lt;/span&gt;). We write this as&lt;/p&gt;
+&lt;div class="math"&gt;$$P(Y=c|X)=F(\theta_{c}^T\cdot X)$$&lt;/div&gt;
+&lt;p&gt;where &lt;span class="math"&gt;\(\theta_c\)&lt;/span&gt; are the coefficients of the linear combination for each category. The predicted class by the model is the one which gives the highest probability.&lt;/p&gt;
+&lt;p&gt;When the target &lt;span class="math"&gt;\(Y\)&lt;/span&gt; is binary, &lt;span class="math"&gt;\(F\)&lt;/span&gt; is taken to be some &lt;a href="https://en.wikipedia.org/wiki/Sigmoid_function"&gt;sigmoid function&lt;/a&gt;, the most common being the &lt;a href="https://en.wikipedia.org/wiki/Logistic_function"&gt;logistic function&lt;/a&gt;. When &lt;span class="math"&gt;\(Y\)&lt;/span&gt; is multiclass we commonly use &lt;span class="math"&gt;\(F\)&lt;/span&gt; as the &lt;a href="https://en.wikipedia.org/wiki/Softmax_function"&gt;softmax function&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Apart from the conceptual understanding of discriminative models, the linear combination of the features (&lt;span class="math"&gt;\(\theta_{c}^T\cdot X\)&lt;/span&gt;) is what makes classification models vulnerable as I will demonstrate. In the own words of Master Jedi Goodfellow: "Linear behavior in high-dimensional spaces is sufficient to cause adversarial examples".&lt;sup id="fnref-4"&gt;&lt;a class="footnote-ref" href="#fn-4"&gt;4&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;h4&gt;Iris dataset&lt;/h4&gt;
+&lt;p&gt;When I was thinking on how to do this blog post and actually visualize the concepts, I concluded I needed two things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A 2-dimensional feature space.&lt;/li&gt;
+&lt;li&gt;A model with high accuracy on this space.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The 2-dimensional space because I wanted to generate plots which directly show the concepts. High accuracy because it's meaningless if I am able to fool a bad model.&lt;/p&gt;
+&lt;p&gt;Lucky for me, it turns out that a good accuracy can be obtained on the &lt;a href="https://en.wikipedia.org/wiki/Iris_flower_data_set"&gt;Iris dataset&lt;/a&gt; by just keeping two features: petal length and petal width.&lt;/p&gt;
+&lt;p&gt;Putting everything into shape this is how the data looks like&lt;/p&gt;
+&lt;p&gt;&lt;img alt="iris dataset sample" src="/images/blog/tech/fooling-dnn/iris_df_sample.png"&gt;&lt;/p&gt;
+&lt;p&gt;This dataset contains only 150 observations, I will fit the model to all the data using a cross-entropy loss function and a L2 regularization term. This is just a plug and play from the amazing scikit-learn.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;LogisticRegression&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;max_iter&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;solver&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;lbfgs&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;multi_class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;multinomial&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;penalty&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;l2&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;iris&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loc&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt; &lt;span class="n"&gt;iris&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;flower&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;iris&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;flower&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The mean accuracy of the model is &lt;span class="math"&gt;\(96.6\%\)&lt;/span&gt;. This score is based on the training data and can be misleading, even if I am using a regularization term I can still be overfitting.&lt;sup id="fnref-5"&gt;&lt;a class="footnote-ref" href="#fn-5"&gt;5&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;Let's now look at our predictions and at how our model is drawing the classification boundaries.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="iris predictions" src="/images/blog/tech/fooling-dnn/iris_predictions.png"&gt;&lt;/p&gt;
+&lt;p&gt;In Figure 0 the red outer circles indicate those observations that were wrongly classified. The setosa flowers are easily identified and there is a region where the versicolor and virginica observations are close together. In Figure 1 we can see the different regions for each flower category. The regions are separated by a linear boundary, this is a consequence of the linear combination model used &lt;span class="math"&gt;\(P(Y=c|X)=F(\theta_{c}^T\cdot X)\)&lt;/span&gt;. As mentioned, in the case of a logistic regression (binary classification) &lt;span class="math"&gt;\(F\)&lt;/span&gt; is the logistic function&lt;/p&gt;
+&lt;div class="math"&gt;$$F(\theta_{c}^T\cdot X)=\frac{1}{1 + e^{-\theta_{c}^T\cdot X}}$$&lt;/div&gt;
+&lt;p&gt;and the classification boundary is given by &lt;span class="math"&gt;\(P(Y=c|X)=\frac{1}{2}\)&lt;/span&gt; when &lt;span class="math"&gt;\(\theta_{c}^T\cdot X=0\)&lt;/span&gt;. If the features are in one dimension then the boundary will be a single value, for two features the boundary is a single line and for three features a plane and so on. In our multinomial case we use the softmax function&lt;/p&gt;
+&lt;div class="math"&gt;$$F(\theta_{c}^T\cdot X)=\frac{e^{\theta_{c}^T\cdot X}}{\Sigma_{i=1}^Ne^{\theta_{i}^T\cdot X}}$$&lt;/div&gt;
+&lt;p&gt;where the sum over &lt;span class="math"&gt;\(i\)&lt;/span&gt; in the denominator runs over all the possible classes of the target. In the regions where only two classes have a non-negligible probability the softmax function simplifies to the logistic function. Therefore the linear classification boundaries between two regions is given by the contour &lt;span class="math"&gt;\(P(Y=c|X)=\frac{1}{2}\)&lt;/span&gt; as shown in Figure 3. In addition, when none of the classes have a negligible probability the boundary approaches the contour &lt;span class="math"&gt;\(P(Y=c|X)=\frac{1}{3}\)&lt;/span&gt; where the uncertainty of our prediction is maximum. This region is illustrated in Figure 2.&lt;/p&gt;
+&lt;p&gt;A thing to note is that the regions extend to values which can be very far from the observations, which means we can grab a petal length of 1 and petal width of 4 and still be classified as a setosa. Even more, Figure 4 shows that even far away from our observations we can find regions with extremely high probability. We can even use a negative petal length!&lt;/p&gt;
+&lt;p&gt;&lt;img alt="iris regions" src="/images/blog/tech/fooling-dnn/iris_regions.png"&gt;&lt;/p&gt;
+&lt;p&gt;Let's pick some points from Figure 4 and see if I am able to fool the multinomial logistic classifier:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Point: (.1, 5)&lt;ul&gt;
+&lt;li&gt;Prediction: setosa&lt;/li&gt;
+&lt;li&gt;Probability: 0.998&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Point: (10, 10)&lt;ul&gt;
+&lt;li&gt;Prediction: virginica&lt;/li&gt;
+&lt;li&gt;Probability: 1.0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Point: (5, -5)&lt;ul&gt;
+&lt;li&gt;Prediction: versicolor&lt;/li&gt;
+&lt;li&gt;Probability: 0.992&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The three points give a high probability on the prediction but are not even remotely like the observations in our dataset.&lt;/p&gt;
+&lt;p&gt;Ok, now to the good stuff.&lt;/p&gt;
+&lt;h2&gt;Fooling a Deep Neural Network&lt;/h2&gt;
+&lt;p&gt;As I said before, in order for me to demonstrate the concepts and have a comprehensive visualization I need two things&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A 2-dimensional feature space.&lt;/li&gt;
+&lt;li&gt;A model with high accuracy on this space.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In the case of a deep neural network it makes no sense to attack a problem with 2 features, as the intent of neural network is to throw a bunch of features as the input layer and let the hidden layers figure out and construct new features which are relevant to my classification problem. So my reasoning as how to solve my first requirement goes as follows:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Build a DNN where the last hidden layer has two units.&lt;/li&gt;
+&lt;li&gt;Then do the space analysis on the features from that layer.&lt;/li&gt;
+&lt;li&gt;Pick a point on that layer space which is far from the propagated observations but still is classified with a high probability.&lt;/li&gt;
+&lt;li&gt;Invert all the operations made from the input layer to that last hidden layer and apply them to my selected 2D point from step 3.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If I can perform those steps I should end with an input which is nothing like my observations but still is classified with high probability by the DNN, giving me an adversarial example.&lt;/p&gt;
+&lt;h4&gt;MNIST&lt;/h4&gt;
+&lt;p&gt;I chose the &lt;a href="http://yann.lecun.com/exdb/mnist/"&gt;MNIST&lt;/a&gt; digits since it is a straight forward dataset to perform classification and it is complex enough to apply a DNN. I only take 4 classes, the numbers &lt;span class="math"&gt;\({0, 1, 2, 3}\)&lt;/span&gt;. The final dataset consists of a bit more than 28,000 observations with 28x28=784 features.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;digits&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fetch_mldata&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;MNIST original&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;index&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;in1d&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;digits&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;digits&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;digits&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;digits&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;digits&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;target&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Number of observations: 28911
+Nr. observations per class:
+1.0    7877
+3.0    7141
+2.0    6990
+0.0    6903
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;A sample view of our observations:&lt;/p&gt;
+&lt;p&gt;&lt;img alt="digits sample" src="/images/blog/tech/fooling-dnn/digits_sample.png"&gt;&lt;/p&gt;
+&lt;h4&gt;DNN configuration&lt;/h4&gt;
+&lt;p&gt;The challenge here is to find the correct configuration such that the training of the DNN converges and has a good performance on the training set.&lt;/p&gt;
+&lt;p&gt;In addition, in order to be able to invert all the operations from the input layer to the last hidden layer then all functions applied must have an inverse. This means that if I decide to use any of the activation functions provided: logistic, tanh and relu, I need to keep track and impose restrictions on my nodes activation so that they are in the codomain of the activation function. This is not trivial and in my opinion does not add much to the concepts I'm trying to get across. Therefore I use the identity activation which can make the convergence a bit more tricky. &lt;sup id="fnref-6"&gt;&lt;a class="footnote-ref" href="#fn-6"&gt;6&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;The final configuration of the DNN consists of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;3 hidden layers with sizes {50, 20, 2}.&lt;/li&gt;
+&lt;li&gt;Identity activation function (no activation function).&lt;/li&gt;
+&lt;li&gt;Stochastic gradient descent optimizer (sgd).&lt;/li&gt;
+&lt;li&gt;Adaptive learning rate.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;dnn_identity&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MLPClassifier&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;hidden_layer_sizes&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;50&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="n"&gt;activation&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;identity&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;solver&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;sgd&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;learning_rate&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;adaptive&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;learning_rate_init&lt;/span&gt;&lt;span class="o"&gt;=.&lt;/span&gt;&lt;span class="mo"&gt;00005&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;random_state&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;21&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The DNN achieved close to 95% accuracy and reached conversion quite nicely as shown in Figure 6. For comparison and for use in my arguments I built another DNN with an activation function &lt;span class="math"&gt;\(tanh\)&lt;/span&gt; using the Adam optimizer.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;dnn_tanh&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MLPClassifier&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;hidden_layer_sizes&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;50&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="n"&gt;activation&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;tanh&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;solver&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;adam&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;learning_rate_init&lt;/span&gt;&lt;span class="o"&gt;=.&lt;/span&gt;&lt;span class="mo"&gt;0001&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;random_state&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;21&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The second DNN with the activation function achieved an accuracy of 98%, the loss curve in Figure 7 reveals that the training can be further improved but for now this is good enough.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="loss curve" src="/images/blog/tech/fooling-dnn/loss_curve.png"&gt;&lt;/p&gt;
+&lt;h4&gt;Extract feature encoding from the last hidden layer&lt;/h4&gt;
+&lt;p&gt;Once the model is trained we can retrieve the coefficients connecting all the layers. We use these coefficients to "manually" propagate our observations input up to the last hidden layer and then plot some of them in a 2D graph. This small function propagates the input layer up to a specified layer.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;propagate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_layer&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;layer_nr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dnn&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation_function&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Obtain the activation values of any intermediate layer of the deep neural network.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;input_layer&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;intercepts&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;weights&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dnn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;intercepts_&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="n"&gt;layer_nr&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;dnn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;coefs_&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="n"&gt;layer_nr&lt;/span&gt;&lt;span class="p"&gt;]):&lt;/span&gt;
+        &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;activation_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;layer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;weights&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;intercepts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;
+
+&lt;span class="n"&gt;hl_identity&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;propagate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;digits&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dnn_identity&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;hl_tanh&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;propagate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;digits&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dnn_tanh&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tanh&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The representation of the observations under the encoding of the last 2D hidden layer is shown on Figure 8 and 9. The identity DNN, as shown in Figure 8, has encoded our observations by creating hidden features which separate them in the hidden layer dimensionality (2D in this case). The more sophisticated &lt;span class="math"&gt;\(tanh\)&lt;/span&gt; DNN achieves better performance because it is capable of coming up with hidden features which separate in a better way our observations as shown in Figure 9. Nevertheless Figures 10 and 11 reveal that in both cases linear classification boundaries are being constructed to separate our category regions. Similar to the multinomial logistic regression, this is caused by the dot product (linear Kernel) between the last hidden layer and the final weights which connect the hidden layer with the output layer. This means that these regions extend far away from where our observations lie, even more these regions have a high probability as shown in Figure 12 and 13.&lt;/p&gt;
+&lt;p&gt;So now the only thing to do is to grab a point from Figure 8 (for example: -200, 200), do all the inverse operations to bring back the encoding to the input layer and reshape the vector into an image which of course will look nothing like a &lt;span class="math"&gt;\(1\)&lt;/span&gt; but will be classified as a &lt;span class="math"&gt;\(1\)&lt;/span&gt; with very high probability by our DNN.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="dnn predictions" src="/images/blog/tech/fooling-dnn/dnn_predictions.png"&gt;&lt;/p&gt;
+&lt;h4&gt;Brief tangent&lt;/h4&gt;
+&lt;p&gt;Before proceeding I would like to have a more conceptual discussion regarding the implications of the arguments presented for figure 8 and 9. The DNN creates hidden features which separate our observations as best as possible. This means that such hidden features will concentrate on capturing differences between our classes. For example, let's say we want to classify dogs and horses&lt;sup id="fnref-7"&gt;&lt;a class="footnote-ref" href="#fn-7"&gt;7&lt;/a&gt;&lt;/sup&gt;. According to our reasoning, will a feature that captures the amount of legs be created? I don't think so, because having such a feature doesn't add to the purpose of separating our classes. We can send a horse with 5 legs and this fact will not raise any flags on our DNN. I believe this is the underlying concept when we say that discriminative models do not capture the essence of the objects to be classified. Here is where generative models come to the rescue, they recently have shown amazing results by capturing the underlying "context" of the objects. In a probability framework they shift from modelling the conditional probability to model the joint probability.&lt;/p&gt;
+&lt;p&gt;Notice that the probability near the boundaries grows exponentially with the product &lt;span class="math"&gt;\(\theta_c\cdot X\)&lt;/span&gt; following the sigmoid function. This means that if we take an observation which lies close to a boundary, it takes a small perturbation to take it to another region. This is the principle behind the study of fooling a DNN with a single pixel change&lt;sup id="fnref2-2"&gt;&lt;a class="footnote-ref" href="#fn-2"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Finally notice that all our analysis is in a 2D space and as such the regions extend in a surface. In a 3D space these regions will become volumes, hence increasing the region size where adversarial examples can be found. Just like Master Jedi Goodfellow said: "Linear behavior in high-dimensional spaces is sufficient to cause adversarial examples" &lt;sup id="fnref2-3"&gt;&lt;a class="footnote-ref" href="#fn-3"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;h4&gt;Pity the fool&lt;/h4&gt;
+&lt;p&gt;A bit of linear algebra. Two consecutive layers can be described by a set of linear equations which in matrix notation can be represented by&lt;sup id="fnref-8"&gt;&lt;a class="footnote-ref" href="#fn-8"&gt;8&lt;/a&gt;&lt;/sup&gt;:&lt;/p&gt;
+&lt;div class="math"&gt;$$L_{N}^i\times \Theta_{N\times M}=L_{M}^{i+1}$$&lt;/div&gt;
+&lt;p&gt;where &lt;span class="math"&gt;\(i\)&lt;/span&gt; is a certain layer number, &lt;span class="math"&gt;\(N\)&lt;/span&gt; and &lt;span class="math"&gt;\(M\)&lt;/span&gt; the number of units in the layer and &lt;span class="math"&gt;\(\Theta\)&lt;/span&gt; the coefficients representing the connections between layers. In our DNN each layer reduces in size, this means that &lt;span class="math"&gt;\(N&amp;gt;M\)&lt;/span&gt;. In order to find the layer &lt;span class="math"&gt;\(i\)&lt;/span&gt; from the layer &lt;span class="math"&gt;\(i+1\)&lt;/span&gt; we need to find the inverse of &lt;span class="math"&gt;\(\Theta_{N\times M}\)&lt;/span&gt; and compute&lt;/p&gt;
+&lt;div class="math"&gt;$$L_{N}^i=L_{M}^{i+1}\times \Theta_{N\times M}^{-1}$$&lt;/div&gt;
+&lt;p&gt;The problem (of course) is that non-square matrices do not have an inverse. In the DNN context, what is happening is that we are losing information by compacting our observations in a lower dimensional space. This means there is no way to exactly trace back layers, simply because we don't have enough information. This does not mean that we cannot find a vector representing &lt;span class="math"&gt;\(L^i_N\)&lt;/span&gt; which satisfies &lt;span class="math"&gt;\(L_{N}^i\times \Theta_{N\times M}=L_{M}^{i+1}\)&lt;/span&gt; given the layer &lt;span class="math"&gt;\(L^{i+1}_M\)&lt;/span&gt; and the coefficients &lt;span class="math"&gt;\(\Theta_{N\times M}\)&lt;/span&gt;, which means that such vector is not unique.&lt;/p&gt;
+&lt;p&gt;A solution for the layer &lt;span class="math"&gt;\(L_{N}^i\)&lt;/span&gt; can be derived using the pseudoinverse, in particular the &lt;a href="https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse"&gt;Moore–Penrose inverse&lt;/a&gt; is adequate for our type of problem, and best of all it is implemented in Numpy!&lt;/p&gt;
+&lt;p&gt;Below I define a function which inverts the propagation from a hidden layer to the input layer with an identity activation function.&lt;sup id="fnref-9"&gt;&lt;a class="footnote-ref" href="#fn-9"&gt;9&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;invert_propagation&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hidden_layer&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;layer_nr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dnn&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Obtain the input layer from a hidden layer of a deep neural network&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hidden_layer&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;intercepts&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;weights&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;nn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;intercepts_&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;layer_nr&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;nn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;coefs_&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;layer_nr&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]):&lt;/span&gt;
+        &lt;span class="n"&gt;inv_weight&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;linalg&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pinv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;weights&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;layer&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;intercepts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;inv_weight&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;layer&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Finally, the moment of truth. I choose a nonsense value for each region by looking at Figures 10 and 12. In particular I choose:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Region 0: (1200, -300)&lt;/li&gt;
+&lt;li&gt;Region 1: (-500, 500)&lt;/li&gt;
+&lt;li&gt;Region 2: (100,400)&lt;/li&gt;
+&lt;li&gt;Region 3: (-1000, 900)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Now I invert the propagation for each point, obtain the input layer, reshape the input to a 28x28 image and show it together with the prediction from the DNN and the probability of such prediction.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;pity_the_fool&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hidden_vector&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dnn&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;input_vector&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;invert_propagation&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hidden_vector&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dnn_identity&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;imshow&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_vector&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reshape&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="mi"&gt;28&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;28&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="n"&gt;cmap&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;gray&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="n"&gt;prediction&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dnn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_vector&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reshape&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;probability&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;max&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dnn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict_proba&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_vector&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;reshape&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+
+    &lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;set_title&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Prediction: {:.0f}&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+                 &lt;span class="s2"&gt;&amp;quot;Probability: {:.3f}&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+                 &lt;span class="s2"&gt;&amp;quot;Hiden vector: {}&amp;quot;&lt;/span&gt;
+                 &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;prediction&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;probability&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hidden_vector&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;ax&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;axis&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;off&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;img alt="adversarial examples" src="/images/blog/tech/fooling-dnn/adversarial_examples_1.png"&gt;&lt;/p&gt;
+&lt;p&gt;The figures above clearly show that I have managed to fool the DNN. It is like the DNN had some Mexican peyote or something. The labels are consistent with the regions we took the points from and are classified with almost 100% probability. There is no way a human eye can tell that those images are a 0, a 1, a 2 and a 3. Not even to tell that there are numbers.&lt;/p&gt;
+&lt;h2&gt;Light at the end of the tunnel&lt;/h2&gt;
+&lt;p&gt;I have stated that the main problem is the linear classification boundaries, is there a way we can avoid this? Well, I left a hint out there when I mentioned that the dot product presented is nothing more than a linear kernel. I will not go into the details of how the &lt;a href="https://en.wikipedia.org/wiki/Kernel_method"&gt;kernel trick&lt;/a&gt; works, but in summary it lets us perform dot products in higher dimensional spaces of our features without ever computing the new features in that high-dimensional space. If you never heard about it, it can be a bit of a weird thing. Just to mess more with your cerebro, if for example we were to use the &lt;a href="https://en.wikipedia.org/wiki/Radial_basis_function_kernel"&gt;Gaussian kernel&lt;/a&gt;, this is equal to performing calculations in an infinite high-dimensional space, yes infinite! &lt;sup id="fnref-10"&gt;&lt;a class="footnote-ref" href="#fn-10"&gt;10&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;By using these kernels the model is not restricted to linear classification boundaries. Below I compare a support vector machine model (SVM) with a linear kernel and a Gaussian kernel using the iris dataset.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;svm_linear&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;SVC&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;kernel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;linear&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;probability&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;svm_gaussian&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;SVC&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;kernel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;rbf&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;probability&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Both SVM models obtain an accuracy of &lt;span class="math"&gt;\(\approx 96.6%\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="svm predictions" src="/images/blog/tech/fooling-dnn/svm_predictions.png"&gt;&lt;/p&gt;
+&lt;p&gt;Figure 18 shows that the SVM with the linear kernel also suffers from the issues discussed. In general any discriminative model that is trying to model the conditional probability via some transformation of the dot product &lt;span class="math"&gt;\(\Theta\cdot X\)&lt;/span&gt; is doomed to be susceptible to adversarial examples attacks.&lt;/p&gt;
+&lt;p&gt;Figure 19 is beautiful, shows exactly how getting rid of the linearity (&lt;span class="math"&gt;\(\Theta\cdot X\)&lt;/span&gt;) allows for non-linear classification boundaries and hence the regions with high probability do not extend indefinitely. In this case all points with high probability are close to our observations, so in principle they should "look" like our observations.&lt;/p&gt;
+&lt;p&gt;A SVM with a Gaussian kernel can't accomplish the extremely complicated tasks that deep neural networks can, but an idea could be to find a way to implement a non-linear kernel between the last hidden layer and the output layer. This discussion is outside the of scope of this article, but hopefully I will find the time to look into it and write about my findings.&lt;/p&gt;
+&lt;p&gt;Another solution to the above discussed issues lies in a completely different perspective, instead of trying to model the conditional probability, try to model the joint probability with generative models. These models should capture the underlying "context" of our observations and not only what makes them different.  This fundamental difference allows generative algorithms to do things which are impossible for a DNN. Such as producing never seen examples which have a striking resemblance to original observations, and even more to tune the context of these examples. A super nice &lt;a href="https://houxianxu.github.io/assets/project/dfcvae"&gt;demonstration&lt;/a&gt; is the generation of never seen faces where the degree of smiling and sunglasses is tuned.&lt;/p&gt;
+&lt;h2&gt;Adios&lt;/h2&gt;
+&lt;p&gt;&lt;img style="float: right;" src="/images/blog/tech/ml-pyapp/dog_developer.jpg" hspace="20"&gt;&lt;/p&gt;
+&lt;p&gt;Well that took much more work than I expected. I hope you enjoyed reading this blog post and got excited about deep learning.&lt;/p&gt;
+&lt;p&gt;You can find the code &lt;a href="https://gist.github.com/rragundez/9399f28a96541e00d02d23f2e3b86338"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you have any other questions just ping me in twitter &lt;a href="https://twitter.com/rragundez"&gt;@rragundez&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn-1"&gt;
+&lt;p&gt;&lt;a href="http://www.evolvingai.org/files/DNNsEasilyFooled_cvpr15.pdf"&gt;Deep Neural Networks are Easily Fooled&lt;/a&gt;&amp;#160;&lt;a class="footnote-backref" href="#fnref-1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-2"&gt;
+&lt;p&gt;&lt;a href="https://arxiv.org/pdf/1710.08864.pdf"&gt;One pixel attack for fooling deep neural networks&lt;/a&gt;&amp;#160;&lt;a class="footnote-backref" href="#fnref-2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;a class="footnote-backref" href="#fnref2-2" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-3"&gt;
+&lt;p&gt;This should be the case not only for Deep Learning models but all models in general. I increasingly see pseudo Data Scientist making outrageous claims or using models with a one-fits-all mentality. I understand there are juniors in the organizations but that's why you should have a strong Lead Data Scientist to provide guidance or hire GoDataDriven to make your team blossom, not only on their technical abilities but also in their mentality when attacking a problem.&amp;#160;&lt;a class="footnote-backref" href="#fnref-3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;a class="footnote-backref" href="#fnref2-3" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-4"&gt;
+&lt;p&gt;&lt;a href="https://arxiv.org/pdf/1412.6572.pdf"&gt;Explaining and harnessing adversarial examples&lt;/a&gt;&amp;#160;&lt;a class="footnote-backref" href="#fnref-4" title="Jump back to footnote 4 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-5"&gt;
+&lt;p&gt;For the demonstration I decided to train on all the data since the dataset is so small (150 observations). In the deep neural network case I will use a much larger dataset and a test set.&amp;#160;&lt;a class="footnote-backref" href="#fnref-5" title="Jump back to footnote 5 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-6"&gt;
+&lt;p&gt;It is known that no activation function can lead to exploiting activations values which in turn affect the convergence of the Deep Neural Network.&amp;#160;&lt;a class="footnote-backref" href="#fnref-6" title="Jump back to footnote 6 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-7"&gt;
+&lt;p&gt;I don't like cats.&amp;#160;&lt;a class="footnote-backref" href="#fnref-7" title="Jump back to footnote 7 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-8"&gt;
+&lt;p&gt;This is taking into account the intercept into the coefficients and adding a unit to layer &lt;span class="math"&gt;\(i\)&lt;/span&gt; with an activation of 1.&amp;#160;&lt;a class="footnote-backref" href="#fnref-8" title="Jump back to footnote 8 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-9"&gt;
+&lt;p&gt;If you were to use an activation function here is where you need to be careful that activation stay in the codomain of activation function. Since we cannot exactly reconstruct the previous layer we cannot be sure that the pseudo inverse will yield values which are outside the codomain therefore generating an exception. I tried a little bit with the &lt;code&gt;tanh&lt;/code&gt; activation function but at least for me it was not straight forward.&amp;#160;&lt;a class="footnote-backref" href="#fnref-9" title="Jump back to footnote 9 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-10"&gt;
+&lt;p&gt;This is because of the Taylor expansion of the exponential function.&amp;#160;&lt;a class="footnote-backref" href="#fnref-10" title="Jump back to footnote 10 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
 &lt;/div&gt;
-&lt;p&gt;Landjaeger cupim capicola sirloin ball tip, picanha turkey t-bone bresaola fatback biltong doner shoulder. Burgdoggen pork pig, turducken t-bone jerky rump frankfurter tongue buffalo turkey sausage leberkas. Jowl doner fatback venison biltong frankfurter pork cow pork belly pancetta ball tip ham hock sirloin short loin. Short ribs brisket beef ribs prosciutto bacon venison beef jowl cupim t-bone capicola meatball landjaeger. Tongue pork loin boudin chicken sirloin. Tri-tip ribeye beef, ground round meatloaf rump beef ribs biltong brisket t-bone buffalo prosciutto pork loin tail spare ribs. Leberkas ground round kevin chuck, shankle tail pork loin ham turducken meatloaf pork belly sausage capicola sirloin. Tri-tip biltong pork loin tongue. Tenderloin shank filet mignon capicola. Turducken bacon beef, tail landjaeger burgdoggen biltong beef ribs filet mignon shankle sirloin flank tongue drumstick pig.&lt;/p&gt;
-&lt;div class="float-right docutils container"&gt;
-&lt;img alt="" src="/images/blog/life/creek-2.jpg" style="width: 250px;" /&gt;
-&lt;/div&gt;
-&lt;p&gt;Ham ham hock short loin fatback filet mignon, venison meatball swine sausage pork andouille capicola frankfurter. T-bone short loin porchetta chuck salami pancetta. Short loin shankle pastrami drumstick chicken ribeye flank. Venison salami turducken, chicken filet mignon landjaeger sirloin tail kevin meatloaf short ribs bacon. Kevin pig beef tri-tip pastrami pork belly pork chop sirloin rump ribeye pork loin cow flank. Shoulder sirloin landjaeger venison chicken bresaola hamburger pastrami short ribs. Leberkas ground round kevin chuck, shankle tail pork loin ham turducken meatloaf pork belly sausage capicola sirloin. Tri-tip biltong pork loin tongue. Tenderloin shank filet mignon capicola. Turducken bacon beef, tail landjaeger burgdoggen biltong beef ribs filet mignon shankle sirloin flank tongue drumstick pig.&lt;/p&gt;
-&lt;div class="float-left docutils container"&gt;
-&lt;img alt="" src="/images/blog/life/tent.jpg" style="width: 250px;" /&gt;
-&lt;/div&gt;
-&lt;p&gt;Short ribs burgdoggen salami, chuck pork belly pork flank. Shankle leberkas porchetta prosciutto sirloin buffalo. Bresaola andouille chicken, brisket fatback boudin buffalo frankfurter porchetta shoulder beef meatloaf. Bresaola kevin rump, ground round pork belly pork shankle shank short loin strip steak salami. Biltong brisket alcatra sirloin venison bresaola drumstick ham hock tri-tip tenderloin strip steak pork meatball short loin. Leberkas ground round kevin chuck, shankle tail pork loin ham turducken meatloaf pork belly sausage capicola sirloin. Tri-tip biltong pork loin tongue. Tenderloin shank filet mignon capicola. Turducken bacon beef, tail landjaeger burgdoggen biltong beef ribs filet mignon shankle sirloin flank tongue drumstick pig. Leberkas ground round kevin chuck, shankle tail pork loin ham turducken meatloaf pork belly sausage capicola sirloin. Tri-tip biltong pork loin tongue. Tenderloin shank filet mignon capicola. Turducken bacon beef, tail landjaeger burgdoggen biltong beef ribs filet mignon shankle sirloin flank tongue drumstick pig.&lt;/p&gt;
-&lt;/div&gt;
-</content><category term="hiking"></category><category term="camping"></category><category term="mountain"></category></entry><entry><title>PyData Amsterdam 2018</title><link href="/rod360.html" rel="alternate"></link><published>2018-01-01T00:00:00+01:00</published><updated>2018-01-01T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-01-01:/rod360.html</id><summary type="html">&lt;p&gt;Short version for index and feeds&lt;/p&gt;</summary><content type="html">&lt;h2&gt;Section&lt;/h2&gt;</content><category term="pelican"></category><category term="publishing"></category></entry></feed>
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content></entry><entry><title>Machine Learning Application Skeleton</title><link href="/ml-pyapp.html" rel="alternate"></link><published>2017-08-23T00:00:00+02:00</published><updated>2017-08-23T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2017-08-23:/ml-pyapp.html</id><summary type="html">&lt;p&gt;The need of the business to interact and understand the output from custom built machine learning models is increasing, here I provide an application skeleton to do just that with your Python made models.&lt;/p&gt;</summary><content type="html">&lt;p&gt;In this blog post I provide an overview of a Python skeleton application I made. This skeleton can help you bridge the gap between your model and a machine learning application.&lt;/p&gt;
+&lt;p&gt;For example, you can use your existing Flask application, import it in &lt;code&gt;run_app.py&lt;/code&gt; as &lt;code&gt;app&lt;/code&gt;, and this will add the production ready features of &lt;a href="http://gunicorn.org/"&gt;Gunicorn&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/rragundez/app-skeleton"&gt;Take me to the code&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;Why bother?&lt;/h3&gt;
+&lt;p&gt;The times when business saw machine learning models as black boxes with no hope of understanding are long gone.&lt;/p&gt;
+&lt;p&gt;It use to be that the data analytics or data science department of a company produced results in a silo kind of environment. Little or no interaction took place between these departments and the business side making the decisions (marketing, sales, client support, etc.). Advice coming from machine learning models consisted of reports, which were nice to have if they supported ideas from the business.&lt;/p&gt;
+&lt;p&gt;&lt;img style="float: left;" src="/images/blog/tech/ml-pyapp/cat_peeking.jpg" width="350" hspace="20"&gt;&lt;/p&gt;
+&lt;p&gt;As data driven decisions demonstrated their value, the business side started peeking behind the curtain.&lt;/p&gt;
+&lt;p&gt;Paper/files reports have been substituted by static reporting dashboards, which themselves are being replaced by interactive ones. The business end users want to interact with the models, understand why certain predictions are made and evenmore, they want to be capable of performing predictions on the fly (imagine simultaneously having a customer on the phone and updating the probabilities of him/her buying certain products, or a marketing department tuning campaigns themselves depending on regional features).&lt;/p&gt;
+&lt;p&gt;In short, I had some time during a rainy weekend and a GDD Friday&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt;, already did something similar for a client and I think it is important to bring machine learning models to the business side.&lt;/p&gt;
+&lt;p&gt;Also, as a bonus they will stop bothering you every time they need insights or a slightly different prediction.&lt;/p&gt;
+&lt;h3&gt;What's in the goody bag?&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Template to extend a &lt;a href="http://flask.pocoo.org/"&gt;Flask&lt;/a&gt; application using &lt;a href="http://gunicorn.org/"&gt;Gunicorn&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This allows the application to be run in a more production ready environment (multiple workers and threads for example). In &lt;a href="http://docs.gunicorn.org/en/stable/settings.html"&gt;here&lt;/a&gt; you can find a complete list of all the possible &lt;a href="http://gunicorn.org/"&gt;Gunicorn&lt;/a&gt; settings. I added the possibility to use some of them as command line arguments. Some relevant ones are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;host&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;port&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;workers&lt;/code&gt; - define number of workers.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;threads&lt;/code&gt; - number of threads on each worker.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;daemon&lt;/code&gt; - run application in the background.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;access-logfile&lt;/code&gt; - save access logs to a file.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;forwarded-allow-ips&lt;/code&gt; - list allowed IP addresses.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Dummy application which demonstrates how to ingest several types of &lt;a href="https://www.w3schools.com/html/html_form_input_types.asp"&gt;user inputs&lt;/a&gt; into your Python application.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Dummy Application" src="/images/blog/tech/ml-pyapp/dummy.png"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Debug mode which (similar to Flask) will&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;run a single process&lt;/li&gt;
+&lt;li&gt;logging to debug level&lt;/li&gt;
+&lt;li&gt;restart process on code change&lt;/li&gt;
+&lt;li&gt;reload html and jinja templates on change&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Dockerfile template to containerize the application.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Docker whale" src="/images/blog/tech/ml-pyapp/docker.png"&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Interactive application which runs a classifier model, outputs predictions and information about the machine learning model.&lt;/p&gt;
+&lt;p&gt;&lt;img src="/images/blog/tech/ml-pyapp/iris_prediction.png" width="520"&gt;
+&lt;img src="/images/blog/tech/ml-pyapp/iris_insights.png" width="800"&gt;
+&lt;img src="/images/blog/tech/ml-pyapp/iris_performance.png" width="580"&gt;&lt;/p&gt;
+&lt;p&gt;The model can be run by using the UI or by directly making a post request to the endpoint.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;A more complete description, a set of instructions and the code can be found in &lt;a href="https://github.com/rragundez/app-skeleton"&gt;this repository&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Note: I also include a &lt;code&gt;setup.py&lt;/code&gt; file that you should use to install your package used in the application.&lt;/p&gt;
+&lt;h3&gt;Adios&lt;/h3&gt;
+&lt;p&gt;If you structure your project following the &lt;a href="https://blog.godatadriven.com/how-to-start-a-data-science-project-in-python"&gt;advice&lt;/a&gt; from &lt;a href="https://godatadriven.com/players/henk-griffioen"&gt;Henk Griffioen&lt;/a&gt; (A.K.A. El Chicano), the integration of this ML application skeleton to your project should be straight forward.&lt;/p&gt;
+&lt;p&gt;&lt;img style="float: right;" src="/images/blog/tech/ml-pyapp/dog_developer.jpg" hspace="20"&gt;&lt;/p&gt;
+&lt;p&gt;I hope this work can help you bring your models into a machine learning application, it certainly helped and will help me in the future. You can find the code &lt;a href="https://github.com/rragundez/app-skeleton"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you have any other questions just ping me in twitter &lt;a href="https://twitter.com/rragundez"&gt;@rragundez&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn-1"&gt;
+&lt;p&gt;One Friday a month when we get to do whatever we want, it is awesome.&amp;#160;&lt;a class="footnote-backref" href="#fnref-1" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</content></entry><entry><title>Facebook's Prophet: Forecasting Stores Transactions</title><link href="/prophet-quicklook.html" rel="alternate"></link><published>2017-02-25T00:00:00+01:00</published><updated>2017-02-25T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2017-02-25:/prophet-quicklook.html</id><summary type="html">&lt;p&gt;Quick look into the Prophet API for predicting the number of transactions in a shop.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://blog.godatadriven.com/prophet-quicklook"&gt;This post was originally published in the GoDataDriven blog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Yesterday &lt;a href="https://godatadriven.com/players/giovanni-lanzani"&gt;Giovanni&lt;/a&gt;, our Chief Scientist, mentioned this recently released (2 days ago in &lt;a href="https://github.com/facebookincubator/prophet"&gt;github&lt;/a&gt;) open source forecasting API by Facebook’s Core Data Science team, so I decided to give it a try during one of our famous GDD Fridays.&lt;/p&gt;
+&lt;p&gt;In Prophet's own words: "&lt;a href="https://facebookincubator.github.io/prophet/"&gt;Prophet&lt;/a&gt; is a procedure for forecasting time series data. It is based on an additive model where non-linear trends are fit with yearly and weekly seasonality, plus holidays. It works best with daily periodicity data with at least one year of historical data. Prophet is robust to missing data, shifts in the trend, and large outliers". Prophet's algorithm explanation can be found in this &lt;a href="https://facebookincubator.github.io/prophet/static/prophet_paper_20170113.pdf"&gt;article&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Prophet offers a R and Python API, I used the Pythton API of course.&lt;/p&gt;
+&lt;h2&gt;Why bother?&lt;/h2&gt;
+&lt;p&gt;The data belongs to a customer for which models are alreading in production. I wanted to see how Prophet's forecasts behave using the same data we use in one of these models developed by &lt;a href="https://godatadriven.com/players/rogier-vandergeer"&gt;Rogier&lt;/a&gt; and me.&lt;/p&gt;
+&lt;p&gt;In reality, the forecast of the number of transactions in a shop is used as a part of an ensemble to predict products sales. Since Prophet does not accept features, it would be unfair to make a comparison at that level since, for example, price is a very important factor.&lt;/p&gt;
+&lt;h2&gt;Data: transactions and holidays&lt;/h2&gt;
+&lt;p&gt;The data is of a current client, therefore I won't be disclosing any details of it.&lt;/p&gt;
+&lt;p&gt;Our models make forecasts for different shops of this company. In particular I took 2 shops, one which contains the easiest transactions to predict from all shops, and another with a somewhat more complicated history.&lt;/p&gt;
+&lt;p&gt;The data consists of real transactions since 2014. Data is daily with the target being the number of transactions executed during a day. There are missing dates in the data when the shop closed, for example New Year's day and Christmas.&lt;/p&gt;
+&lt;p&gt;The holidays provided to the API are the same I use in our model. They contain from school vacations or large periods, to single holidays like Christmas Eve. In total, the data contains 46 different holidays.&lt;/p&gt;
+&lt;h2&gt;Code&lt;/h2&gt;
+&lt;p&gt;If the data is in a nice format (this is a big if), Prophet provides a very easy to use API. In particular, once I cleaned, aggregated and dumped the data, the calculation consisted on these two pieces of code:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tseries&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;predict_date&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;holidays&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Prophet&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;holidays&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;holidays&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="c1"&gt;# train on data until 3 days before&lt;/span&gt;
+    &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tseries&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;tseries&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ds&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;predict_date&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;timedelta&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;days&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))])&lt;/span&gt;
+    &lt;span class="n"&gt;forecast&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;make_future_dataframe&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;periods&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;forecast&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loc&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;forecast&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ds&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;predict_date&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;ds&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;yhat&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;
+
+&lt;span class="n"&gt;pred&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="n"&gt;pred_holidays&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;date&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;date_range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;2016-1-1&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;2016-12-31&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;pred&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tseries_shop&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;date&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;pred_holidays&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tseries_shop&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;date&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;holidays&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;holidays&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="n"&gt;predictions&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;merge&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;concat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pred&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;concat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pred_holidays&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+                       &lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;ds&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;how&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;inner&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;suffixes&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;_hol&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The forecast is done for 2016 with and without holiday data. Our production model gets trained daily via an &lt;a href="https://airflow.incubator.apache.org/"&gt;Airflow&lt;/a&gt; job, to make a fair comparison, I train a Prophet model for each date in 2016 using the data until 3 days before the date to be forecast. This is because the order for a product needs to be submitted 2 days before, which means it uses the data available until then.&lt;/p&gt;
+&lt;p&gt;Prophet leveraged the full capacity of my laptop using all 8 cores. The calculation took around 45 minutes per shop, which means a single day with or without holidays takes around 4 seconds.&lt;/p&gt;
+&lt;h2&gt;Metric&lt;/h2&gt;
+&lt;p&gt;The metric I used to measure the forecast performance is the &lt;a href="https://en.wikipedia.org/wiki/Coefficient_of_determination"&gt;coefficient of determination (&lt;span class="math"&gt;\(R^2\)&lt;/span&gt; score)&lt;/a&gt;. The &lt;span class="math"&gt;\(R^2\)&lt;/span&gt; score gives the proportion of the variance in the data that is explained by the forecast. A perfect forecast will give 1.0 and a constant prediction for every day will give 0.0.&lt;/p&gt;
+&lt;h2&gt;Easy shop: Widushop&lt;/h2&gt;
+&lt;p&gt;Using &lt;a href="https://godatadriven.com/players/vincent-warmerdam"&gt;Vincent's&lt;/a&gt; awesome &lt;a href="http://tnaas.com/"&gt;Pokemon name generator&lt;/a&gt;, I will call this shop Widushop. This is the transaction data for the 3 years,&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Widushop transaction history" src="/images/blog/tech/prophet-quicklook/widushop_history.png"&gt;&lt;/p&gt;
+&lt;p&gt;The image shows a very similar pattern each year. Also, it shows some days that are definitely holidays where transactions drop or increase dramatically.&lt;/p&gt;
+&lt;p&gt;Prophet produces a very accurate forecast, it scores 0.89 without using holidays and &lt;strong&gt;0.94&lt;/strong&gt; using holidays. Below I show a comparison between the transactions (truth) and the forecast using holidays.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Widushop forecast" src="/images/blog/tech/prophet-quicklook/widushop_forecast.png"&gt;&lt;/p&gt;
+&lt;p&gt;Pretty nice!&lt;/p&gt;
+&lt;p&gt;Overall it produces very good results, for holidays seems to overestimate (look at Christmas Eve), nevertheless that can be tuned by the parameter &lt;code&gt;holidays.prior.scale&lt;/code&gt; as stated in the &lt;a href="https://facebookincubator.github.io/prophet/docs/holiday_effects.html"&gt;documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;Difficult shop: Qumashop&lt;/h2&gt;
+&lt;p&gt;This time the shop name generated is Qumashop. The transaction history of Qumashop is more chaotic than the one for Widushop. Below I show the transaction history of Qumashop.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Qumashop transaction history" src="/images/blog/tech/prophet-quicklook/qumashop_history.png"&gt;&lt;/p&gt;
+&lt;p&gt;Holidays have a much greater impact. Look at that peak in the middle of July, this is a known event that draws a lot of people to the city (it is in the holidays data). Notice that transactions in 2016 are considerably higher than other years, specially from July until September. Not catching this uprise trend would mean losing a lot of potential sales.&lt;/p&gt;
+&lt;p&gt;This time the Prophet forecast is not as good as for Widushop giving 0.64 without holiday data and a solid &lt;strong&gt;0.82&lt;/strong&gt; using holidays. Below I show a comparison between the transactions (truth) and the forecast using holidays for Qumashop.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Qumashop forecast" src="/images/blog/tech/prophet-quicklook/qumashop_forecast.png"&gt;&lt;/p&gt;
+&lt;p&gt;Look at that! very nice. I am specially happy that it catched the mentioned trend between July and September. Moreover, the residuals on the week following the big peak in July, the second week in September and the two weeks at the end of October are too high.
+Remember that in practice this is just a model of an ensemble, is better to have a little overall bigger residual that can reduced by other models, than having weeks with such big errors.&lt;/p&gt;
+&lt;p&gt;Perhaps the forecasts for the week after the big peak in July can improve by introducing a &lt;a href="https://facebookincubator.github.io/prophet/docs/trend_changepoints.html"&gt;&lt;code&gt;changepoint&lt;/code&gt;&lt;/a&gt; the last day of the peak holiday week.&lt;/p&gt;
+&lt;h2&gt;Wrap-up&lt;/h2&gt;
+&lt;p&gt;Prophet's out of the box results were impressive. The quality of the forecasts are comparable with those from our current model in production for these 2 shops.&lt;/p&gt;
+&lt;p&gt;Calculations were parallelized over all 8 cores of my machine. Training plus prediction time for each date was about 4 seconds.&lt;/p&gt;
+&lt;p&gt;The API is ridiculously easy to use and the documentation seems sufficient.&lt;/p&gt;
+&lt;p&gt;For what I can read in the &lt;a href="https://facebookincubator.github.io/prophet/docs/quick_start.html"&gt;documentation&lt;/a&gt;, Prophet does not accept features. Nevertheless, Prophet's forecasts can be part of an ensemble that produces predictions with a higher granularity.&lt;/p&gt;
+&lt;p&gt;It would be interesting to make a comparison for every shop. I was surprised by the result on the difficult shop history.&lt;/p&gt;
+&lt;p&gt;There are also several hyperparameters that would be interesting to look into, among several, these in particular:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://facebookincubator.github.io/prophet/docs/forecasting_growth.html"&gt;&lt;code&gt;cap&lt;/code&gt;&lt;/a&gt;: the maximum possible value of the target.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://facebookincubator.github.io/prophet/docs/trend_changepoints.html"&gt;&lt;code&gt;changepoint&lt;/code&gt;&lt;/a&gt;: indicate where do we expect an abrupt change in the time series.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://facebookincubator.github.io/prophet/docs/trend_changepoints.html"&gt;&lt;code&gt;changepoint_prior_scale&lt;/code&gt;&lt;/a&gt;: related to how strongly should the model adjust to trends.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://facebookincubator.github.io/prophet/docs/holiday_effects.html"&gt;&lt;code&gt;holidays_prior_scale&lt;/code&gt;&lt;/a&gt;: adjust the importance of holiday effects.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://facebookincubator.github.io/prophet/docs/uncertainty_intervals.html"&gt;&lt;code&gt;interval_width&lt;/code&gt;&lt;/a&gt;: sets the uncertainty interval to produce a confidence interval around the forecast. This could be very useful for monitoring the quality of the forecast. Defaults to 80%.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To anyone starting a project using time-series for forecasting, I really recommend taking a close look at this tool.&lt;/p&gt;
+&lt;p&gt;Great work &lt;a href="https://facebookincubator.github.io/prophet/"&gt;Prophet!&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I hope this blog has been helpful and please bother me &lt;a href="https://twitter.com/rragundez"&gt;@rragundez&lt;/a&gt; with your results of playing around with Prophet.&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;</content></entry></feed>

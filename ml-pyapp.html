@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Machine Learning Application Skeleton</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="author" content="Rodrigo Agundez" />
+    <meta name="description" content="The need of the business to interact and understand the output from custom built machine learning models is increasing, here I provide an application skeleton to do just that with your Python made models." />
+    <meta name="keywords" content="">
+<!-- Facebook and Twitter integration -->
+<meta property="og:site_name" content="Rodrigo Agundez"/>
+<meta property="og:title" content="Machine Learning Application Skeleton"/>
+<meta property="og:description" content="The need of the business to interact and understand the output from custom built machine learning models is increasing, here I provide an application skeleton to do just that with your Python made models."/>
+<meta property="og:url" content="/ml-pyapp.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2017-08-23 00:00:00+02:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/rodrigo-agundez.html">
+<meta property="article:section" content="tech"/>
+    <meta property="og:image" content="//images/blog/tech/blog/life/snow-tent.jpg">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="/theme/css/animate.css">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="/theme/css/icomoon.css">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="/theme/css/bootstrap.css">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="/theme/css/flexslider.css">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="/theme/css/style.css">
+    <!-- Custom style  -->
+    <link rel="stylesheet" href="/theme/css/custom.css">
+    <!-- pygments code highlight -->
+    <link rel="stylesheet" href="/theme/css/pygments.css">
+    <!-- tipue search -->
+    <link rel="stylesheet" href="/theme/tipuesearch/css/tipuesearch.css">
+
+    <!-- Modernizr JS -->
+    <script src="/theme/js/modernizr-2.6.2.min.js"></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src="/theme/js/respond.min.js"></script>
+    <![endif]-->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rodrigo Agundez Atom">
+
+
+
+    </head>
+    <body>
+    <div id="fh5co-page">
+        <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+        <aside id="fh5co-aside" role="complementary" class="border js-fullheight">
+
+            <nav class="fh5co-main-menu" role="navigation">
+            </nav>
+            <div class="clearfix"></div>
+            <h1  id="fh5co-logo">
+                <a href="/index.html">
+                    <img src="/images/logo.svg" />
+                </a>
+            </h1>
+            <nav class="fh5co-main-menu" role="navigation">
+<ul>
+    <!-- home link -->
+    <li><a href="/">Home</a></li>
+
+    <!-- page links -->
+            <li><a href="/pages/rod360.html">Rod360</a></li>
+
+    <!-- additional menu items from config -->
+        <!-- <li class="nav-title">Misc</li> -->
+            <li><a href="/timeline.html">Timeline</a></li>
+            <li><a href="/blog.html">Blog</a></li>
+            <li><a href="/categories.html">Categories</a></li>
+            <li><a href="/tags.html">Tags</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+
+</ul><ul><li><form id="searchform" action="/search.html">
+    <input id="tipue_search_input" data-siteurl="" type="text" size="60" class="form-control search-field" name="q">
+
+    <button type="submit" class="btn btn-primary search-submit"><i class="icon-search4"></i></button>
+</form></li></ul>
+            </nav>
+
+<ul id="social">
+            <li><a href="https://www.github.com/rragundez" alt="Github"><i class="icon-github"></i></a></li>
+
+            <li><a href="https://www.twitter.com/rragundez" alt="Twitter"><i class="icon-twitter2"></i></a></li>
+
+            <li><a href="https://www.linkedin.com/in/rodrigo-agundez-2b727258" alt="LinkedIn"><i class="icon-linkedin2"></i></a></li>
+
+</ul>
+        </aside>
+
+        <div id="fh5co-main">
+
+    <div class="fh5co-narrow-content article-content">
+        <h1 class="fh5co-heading-colored">Machine Learning Application Skeleton</h1>
+
+        <div>by
+                <a href="author/rodrigo-agundez.html">Rodrigo Agundez</a> - Wed, 23 Aug 2017
+        </div>
+
+
+        <div class="animate-box" data-animate-effect="fadeInLeft">
+            <p class="animate-box" data-animate-effect="fadeInLeft"><p>In this blog post I provide an overview of a Python skeleton application I made. This skeleton can help you bridge the gap between your model and a machine learning application.</p>
+<p>For example, you can use your existing Flask application, import it in <code>run_app.py</code> as <code>app</code>, and this will add the production ready features of <a href="http://gunicorn.org/">Gunicorn</a>.</p>
+<p><a href="https://github.com/rragundez/app-skeleton">Take me to the code</a></p>
+<h3>Why bother?</h3>
+<p>The times when business saw machine learning models as black boxes with no hope of understanding are long gone.</p>
+<p>It use to be that the data analytics or data science department of a company produced results in a silo kind of environment. Little or no interaction took place between these departments and the business side making the decisions (marketing, sales, client support, etc.). Advice coming from machine learning models consisted of reports, which were nice to have if they supported ideas from the business.</p>
+<p><img style="float: left;" src="/images/blog/tech/ml-pyapp/cat_peeking.jpg" width="350" hspace="20"></p>
+<p>As data driven decisions demonstrated their value, the business side started peeking behind the curtain.</p>
+<p>Paper/files reports have been substituted by static reporting dashboards, which themselves are being replaced by interactive ones. The business end users want to interact with the models, understand why certain predictions are made and evenmore, they want to be capable of performing predictions on the fly (imagine simultaneously having a customer on the phone and updating the probabilities of him/her buying certain products, or a marketing department tuning campaigns themselves depending on regional features).</p>
+<p>In short, I had some time during a rainy weekend and a GDD Friday<sup id="fnref-1"><a class="footnote-ref" href="#fn-1">1</a></sup>, already did something similar for a client and I think it is important to bring machine learning models to the business side.</p>
+<p>Also, as a bonus they will stop bothering you every time they need insights or a slightly different prediction.</p>
+<h3>What's in the goody bag?</h3>
+<ol>
+<li>
+<p>Template to extend a <a href="http://flask.pocoo.org/">Flask</a> application using <a href="http://gunicorn.org/">Gunicorn</a>.</p>
+<p>This allows the application to be run in a more production ready environment (multiple workers and threads for example). In <a href="http://docs.gunicorn.org/en/stable/settings.html">here</a> you can find a complete list of all the possible <a href="http://gunicorn.org/">Gunicorn</a> settings. I added the possibility to use some of them as command line arguments. Some relevant ones are:</p>
+<ul>
+<li><code>host</code></li>
+<li><code>port</code></li>
+<li><code>workers</code> - define number of workers.</li>
+<li><code>threads</code> - number of threads on each worker.</li>
+<li><code>daemon</code> - run application in the background.</li>
+<li><code>access-logfile</code> - save access logs to a file.</li>
+<li><code>forwarded-allow-ips</code> - list allowed IP addresses.</li>
+</ul>
+</li>
+<li>
+<p>Dummy application which demonstrates how to ingest several types of <a href="https://www.w3schools.com/html/html_form_input_types.asp">user inputs</a> into your Python application.</p>
+<p><img alt="Dummy Application" src="/images/blog/tech/ml-pyapp/dummy.png"></p>
+</li>
+<li>
+<p>Debug mode which (similar to Flask) will</p>
+<ul>
+<li>run a single process</li>
+<li>logging to debug level</li>
+<li>restart process on code change</li>
+<li>reload html and jinja templates on change</li>
+</ul>
+</li>
+<li>
+<p>Dockerfile template to containerize the application.</p>
+<p><img alt="Docker whale" src="/images/blog/tech/ml-pyapp/docker.png"></p>
+</li>
+<li>
+<p>Interactive application which runs a classifier model, outputs predictions and information about the machine learning model.</p>
+<p><img src="/images/blog/tech/ml-pyapp/iris_prediction.png" width="520">
+<img src="/images/blog/tech/ml-pyapp/iris_insights.png" width="800">
+<img src="/images/blog/tech/ml-pyapp/iris_performance.png" width="580"></p>
+<p>The model can be run by using the UI or by directly making a post request to the endpoint.</p>
+</li>
+</ol>
+<p>A more complete description, a set of instructions and the code can be found in <a href="https://github.com/rragundez/app-skeleton">this repository</a>.</p>
+<p>Note: I also include a <code>setup.py</code> file that you should use to install your package used in the application.</p>
+<h3>Adios</h3>
+<p>If you structure your project following the <a href="https://blog.godatadriven.com/how-to-start-a-data-science-project-in-python">advice</a> from <a href="https://godatadriven.com/players/henk-griffioen">Henk Griffioen</a> (A.K.A. El Chicano), the integration of this ML application skeleton to your project should be straight forward.</p>
+<p><img style="float: right;" src="/images/blog/tech/ml-pyapp/dog_developer.jpg" hspace="20"></p>
+<p>I hope this work can help you bring your models into a machine learning application, it certainly helped and will help me in the future. You can find the code <a href="https://github.com/rragundez/app-skeleton">here</a>.</p>
+<p>If you have any other questions just ping me in twitter <a href="https://twitter.com/rragundez">@rragundez</a>.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-1">
+<p>One Friday a month when we get to do whatever we want, it is awesome.&#160;<a class="footnote-backref" href="#fnref-1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></p>
+        </div>
+    </div>
+
+<div class="fh5co-narrow-content">
+<div class="animate-box" data-animate-effect="fadeInLeft">
+    <h2><!-- <i class="icon-speech-bubble"></i>  -->Comments</h2>
+</div>
+<div class="animate-box" data-animate-effect="fadeInLeft">
+    <div id="disqus_thread"></div>
+</div>
+
+<script>
+var disqus_config = function () { 
+  this.language = "en";
+};
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://gitcd-dev.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript><a href="https://disqus.com/?ref_noscript">Please enable JavaScript to view the comments powered by Disqus.</a></noscript>
+<div class="fh5co-footer">
+    <p><small>&copy; 2016 Blend Free HTML5. All Rights Reserved.</span> <span>Designed by <a href="http://freehtml5.co/" target="_blank">FreeHTML5.co</a></span>
+    <br /><span>Pelican Theme by: <a href="https://github.com/claudio-walser/pelican-fh5co-marble" target="_blank">Claudio Walser</a></span></small></p>
+
+</div>                
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/theme/js/jquery.min.js"></script>
+    <!-- jQuery Easing -->
+    <script src="/theme/js/jquery.easing.1.3.js"></script>
+    <!-- Bootstrap -->
+    <script src="/theme/js/bootstrap.min.js"></script>
+    <!-- Waypoints -->
+    <script src="/theme/js/jquery.waypoints.min.js"></script>
+    <!-- Flexslider -->
+    <script src="/theme/js/jquery.flexslider-min.js"></script>
+
+
+    <!-- MAIN JS -->
+    <script src="/theme/js/main.js"></script>
+    </body>
+</html>

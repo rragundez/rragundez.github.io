@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>"I Pity the fool", Deep Learning style</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="author" content="Rodrigo Agundez" />
+    <meta name="description" content="With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions." />
+    <meta name="keywords" content="">
+<!-- Facebook and Twitter integration -->
+<meta property="og:site_name" content="Rodrigo Agundez"/>
+<meta property="og:title" content=""I Pity the fool", Deep Learning style"/>
+<meta property="og:description" content="With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions."/>
+<meta property="og:url" content="/fool-neural-network.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2017-11-05 00:00:00+01:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/rodrigo-agundez.html">
+<meta property="article:section" content="tech"/>
+    <meta property="og:image" content="//images/blog/life/snow-tent.jpg">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="/theme/css/animate.css">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="/theme/css/icomoon.css">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="/theme/css/bootstrap.css">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="/theme/css/flexslider.css">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="/theme/css/style.css">
+    <!-- Custom style  -->
+    <link rel="stylesheet" href="/theme/css/custom.css">
+    <!-- pygments code highlight -->
+    <link rel="stylesheet" href="/theme/css/pygments.css">
+    <!-- tipue search -->
+    <link rel="stylesheet" href="/theme/tipuesearch/css/tipuesearch.css">
+
+    <!-- Modernizr JS -->
+    <script src="/theme/js/modernizr-2.6.2.min.js"></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src="/theme/js/respond.min.js"></script>
+    <![endif]-->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rodrigo Agundez Atom">
+
+
+
+    </head>
+    <body>
+    <div id="fh5co-page">
+        <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+        <aside id="fh5co-aside" role="complementary" class="border js-fullheight">
+
+            <nav class="fh5co-main-menu" role="navigation">
+            </nav>
+            <div class="clearfix"></div>
+            <h1  id="fh5co-logo">
+                <a href="/index.html">
+                    <img src="/images/logo.svg" />
+                </a>
+            </h1>
+            <nav class="fh5co-main-menu" role="navigation">
+<ul>
+    <!-- home link -->
+    <li><a href="/">Home</a></li>
+
+    <!-- page links -->
+            <li><a href="/pages/rod360.html">Rod360</a></li>
+
+    <!-- additional menu items from config -->
+        <!-- <li class="nav-title">Misc</li> -->
+            <li><a href="/timeline.html">Timeline</a></li>
+            <li><a href="/blog.html">Blog</a></li>
+            <li><a href="/categories.html">Categories</a></li>
+            <li><a href="/tags.html">Tags</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+
+</ul><ul><li><form id="searchform" action="/search.html">
+    <input id="tipue_search_input" data-siteurl="" type="text" size="60" class="form-control search-field" name="q">
+
+    <button type="submit" class="btn btn-primary search-submit"><i class="icon-search4"></i></button>
+</form></li></ul>
+            </nav>
+
+<ul id="social">
+            <li><a href="https://www.github.com/rragundez" alt="Github"><i class="icon-github"></i></a></li>
+
+            <li><a href="https://www.twitter.com/rragundez" alt="Twitter"><i class="icon-twitter2"></i></a></li>
+
+            <li><a href="https://www.linkedin.com/in/rodrigo-agundez-2b727258" alt="LinkedIn"><i class="icon-linkedin2"></i></a></li>
+
+</ul>
+        </aside>
+
+        <div id="fh5co-main">
+
+    <div class="fh5co-narrow-content article-content">
+        <h1 class="fh5co-heading-colored">"I Pity the fool", Deep Learning style</h1>
+
+        <div>by
+                <a href="author/rodrigo-agundez.html">Rodrigo Agundez</a> - Sun, 05 Nov 2017
+        </div>
+
+
+        <div class="animate-box" data-animate-effect="fadeInLeft">
+            <p class="animate-box" data-animate-effect="fadeInLeft"><p><a href="https://blog.godatadriven.com/rod-fool-neural-network">This post was originally published in the GoDataDriven blog</a></p>
+<p>With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions.</p>
+<p><img style="float: right;" src="/images/blog/tech/fooling-dnn/mr_t.png" width="350" hspace="20"></p>
+<p>Several studies have been published on how to fool a deep neural network (DNN). The most famous study, which was published in 2015 used evolutionary
+algorithms or gradient ascent to produce the adversarial images.<sup id="fnref-1"><a class="footnote-ref" href="#fn-1">1</a></sup> A very recent study (October 2017) revealed that fooling a DNN could be achieved by changing a single pixel.<sup id="fnref-2"><a class="footnote-ref" href="#fn-2">2</a></sup> This subject seems fun and all but has substantial implications on current and future applications of deep learning. I believe that understanding what makes these models tick is extremely important to be able to develop robust deep learning applications (and avoid another event like random forest mania).<sup id="fnref-3"><a class="footnote-ref" href="#fn-3">3</a></sup></p>
+<p>A comprehensive and complete summary can be found in the <a href="https://blog.acolyer.org/2017/02/28/when-dnns-go-wrong-adversarial-examples-and-what-we-can-learn-from-them/">When DNNs go wrong</a> blog, which I recommend you to read.</p>
+<p>All these amazing studies use state of the art deep learning techniques, which makes them (in my opinion) difficult to reproduce and to answer questions we might have as non-experts in this subject.</p>
+<p>My intention in this blog is to bring the main concepts down to earth, to an easily reproducible setting where they are clear and actually visible. In addition, I hope this short blog can provide a better understanding of the limitations of discriminative models in general. The complete code used in this blog post can be found <a href="https://gist.github.com/rragundez/9399f28a96541e00d02d23f2e3b86338">here</a>.</p>
+<h2>Discriminative what?</h2>
+<p>Neural networks belong to the family of discriminative models, they model the dependence of an unobserved variable (target) based on observed input (features). In the language of probability this scenario is represented by the conditional probability and it is expressed as:</p>
+<div class="math">$$p(target|features)$$</div>
+<p>it reads: the probability of the target given the features (e.g. the probability that it will rain based on yesterday's weather, temperature and pressure measurements).</p>
+<p>Multinomial logistic regression models are also part of these discriminative models and they basically are a neural network without a hidden layer. Please don't be disappointed but I will start by demonstrating some concepts using multinomial logistic regression. Then I'll expand the concepts to a deep neural network.</p>
+<h2>Fooling multinomial logistic regression</h2>
+<p>As mentioned before a multinomial logistic regression can be seen as a neural network without a hidden layer. It models the probability of the target (<span class="math">\(Y\)</span>) being a certain category (<span class="math">\(c\)</span>), as a function (<span class="math">\(F\)</span>) that depends on the linear combination of the features (<span class="math">\(X=(X_1, X_2,...,X_N)\)</span>). We write this as</p>
+<div class="math">$$P(Y=c|X)=F(\theta_{c}^T\cdot X)$$</div>
+<p>where <span class="math">\(\theta_c\)</span> are the coefficients of the linear combination for each category. The predicted class by the model is the one which gives the highest probability.</p>
+<p>When the target <span class="math">\(Y\)</span> is binary, <span class="math">\(F\)</span> is taken to be some <a href="https://en.wikipedia.org/wiki/Sigmoid_function">sigmoid function</a>, the most common being the <a href="https://en.wikipedia.org/wiki/Logistic_function">logistic function</a>. When <span class="math">\(Y\)</span> is multiclass we commonly use <span class="math">\(F\)</span> as the <a href="https://en.wikipedia.org/wiki/Softmax_function">softmax function</a>.</p>
+<p>Apart from the conceptual understanding of discriminative models, the linear combination of the features (<span class="math">\(\theta_{c}^T\cdot X\)</span>) is what makes classification models vulnerable as I will demonstrate. In the own words of Master Jedi Goodfellow: "Linear behavior in high-dimensional spaces is sufficient to cause adversarial examples".<sup id="fnref-4"><a class="footnote-ref" href="#fn-4">4</a></sup></p>
+<h4>Iris dataset</h4>
+<p>When I was thinking on how to do this blog post and actually visualize the concepts, I concluded I needed two things:</p>
+<ul>
+<li>A 2-dimensional feature space.</li>
+<li>A model with high accuracy on this space.</li>
+</ul>
+<p>The 2-dimensional space because I wanted to generate plots which directly show the concepts. High accuracy because it's meaningless if I am able to fool a bad model.</p>
+<p>Lucky for me, it turns out that a good accuracy can be obtained on the <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set">Iris dataset</a> by just keeping two features: petal length and petal width.</p>
+<p>Putting everything into shape this is how the data looks like</p>
+<p><img alt="iris dataset sample" src="/images/blog/tech/fooling-dnn/iris_df_sample.png"></p>
+<p>This dataset contains only 150 observations, I will fit the model to all the data using a cross-entropy loss function and a L2 regularization term. This is just a plug and play from the amazing scikit-learn.</p>
+<div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;lbfgs&#39;</span><span class="p">,</span> <span class="n">multi_class</span><span class="o">=</span><span class="s1">&#39;multinomial&#39;</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">iris</span><span class="o">.</span><span class="n">columns</span> <span class="o">!=</span> <span class="s1">&#39;flower&#39;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">flower</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The mean accuracy of the model is <span class="math">\(96.6\%\)</span>. This score is based on the training data and can be misleading, even if I am using a regularization term I can still be overfitting.<sup id="fnref-5"><a class="footnote-ref" href="#fn-5">5</a></sup></p>
+<p>Let's now look at our predictions and at how our model is drawing the classification boundaries.</p>
+<p><img alt="iris predictions" src="/images/blog/tech/fooling-dnn/iris_predictions.png"></p>
+<p>In Figure 0 the red outer circles indicate those observations that were wrongly classified. The setosa flowers are easily identified and there is a region where the versicolor and virginica observations are close together. In Figure 1 we can see the different regions for each flower category. The regions are separated by a linear boundary, this is a consequence of the linear combination model used <span class="math">\(P(Y=c|X)=F(\theta_{c}^T\cdot X)\)</span>. As mentioned, in the case of a logistic regression (binary classification) <span class="math">\(F\)</span> is the logistic function</p>
+<div class="math">$$F(\theta_{c}^T\cdot X)=\frac{1}{1 + e^{-\theta_{c}^T\cdot X}}$$</div>
+<p>and the classification boundary is given by <span class="math">\(P(Y=c|X)=\frac{1}{2}\)</span> when <span class="math">\(\theta_{c}^T\cdot X=0\)</span>. If the features are in one dimension then the boundary will be a single value, for two features the boundary is a single line and for three features a plane and so on. In our multinomial case we use the softmax function</p>
+<div class="math">$$F(\theta_{c}^T\cdot X)=\frac{e^{\theta_{c}^T\cdot X}}{\Sigma_{i=1}^Ne^{\theta_{i}^T\cdot X}}$$</div>
+<p>where the sum over <span class="math">\(i\)</span> in the denominator runs over all the possible classes of the target. In the regions where only two classes have a non-negligible probability the softmax function simplifies to the logistic function. Therefore the linear classification boundaries between two regions is given by the contour <span class="math">\(P(Y=c|X)=\frac{1}{2}\)</span> as shown in Figure 3. In addition, when none of the classes have a negligible probability the boundary approaches the contour <span class="math">\(P(Y=c|X)=\frac{1}{3}\)</span> where the uncertainty of our prediction is maximum. This region is illustrated in Figure 2.</p>
+<p>A thing to note is that the regions extend to values which can be very far from the observations, which means we can grab a petal length of 1 and petal width of 4 and still be classified as a setosa. Even more, Figure 4 shows that even far away from our observations we can find regions with extremely high probability. We can even use a negative petal length!</p>
+<p><img alt="iris regions" src="/images/blog/tech/fooling-dnn/iris_regions.png"></p>
+<p>Let's pick some points from Figure 4 and see if I am able to fool the multinomial logistic classifier:</p>
+<ul>
+<li>Point: (.1, 5)<ul>
+<li>Prediction: setosa</li>
+<li>Probability: 0.998</li>
+</ul>
+</li>
+<li>Point: (10, 10)<ul>
+<li>Prediction: virginica</li>
+<li>Probability: 1.0</li>
+</ul>
+</li>
+<li>Point: (5, -5)<ul>
+<li>Prediction: versicolor</li>
+<li>Probability: 0.992</li>
+</ul>
+</li>
+</ul>
+<p>The three points give a high probability on the prediction but are not even remotely like the observations in our dataset.</p>
+<p>Ok, now to the good stuff.</p>
+<h2>Fooling a Deep Neural Network</h2>
+<p>As I said before, in order for me to demonstrate the concepts and have a comprehensive visualization I need two things</p>
+<ul>
+<li>A 2-dimensional feature space.</li>
+<li>A model with high accuracy on this space.</li>
+</ul>
+<p>In the case of a deep neural network it makes no sense to attack a problem with 2 features, as the intent of neural network is to throw a bunch of features as the input layer and let the hidden layers figure out and construct new features which are relevant to my classification problem. So my reasoning as how to solve my first requirement goes as follows:</p>
+<ol>
+<li>Build a DNN where the last hidden layer has two units.</li>
+<li>Then do the space analysis on the features from that layer.</li>
+<li>Pick a point on that layer space which is far from the propagated observations but still is classified with a high probability.</li>
+<li>Invert all the operations made from the input layer to that last hidden layer and apply them to my selected 2D point from step 3.</li>
+</ol>
+<p>If I can perform those steps I should end with an input which is nothing like my observations but still is classified with high probability by the DNN, giving me an adversarial example.</p>
+<h4>MNIST</h4>
+<p>I chose the <a href="http://yann.lecun.com/exdb/mnist/">MNIST</a> digits since it is a straight forward dataset to perform classification and it is complex enough to apply a DNN. I only take 4 classes, the numbers <span class="math">\({0, 1, 2, 3}\)</span>. The final dataset consists of a bit more than 28,000 observations with 28x28=784 features.</p>
+<div class="highlight"><pre><span></span><span class="n">digits</span> <span class="o">=</span> <span class="n">fetch_mldata</span><span class="p">(</span><span class="s2">&quot;MNIST original&quot;</span><span class="p">)</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">digits</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">digits</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+<span class="n">digits</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">target</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Number of observations: 28911
+Nr. observations per class:
+1.0    7877
+3.0    7141
+2.0    6990
+0.0    6903
+</pre></div>
+
+
+<p>A sample view of our observations:</p>
+<p><img alt="digits sample" src="/images/blog/tech/fooling-dnn/digits_sample.png"></p>
+<h4>DNN configuration</h4>
+<p>The challenge here is to find the correct configuration such that the training of the DNN converges and has a good performance on the training set.</p>
+<p>In addition, in order to be able to invert all the operations from the input layer to the last hidden layer then all functions applied must have an inverse. This means that if I decide to use any of the activation functions provided: logistic, tanh and relu, I need to keep track and impose restrictions on my nodes activation so that they are in the codomain of the activation function. This is not trivial and in my opinion does not add much to the concepts I'm trying to get across. Therefore I use the identity activation which can make the convergence a bit more tricky. <sup id="fnref-6"><a class="footnote-ref" href="#fn-6">6</a></sup></p>
+<p>The final configuration of the DNN consists of:</p>
+<ul>
+<li>3 hidden layers with sizes {50, 20, 2}.</li>
+<li>Identity activation function (no activation function).</li>
+<li>Stochastic gradient descent optimizer (sgd).</li>
+<li>Adaptive learning rate.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">dnn_identity</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">(</span>
+    <span class="n">hidden_layer_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;identity&#39;</span><span class="p">,</span>
+    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;sgd&#39;</span><span class="p">,</span>
+    <span class="n">learning_rate</span> <span class="o">=</span> <span class="s1">&#39;adaptive&#39;</span><span class="p">,</span> <span class="n">learning_rate_init</span><span class="o">=.</span><span class="mo">00005</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">21</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>The DNN achieved close to 95% accuracy and reached conversion quite nicely as shown in Figure 6. For comparison and for use in my arguments I built another DNN with an activation function <span class="math">\(tanh\)</span> using the Adam optimizer.</p>
+<div class="highlight"><pre><span></span><span class="n">dnn_tanh</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">(</span>
+    <span class="n">hidden_layer_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;tanh&#39;</span><span class="p">,</span>
+    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span>
+    <span class="n">learning_rate_init</span><span class="o">=.</span><span class="mo">0001</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">21</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>The second DNN with the activation function achieved an accuracy of 98%, the loss curve in Figure 7 reveals that the training can be further improved but for now this is good enough.</p>
+<p><img alt="loss curve" src="/images/blog/tech/fooling-dnn/loss_curve.png"></p>
+<h4>Extract feature encoding from the last hidden layer</h4>
+<p>Once the model is trained we can retrieve the coefficients connecting all the layers. We use these coefficients to "manually" propagate our observations input up to the last hidden layer and then plot some of them in a 2D graph. This small function propagates the input layer up to a specified layer.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">propagate</span><span class="p">(</span><span class="n">input_layer</span><span class="p">,</span> <span class="n">layer_nr</span><span class="p">,</span> <span class="n">dnn</span><span class="p">,</span> <span class="n">activation_function</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Obtain the activation values of any intermediate layer of the deep neural network.&quot;&quot;&quot;</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">input_layer</span>
+    <span class="k">for</span> <span class="n">intercepts</span><span class="p">,</span> <span class="n">weights</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dnn</span><span class="o">.</span><span class="n">intercepts_</span><span class="p">[:</span><span class="n">layer_nr</span><span class="p">],</span> <span class="n">dnn</span><span class="o">.</span><span class="n">coefs_</span><span class="p">[:</span><span class="n">layer_nr</span><span class="p">]):</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="n">activation_function</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">+</span> <span class="n">intercepts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">layer</span>
+
+<span class="n">hl_identity</span> <span class="o">=</span> <span class="n">propagate</span><span class="p">(</span><span class="n">digits</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">dnn_identity</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
+<span class="n">hl_tanh</span> <span class="o">=</span> <span class="n">propagate</span><span class="p">(</span><span class="n">digits</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">dnn_tanh</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The representation of the observations under the encoding of the last 2D hidden layer is shown on Figure 8 and 9. The identity DNN, as shown in Figure 8, has encoded our observations by creating hidden features which separate them in the hidden layer dimensionality (2D in this case). The more sophisticated <span class="math">\(tanh\)</span> DNN achieves better performance because it is capable of coming up with hidden features which separate in a better way our observations as shown in Figure 9. Nevertheless Figures 10 and 11 reveal that in both cases linear classification boundaries are being constructed to separate our category regions. Similar to the multinomial logistic regression, this is caused by the dot product (linear Kernel) between the last hidden layer and the final weights which connect the hidden layer with the output layer. This means that these regions extend far away from where our observations lie, even more these regions have a high probability as shown in Figure 12 and 13.</p>
+<p>So now the only thing to do is to grab a point from Figure 8 (for example: -200, 200), do all the inverse operations to bring back the encoding to the input layer and reshape the vector into an image which of course will look nothing like a <span class="math">\(1\)</span> but will be classified as a <span class="math">\(1\)</span> with very high probability by our DNN.</p>
+<p><img alt="dnn predictions" src="/images/blog/tech/fooling-dnn/dnn_predictions.png"></p>
+<h4>Brief tangent</h4>
+<p>Before proceeding I would like to have a more conceptual discussion regarding the implications of the arguments presented for figure 8 and 9. The DNN creates hidden features which separate our observations as best as possible. This means that such hidden features will concentrate on capturing differences between our classes. For example, let's say we want to classify dogs and horses<sup id="fnref-7"><a class="footnote-ref" href="#fn-7">7</a></sup>. According to our reasoning, will a feature that captures the amount of legs be created? I don't think so, because having such a feature doesn't add to the purpose of separating our classes. We can send a horse with 5 legs and this fact will not raise any flags on our DNN. I believe this is the underlying concept when we say that discriminative models do not capture the essence of the objects to be classified. Here is where generative models come to the rescue, they recently have shown amazing results by capturing the underlying "context" of the objects. In a probability framework they shift from modelling the conditional probability to model the joint probability.</p>
+<p>Notice that the probability near the boundaries grows exponentially with the product <span class="math">\(\theta_c\cdot X\)</span> following the sigmoid function. This means that if we take an observation which lies close to a boundary, it takes a small perturbation to take it to another region. This is the principle behind the study of fooling a DNN with a single pixel change<sup id="fnref2-2"><a class="footnote-ref" href="#fn-2">2</a></sup>.</p>
+<p>Finally notice that all our analysis is in a 2D space and as such the regions extend in a surface. In a 3D space these regions will become volumes, hence increasing the region size where adversarial examples can be found. Just like Master Jedi Goodfellow said: "Linear behavior in high-dimensional spaces is sufficient to cause adversarial examples" <sup id="fnref2-3"><a class="footnote-ref" href="#fn-3">3</a></sup>.</p>
+<h4>Pity the fool</h4>
+<p>A bit of linear algebra. Two consecutive layers can be described by a set of linear equations which in matrix notation can be represented by<sup id="fnref-8"><a class="footnote-ref" href="#fn-8">8</a></sup>:</p>
+<div class="math">$$L_{N}^i\times \Theta_{N\times M}=L_{M}^{i+1}$$</div>
+<p>where <span class="math">\(i\)</span> is a certain layer number, <span class="math">\(N\)</span> and <span class="math">\(M\)</span> the number of units in the layer and <span class="math">\(\Theta\)</span> the coefficients representing the connections between layers. In our DNN each layer reduces in size, this means that <span class="math">\(N&gt;M\)</span>. In order to find the layer <span class="math">\(i\)</span> from the layer <span class="math">\(i+1\)</span> we need to find the inverse of <span class="math">\(\Theta_{N\times M}\)</span> and compute</p>
+<div class="math">$$L_{N}^i=L_{M}^{i+1}\times \Theta_{N\times M}^{-1}$$</div>
+<p>The problem (of course) is that non-square matrices do not have an inverse. In the DNN context, what is happening is that we are losing information by compacting our observations in a lower dimensional space. This means there is no way to exactly trace back layers, simply because we don't have enough information. This does not mean that we cannot find a vector representing <span class="math">\(L^i_N\)</span> which satisfies <span class="math">\(L_{N}^i\times \Theta_{N\times M}=L_{M}^{i+1}\)</span> given the layer <span class="math">\(L^{i+1}_M\)</span> and the coefficients <span class="math">\(\Theta_{N\times M}\)</span>, which means that such vector is not unique.</p>
+<p>A solution for the layer <span class="math">\(L_{N}^i\)</span> can be derived using the pseudoinverse, in particular the <a href="https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse">Moore–Penrose inverse</a> is adequate for our type of problem, and best of all it is implemented in Numpy!</p>
+<p>Below I define a function which inverts the propagation from a hidden layer to the input layer with an identity activation function.<sup id="fnref-9"><a class="footnote-ref" href="#fn-9">9</a></sup></p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">invert_propagation</span><span class="p">(</span><span class="n">hidden_layer</span><span class="p">,</span> <span class="n">layer_nr</span><span class="p">,</span> <span class="n">dnn</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Obtain the input layer from a hidden layer of a deep neural network&quot;&quot;&quot;</span>
+    <span class="n">layer</span> <span class="o">=</span> <span class="n">hidden_layer</span>
+    <span class="k">for</span> <span class="n">intercepts</span><span class="p">,</span> <span class="n">weights</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">intercepts_</span><span class="p">[</span><span class="n">layer_nr</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nn</span><span class="o">.</span><span class="n">coefs_</span><span class="p">[</span><span class="n">layer_nr</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">inv_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="p">(</span><span class="n">layer</span> <span class="o">-</span> <span class="n">intercepts</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv_weight</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">layer</span>
+</pre></div>
+
+
+<p>Finally, the moment of truth. I choose a nonsense value for each region by looking at Figures 10 and 12. In particular I choose:</p>
+<ul>
+<li>Region 0: (1200, -300)</li>
+<li>Region 1: (-500, 500)</li>
+<li>Region 2: (100,400)</li>
+<li>Region 3: (-1000, 900)</li>
+</ul>
+<p>Now I invert the propagation for each point, obtain the input layer, reshape the input to a 28x28 image and show it together with the prediction from the DNN and the probability of such prediction.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pity_the_fool</span><span class="p">(</span><span class="n">hidden_vector</span><span class="p">,</span> <span class="n">dnn</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+    <span class="n">input_vector</span> <span class="o">=</span> <span class="n">invert_propagation</span><span class="p">(</span><span class="n">hidden_vector</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dnn_identity</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">input_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+
+    <span class="n">prediction</span> <span class="o">=</span> <span class="n">dnn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">input_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">probability</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dnn</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">input_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)))</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Prediction: {:.0f}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                 <span class="s2">&quot;Probability: {:.3f}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                 <span class="s2">&quot;Hiden vector: {}&quot;</span>
+                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">probability</span><span class="p">,</span> <span class="n">hidden_vector</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="adversarial examples" src="/images/blog/tech/fooling-dnn/adversarial_examples_1.png"></p>
+<p>The figures above clearly show that I have managed to fool the DNN. It is like the DNN had some Mexican peyote or something. The labels are consistent with the regions we took the points from and are classified with almost 100% probability. There is no way a human eye can tell that those images are a 0, a 1, a 2 and a 3. Not even to tell that there are numbers.</p>
+<h2>Light at the end of the tunnel</h2>
+<p>I have stated that the main problem is the linear classification boundaries, is there a way we can avoid this? Well, I left a hint out there when I mentioned that the dot product presented is nothing more than a linear kernel. I will not go into the details of how the <a href="https://en.wikipedia.org/wiki/Kernel_method">kernel trick</a> works, but in summary it lets us perform dot products in higher dimensional spaces of our features without ever computing the new features in that high-dimensional space. If you never heard about it, it can be a bit of a weird thing. Just to mess more with your cerebro, if for example we were to use the <a href="https://en.wikipedia.org/wiki/Radial_basis_function_kernel">Gaussian kernel</a>, this is equal to performing calculations in an infinite high-dimensional space, yes infinite! <sup id="fnref-10"><a class="footnote-ref" href="#fn-10">10</a></sup></p>
+<p>By using these kernels the model is not restricted to linear classification boundaries. Below I compare a support vector machine model (SVM) with a linear kernel and a Gaussian kernel using the iris dataset.</p>
+<div class="highlight"><pre><span></span><span class="n">svm_linear</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">svm_gaussian</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;rbf&#39;</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Both SVM models obtain an accuracy of <span class="math">\(\approx 96.6%\)</span>.</p>
+<p><img alt="svm predictions" src="/images/blog/tech/fooling-dnn/svm_predictions.png"></p>
+<p>Figure 18 shows that the SVM with the linear kernel also suffers from the issues discussed. In general any discriminative model that is trying to model the conditional probability via some transformation of the dot product <span class="math">\(\Theta\cdot X\)</span> is doomed to be susceptible to adversarial examples attacks.</p>
+<p>Figure 19 is beautiful, shows exactly how getting rid of the linearity (<span class="math">\(\Theta\cdot X\)</span>) allows for non-linear classification boundaries and hence the regions with high probability do not extend indefinitely. In this case all points with high probability are close to our observations, so in principle they should "look" like our observations.</p>
+<p>A SVM with a Gaussian kernel can't accomplish the extremely complicated tasks that deep neural networks can, but an idea could be to find a way to implement a non-linear kernel between the last hidden layer and the output layer. This discussion is outside the of scope of this article, but hopefully I will find the time to look into it and write about my findings.</p>
+<p>Another solution to the above discussed issues lies in a completely different perspective, instead of trying to model the conditional probability, try to model the joint probability with generative models. These models should capture the underlying "context" of our observations and not only what makes them different.  This fundamental difference allows generative algorithms to do things which are impossible for a DNN. Such as producing never seen examples which have a striking resemblance to original observations, and even more to tune the context of these examples. A super nice <a href="https://houxianxu.github.io/assets/project/dfcvae">demonstration</a> is the generation of never seen faces where the degree of smiling and sunglasses is tuned.</p>
+<h2>Adios</h2>
+<p><img style="float: right;" src="/images/blog/tech/ml-pyapp/dog_developer.jpg" hspace="20"></p>
+<p>Well that took much more work than I expected. I hope you enjoyed reading this blog post and got excited about deep learning.</p>
+<p>You can find the code <a href="https://gist.github.com/rragundez/9399f28a96541e00d02d23f2e3b86338">here</a>.</p>
+<p>If you have any other questions just ping me in twitter <a href="https://twitter.com/rragundez">@rragundez</a>.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-1">
+<p><a href="http://www.evolvingai.org/files/DNNsEasilyFooled_cvpr15.pdf">Deep Neural Networks are Easily Fooled</a>&#160;<a class="footnote-backref" href="#fnref-1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn-2">
+<p><a href="https://arxiv.org/pdf/1710.08864.pdf">One pixel attack for fooling deep neural networks</a>&#160;<a class="footnote-backref" href="#fnref-2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2-2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn-3">
+<p>This should be the case not only for Deep Learning models but all models in general. I increasingly see pseudo Data Scientist making outrageous claims or using models with a one-fits-all mentality. I understand there are juniors in the organizations but that's why you should have a strong Lead Data Scientist to provide guidance or hire GoDataDriven to make your team blossom, not only on their technical abilities but also in their mentality when attacking a problem.&#160;<a class="footnote-backref" href="#fnref-3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2-3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn-4">
+<p><a href="https://arxiv.org/pdf/1412.6572.pdf">Explaining and harnessing adversarial examples</a>&#160;<a class="footnote-backref" href="#fnref-4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn-5">
+<p>For the demonstration I decided to train on all the data since the dataset is so small (150 observations). In the deep neural network case I will use a much larger dataset and a test set.&#160;<a class="footnote-backref" href="#fnref-5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn-6">
+<p>It is known that no activation function can lead to exploiting activations values which in turn affect the convergence of the Deep Neural Network.&#160;<a class="footnote-backref" href="#fnref-6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn-7">
+<p>I don't like cats.&#160;<a class="footnote-backref" href="#fnref-7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn-8">
+<p>This is taking into account the intercept into the coefficients and adding a unit to layer <span class="math">\(i\)</span> with an activation of 1.&#160;<a class="footnote-backref" href="#fnref-8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+<li id="fn-9">
+<p>If you were to use an activation function here is where you need to be careful that activation stay in the codomain of activation function. Since we cannot exactly reconstruct the previous layer we cannot be sure that the pseudo inverse will yield values which are outside the codomain therefore generating an exception. I tried a little bit with the <code>tanh</code> activation function but at least for me it was not straight forward.&#160;<a class="footnote-backref" href="#fnref-9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+</li>
+<li id="fn-10">
+<p>This is because of the Taylor expansion of the exponential function.&#160;<a class="footnote-backref" href="#fnref-10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></p>
+        </div>
+    </div>
+
+<div class="fh5co-narrow-content">
+<div class="animate-box" data-animate-effect="fadeInLeft">
+    <h2><!-- <i class="icon-speech-bubble"></i>  -->Comments</h2>
+</div>
+<div class="animate-box" data-animate-effect="fadeInLeft">
+    <div id="disqus_thread"></div>
+</div>
+
+<script>
+var disqus_config = function () { 
+  this.language = "en";
+};
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://gitcd-dev.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript><a href="https://disqus.com/?ref_noscript">Please enable JavaScript to view the comments powered by Disqus.</a></noscript>
+<div class="fh5co-footer">
+    <p><small>&copy; 2016 Blend Free HTML5. All Rights Reserved.</span> <span>Designed by <a href="http://freehtml5.co/" target="_blank">FreeHTML5.co</a></span>
+    <br /><span>Pelican Theme by: <a href="https://github.com/claudio-walser/pelican-fh5co-marble" target="_blank">Claudio Walser</a></span></small></p>
+
+</div>                
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/theme/js/jquery.min.js"></script>
+    <!-- jQuery Easing -->
+    <script src="/theme/js/jquery.easing.1.3.js"></script>
+    <!-- Bootstrap -->
+    <script src="/theme/js/bootstrap.min.js"></script>
+    <!-- Waypoints -->
+    <script src="/theme/js/jquery.waypoints.min.js"></script>
+    <!-- Flexslider -->
+    <script src="/theme/js/jquery.flexslider-min.js"></script>
+
+
+    <!-- MAIN JS -->
+    <script src="/theme/js/main.js"></script>
+    </body>
+</html>

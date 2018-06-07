@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Multi-threshold Neuron Model</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="author" content="Rodrigo Agundez" />
+    <meta name="description" content="Inspired by a new biological scientific research, I propose, build and train a Deep Neural Network using a novel neuron model." />
+    <meta name="keywords" content="">
+<!-- Facebook and Twitter integration -->
+<meta property="og:site_name" content="Rodrigo Agundez"/>
+<meta property="og:title" content="Multi-threshold Neuron Model"/>
+<meta property="og:description" content="Inspired by a new biological scientific research, I propose, build and train a Deep Neural Network using a novel neuron model."/>
+<meta property="og:url" content="/multi-threshold-neuron.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-03-09 00:00:00+01:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/rodrigo-agundez.html">
+<meta property="article:section" content="tech"/>
+    <meta property="og:image" content="//images/blog/life/snow-tent.jpg">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="/theme/css/animate.css">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="/theme/css/icomoon.css">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="/theme/css/bootstrap.css">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="/theme/css/flexslider.css">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="/theme/css/style.css">
+    <!-- Custom style  -->
+    <link rel="stylesheet" href="/theme/css/custom.css">
+    <!-- pygments code highlight -->
+    <link rel="stylesheet" href="/theme/css/pygments.css">
+    <!-- tipue search -->
+    <link rel="stylesheet" href="/theme/tipuesearch/css/tipuesearch.css">
+
+    <!-- Modernizr JS -->
+    <script src="/theme/js/modernizr-2.6.2.min.js"></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src="/theme/js/respond.min.js"></script>
+    <![endif]-->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rodrigo Agundez Atom">
+
+
+
+    </head>
+    <body>
+    <div id="fh5co-page">
+        <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+        <aside id="fh5co-aside" role="complementary" class="border js-fullheight">
+
+            <nav class="fh5co-main-menu" role="navigation">
+            </nav>
+            <div class="clearfix"></div>
+            <h1  id="fh5co-logo">
+                <a href="/index.html">
+                    <img src="/images/logo.svg" />
+                </a>
+            </h1>
+            <nav class="fh5co-main-menu" role="navigation">
+<ul>
+    <!-- home link -->
+    <li><a href="/">Home</a></li>
+
+    <!-- page links -->
+            <li><a href="/pages/rod360.html">Rod360</a></li>
+
+    <!-- additional menu items from config -->
+        <!-- <li class="nav-title">Misc</li> -->
+            <li><a href="/timeline.html">Timeline</a></li>
+            <li><a href="/blog.html">Blog</a></li>
+            <li><a href="/categories.html">Categories</a></li>
+            <li><a href="/tags.html">Tags</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+
+</ul><ul><li><form id="searchform" action="/search.html">
+    <input id="tipue_search_input" data-siteurl="" type="text" size="60" class="form-control search-field" name="q">
+
+    <button type="submit" class="btn btn-primary search-submit"><i class="icon-search4"></i></button>
+</form></li></ul>
+            </nav>
+
+<ul id="social">
+            <li><a href="https://www.github.com/rragundez" alt="Github"><i class="icon-github"></i></a></li>
+
+            <li><a href="https://www.twitter.com/rragundez" alt="Twitter"><i class="icon-twitter2"></i></a></li>
+
+            <li><a href="https://www.linkedin.com/in/rodrigo-agundez-2b727258" alt="LinkedIn"><i class="icon-linkedin2"></i></a></li>
+
+</ul>
+        </aside>
+
+        <div id="fh5co-main">
+
+    <div class="fh5co-narrow-content article-content">
+        <h1 class="fh5co-heading-colored">Multi-threshold Neuron Model</h1>
+
+        <div>by
+                <a href="author/rodrigo-agundez.html">Rodrigo Agundez</a> - Fri, 09 Mar 2018
+        </div>
+
+
+        <div class="animate-box" data-animate-effect="fadeInLeft">
+            <p class="animate-box" data-animate-effect="fadeInLeft"><p><a href="https://blog.godatadriven.com/rod-multi-threshold-neuron">This post was originally published in the GoDataDriven blog</a></p>
+<p>Inspired by a new biological scientific research, I propose, build and train a Deep Neural Network using a novel neuron model.</p>
+<p><img alt="model proposal" src="/images/blog/tech/multi-threshold-neuron/model_proposal.png"></p>
+<p><sup>Figure 0. Schematic diagrams of two neuron models. (Central-threshold neuron) The model on the left is the current employed model in artificial neural networks where the input signals are propagated if their sum is above a certain threshold. (Multi-threshold neuron) In contrast, in the right I show the new proposed model where each input signal goes through a threshold filter before summing them.</sup></p>
+<p>In this blog post I construct and train a simple Deep Neural Network based on a novel experimental driven neuron model proposed last year (2017) in July. This blog is separated as follows:</p>
+<ol>
+<li>Scientific background<ul>
+<li>Summarize the article that lead me to this idea and explain some of the theory.</li>
+</ul>
+</li>
+<li>Concepts<ul>
+<li>Relate Deep Learning technical concepts to Neuroscience concepts mentioned in the paper.</li>
+</ul>
+</li>
+<li>Approximations<ul>
+<li>Introduce approximations I will make on the multi-threshold neuron model.</li>
+</ul>
+</li>
+<li>Discussion<ul>
+<li>Overview of mathematical and Deep Learning implications as a consequence of the multi-threshold neuron model.</li>
+</ul>
+</li>
+<li>Model &amp; training<ul>
+<li>Tensorflow implementation and training of a simple fully-connected Deep Neural Network using the multi-threshold neuron model.</li>
+</ul>
+</li>
+<li>Results<ul>
+<li>Briefly show and explain results from training and testing the proposed model vs the commonly used one in Deep Neural Networks (DNNs).</li>
+</ul>
+</li>
+</ol>
+<h2>Scientific background</h2>
+<p><center><img alt="article_title" src="/images/blog/tech/multi-threshold-neuron/article.png"></center></p>
+<p>S. Sardi <em>et al.</em> published in July last year (2017) an experimental work in <a href="https://www.nature.com/articles/s41598-017-18363-1">Nature scientific reports</a> which contradicts a century old assumption about how neurons work. The work was a combined effort between the Physics, Life Sciences and Neuroscience departments of Bar-Ilan University in Tel Aviv, Israel.</p>
+<p>The authors proposed three different neuron models which they put to the test with different types of experiments. They describe each neuron model with, what they call, <em>neuronal equations</em>.</p>
+<p><center><img alt="neuron" src="/images/blog/tech/multi-threshold-neuron/neuron.jpg"></center>
+<sup>Figure 1. Schematic representation of a neuron. The signal in a neural network flows from a neuron's axon to the dendrites of another one. That is, the signal in any neuron is incoming from its dendrites and outgoing to its axon.</sup></p>
+<p>Below I describe two of these neuron models in the paper. In particular the commonly used neuron model which I call "central-threshold" and the neuron model proposal in this blog "multi-threshold".</p>
+<p><strong>Central-threshold neuron</strong></p>
+<p>This is the current adopted computational description of neurons (<a href="https://en.wikipedia.org/wiki/Artificial_neuron">artificial neurons</a>), and the corner stone of Deep Learning. "A neuron consists of a unique centralized excitable mechanism". The signal reaching the neuron consists of a linear sum of the incoming signals from all the dendrites connected to the neuron, if this sum reaches a threshold, a spike signal is propagated through the axon to the other connected neurons.</p>
+<p>The neuronal equation of this model is:</p>
+<div class="math">$$I = \Theta\Big(\sum_{i=1}^NW_i\cdot I_i - t\Big)$$</div>
+<p>where</p>
+<ul>
+<li><span class="math">\(i\)</span>: identifies any connected neuron</li>
+<li><span class="math">\(N\)</span>: total number of connected neurons</li>
+<li><span class="math">\(W_i\)</span>: is the weight (strength) associated to the connection with neuron <span class="math">\(i\)</span></li>
+<li><span class="math">\(I_i\)</span>: is the signal coming out of neuron <span class="math">\(i\)</span></li>
+<li><span class="math">\(t\)</span>: is the centralized single neuron threshold</li>
+<li><span class="math">\(\Theta\)</span>: is the <a href="https://en.wikipedia.org/wiki/Heaviside_step_function">Heaviside step function</a></li>
+<li><span class="math">\(I\)</span>: signal output from the neuron</li>
+</ul>
+<p><strong>Multi-threshold neuron</strong></p>
+<p>In this model the centralized threshold (<span class="math">\(\Theta\)</span>) is removed. The neuron can be independently excited by any signal coming from a dendrite given that this signal is above a threshold. This model describes a multi-threshold neuron and the mathematical representation can be written as:</p>
+<div class="math">$$I=\sum_{i=1}^N\Theta(W_i\cdot I_i - t_i)$$</div>
+<p>where</p>
+<ul>
+<li><span class="math">\(i\)</span>: identifies any connected neuron</li>
+<li><span class="math">\(N\)</span>: total number of connected neurons</li>
+<li><span class="math">\(W_i\)</span>: is the weight (strength) associated to the connection with neuron <span class="math">\(i\)</span></li>
+<li><span class="math">\(I_i\)</span>: is the signal coming out of neuron <span class="math">\(i\)</span></li>
+<li><span class="math">\(t_i\)</span>: is the threshold value for each neuron <span class="math">\(i\)</span></li>
+<li><span class="math">\(\Theta\)</span>: is the <a href="https://en.wikipedia.org/wiki/Heaviside_step_function">Heaviside step function</a></li>
+<li><span class="math">\(I\)</span>: signal output from the neuron</li>
+</ul>
+<p><strong>Study conclusion</strong></p>
+<p>Based on their experiments the authors conclude that the <strong>multi-threshold neuron</strong> model explains best the data. The authors mention that the main reason for adopting the central-threshold neuron as the main model, is that technology did not allow for direct excitation of single neurons, which other model experiments require. Moreover, they state that these results could have been discovered using technology that existed since the 1980s.</p>
+<h2>Concepts</h2>
+<p>There are some main concepts in the Deep Learning domain that you should be familiar with before proceeding. If you are familiar with them skip this part.</p>
+<p><br>
+<img align='left' src="/images/blog/tech/multi-threshold-neuron/artificial_neuron.png" width="300px"></p>
+<p><strong>Artificial neuron</strong></p>
+<p>A mathematical representation of a biological neuron. They are the corner stone of artificial neural networks and Deep Learning. The idea is that the artificial neuron receives input signals from other connected artificial neurons and via a non-linear transmission function emits a signal itself.</p>
+<p><br><br><br><br>
+<img align='left' src="/images/blog/tech/multi-threshold-neuron/relu.png" width="300px"></p>
+<p><strong>Activation function</strong></p>
+<p>The current understanding of a neuron is that it will transmit some signal only if the sum from incoming signals from other neurons exceeds a threshold. For an artificial neuron this threshold filter is applied via an activation function. There are many <a href="https://en.wikipedia.org/wiki/Activation_function">activation functions</a> but the <a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)">Rectified Linear unit</a> (ReLu) is one of the most broadly used in the Deep Learning community, and it's the one I will use in this notebook. The mathematical definition of the function is:</p>
+<div class="math">$$R(z) = max(0, z) =
+     \begin{cases}
+       0 &amp;\quad\text{for } z\leq0 \\
+       z &amp;\quad\text{for } z &gt; 0
+     \end{cases}$$</div>
+<p>You can check its implementation in the <a href="https://github.com/tensorflow/tensorflow/blob/48be6a56d5c49d019ca049f8c48b2df597594343/tensorflow/compiler/tf2xla/kernels/relu_op.cc#L37">Tensorflow source code</a> or in the <a href="https://github.com/tensorflow/playground/blob/718a6c8f2f876d5450b105e269534ae58e70223d/nn.ts#L120">Tensorflow playground code</a>.</p>
+<h2>Approximations</h2>
+<p><center><img alt="cow" src="/images/blog/tech/multi-threshold-neuron/spherical_cow.gif"></center></p>
+<p>I am a theoretical physicist and as such it's impossible for me to resist the <a href="https://en.wikipedia.org/wiki/Spherical_cow">spherical cow</a>.</p>
+<p><strong>Single threshold value</strong></p>
+<p>The multi-threshold neuron model contains different threshold parameter values (<span class="math">\(t_i\)</span>). Mathematically a threshold has the same effect if I take it as a constant and instead the input signal is moved up or down by the connecting weight parameters. Hence, the neuronal equation becomes: <sup id="fnref-1"><a class="footnote-ref" href="#fn-1">1</a></sup></p>
+<div class="math">$$I=\sum_{i=1}^N\Theta(W_i\cdot I_i - t)$$</div>
+<p><strong>ReLu activation function</strong></p>
+<p>I'll replace the Heaviside step function (<span class="math">\(\Theta\)</span>) with threshold <span class="math">\(t\)</span> by a <a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)">Rectified Linear unit</a> (<span class="math">\(\mathcal{R}\)</span>).</p>
+<div class="math">$$I=\sum_{i=1}^N\mathcal{R}(W_i\cdot I_i)$$</div>
+<p>In general any activation function could replace the Heaviside step function.</p>
+<p><strong>Bias</strong></p>
+<p>Notice that the proposed model equation contains no bias terms. I'll add a bias term to the equation since it's known to help neural networks fit better. It can also help with the threshold approximation, tuning the biases instead of the thresholds.</p>
+<div class="math">$$I=\sum_{i=1}^N\mathcal{R}(W_i\cdot I_i) + b$$</div>
+<h3>Discussion</h3>
+<p>The idea is to take the multi-threshold neuron model and try to write a Deep Learning implementation, a neural network consisting of multi-threshold neurons. Tensorflow is quite flexible and allows for writing user defined implementations.</p>
+<p><strong>Backpropagation</strong></p>
+<p>In order for my neural network to be trained I need backpropagation, this means that the derivative of whatever I introduce is necessary. Luckily, I'm not changing the activation function itself, I can just use the already derivative of the ReLu function in Tensorflow:</p>
+<div class="math">$$\frac{d}{dz}\mathcal{R}(z)=
+     \begin{cases}
+       0 &amp;\quad\text{for } z\leq0 \\
+       1 &amp;\quad\text{for } z &gt; 0
+     \end{cases}$$</div>
+<p>You can check it out in the <a href="https://github.com/tensorflow/tensorflow/blob/48be6a56d5c49d019ca049f8c48b2df597594343/tensorflow/compiler/tf2xla/kernels/relu_op.cc#L63">Tensorflow source code</a> or in the <a href="https://github.com/tensorflow/playground/blob/718a6c8f2f876d5450b105e269534ae58e70223d/nn.ts#L121">Tensorflow playground code</a>.</p>
+<p><strong>Tensor multiplication</strong></p>
+<p>What I'm really changing is the architecture of the artificial neural network as seen in Figure 0, the activation function is no longer applied on the sum of all the inputs from the connected neurons, but instead on the input arriving from every single connected neuron. The sum operation is going from inside the activation function to outside of it:</p>
+<div class="math">$$\mathcal{R}\Big(\sum_{i=1}^NW_i\cdot I_i\Big) \rightarrow \sum_{i=1}^N\mathcal{R}(W_i\cdot I_i)$$</div>
+<p>Do you see the implementation problem described by the equation above?</p>
+<p>In the central-threshold model (left equation) the input to the activation function <span class="math">\(\sum_iW_i\cdot I_i\)</span> is exactly the dot product between vectors <span class="math">\((W_1, W_2,\dots,W_N)\)</span> and <span class="math">\((I_1, I_2,\dots,I_N)\)</span> and it's this fact which allows fast computation of input signals for many neurons and observations at once via a single matrix multiplication.</p>
+<p>In the multi-threshold model this is no longer possible. I think this will be the biggest challenge when coming up with an implementation which can be trained efficiently and fast.</p>
+<p><strong>Example</strong></p>
+<p>Suppose I have the following weight matrix connecting two neuron layers, the first layer has 3 neurons the second has 2:</p>
+<div class="math">$$W=
+\begin{bmatrix}
+    3 &amp; -4 \\
+    -2&amp; 2\\
+    0&amp; 4
+\end{bmatrix}
+$$</div>
+<p>and that the output signal from the neurons in the first layer are</p>
+<div class="math">$$I_0=
+\begin{bmatrix}
+    2 &amp; 5 &amp; 1
+\end{bmatrix}
+$$</div>
+<p>with bias terms</p>
+<div class="math">$$b=
+\begin{bmatrix}
+    2 &amp; -1
+\end{bmatrix}
+$$</div>
+<p>Using the standard central-threshold neuron model, the output signal of the second layer is:</p>
+<div class="math">$$\mathcal{R}\Big(I_0\cdot W + b\Big) = \mathcal{R}\Big(
+\begin{bmatrix}
+    2 &amp; 5 &amp; 1
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+    3 &amp; -4 \\
+    -2&amp; 2\\
+    0&amp; 4
+\end{bmatrix}
++
+\begin{bmatrix}
+    2 &amp; -1
+\end{bmatrix}
+\Big)
+=
+$$</div>
+<div class="math">$$
+\mathcal{R}\Big(
+\begin{bmatrix}
+    -2 &amp; 5
+\end{bmatrix}
+\Big)
+=
+\begin{bmatrix}
+    \mathcal{R}(-2)&amp; \mathcal{R}(5)
+\end{bmatrix}
+\Big)
+=
+\begin{bmatrix}
+    0 &amp; 5
+\end{bmatrix}
+$$</div>
+<p>In the case of the multi-threshold neuron model proposed the output is</p>
+<div class="math">$$
+[\sum_{i=1}^N\mathcal{R}(W_{i1}\cdot I_i) + b_1, \sum_{i=1}^N\mathcal{R}(W_{i2}\cdot I_i) + b_2]=
+$$</div>
+<div class="math">$$
+\begin{bmatrix}
+    \mathcal{R}(6) + \mathcal{R}(-10) + \mathcal{R}(0) + 2 &amp; \mathcal{R}(-8) + \mathcal{R}(10) + \mathcal{R}(4)  -1
+\end{bmatrix}
+=
+\begin{bmatrix}
+    8 &amp; 13
+\end{bmatrix}
+$$</div>
+<p>As the example shows, a fundamental difference is that in the multi-threshold case if any input output signal times the weight is positive then the output will be positive. This will greatly reduce the sparsity of the neurons firing throughout the network in comparison with the conventional central-threshold model.</p>
+<p>I don't know all the implications but I expect that it will be more difficult for individual neurons (or parts of the network) to singly address a specific feature, therefore in principle reducing overfitting.</p>
+<p>A known issue of most activation functions in Deep Neural Networks is the "vanishing gradient problem", it relates to the decreasing update value to the weights as the errors propagate through the network via backpropagation. In the standard central-threshold model the ReLu partially solves this problem by having a derivative equal to 1 if the neuron fires, this propagates the error without vanishing the gradient. On the other hand, if the neuron signal is negative and squashed by the ReLu (did not fire) the corresponding weights are not updated, since the ReLu derivate is zero i.e. neuron connections are not learning when the connecting neurons didn't fire. In the multi-threshold model, I expect this last issue to be reduced since sparsity reduces, more weights should be updated on each step in comparison with the central-threshold neuron.</p>
+<h2>Model &amp; training</h2>
+<p>I first concentrate in replicating the example above using <code>tensorflow</code>, it contains two built-in related <code>ReLu</code> functions:</p>
+<ul>
+<li><code>relu_layer</code></li>
+<li><code>relu</code></li>
+</ul>
+<p>The <code>relu_layer</code> function already assumes a layer architecture with central-threshold neurons. The <code>relu</code> function on the other hand can operate on each entry of a tensor.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">([[</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="n">I_0</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">I_1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I_0</span><span class="p">,</span> <span class="n">w</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+<span class="n">I_1</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">sess</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">array</span><span class="p">([</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Notice that <code>b</code> and <code>I_0</code> are one dimensional tensors, this allows me to take advantage of the <code>tensorflow</code> broadcasting feature. Using the code above I can then define a neural network layer consisting of multi-threshold neurons<sup id="fnref-2"><a class="footnote-ref" href="#fn-2">2</a></sup>.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">multi_threshold_neuron_layer</span><span class="p">(</span><span class="n">input_values</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">activation</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">input_values</span><span class="p">,</span> <span class="n">weights</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+
+
+<p><strong>MNIST - 2 hidden layer multi-threshold neural network</strong></p>
+<p>With this basic implementation, my goal was to see if the model is actually trainable. I just wanted to observe the loss decrease with each iteration. As you probably noticed, the <code>multi_threshold_neuron_layer</code> can only take 1 example at a time, this is the complication I mentioned, simple matrix multiplication taking several observations is no longer possible for now. In part II of the blog I hope to expand to a more efficient implementation.</p>
+<p>The multi-threshold neural network is then:</p>
+<div class="highlight"><pre><span></span><span class="c1"># Construct model</span>
+<span class="n">I_0</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_size</span><span class="p">,))</span> <span class="c1"># input layer</span>
+
+<span class="n">W_01</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="n">hidden_layers_sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_size</span><span class="p">)))</span>
+<span class="n">b_1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="n">hidden_layers_sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">],)))</span>
+<span class="n">I_1</span> <span class="o">=</span> <span class="n">multi_threshold_neuron_layer</span><span class="p">(</span><span class="n">I_0</span><span class="p">,</span> <span class="n">W_01</span><span class="p">,</span> <span class="n">b_1</span><span class="p">)</span> <span class="c1"># 1st hidden layer</span>
+
+<span class="n">W_12</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="n">hidden_layers_sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">hidden_layers_sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+<span class="n">b_2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="n">hidden_layers_sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">],)))</span>
+<span class="n">I_2</span> <span class="o">=</span> <span class="n">multi_threshold_neuron_layer</span><span class="p">(</span><span class="n">I_1</span><span class="p">,</span> <span class="n">W_12</span><span class="p">,</span> <span class="n">b_2</span><span class="p">)</span> <span class="c1"># 2nd hidden layer</span>
+
+<span class="n">W_23</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="n">number_of_classes</span><span class="p">,</span> <span class="n">hidden_layers_sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+<span class="n">b_3</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="n">number_of_classes</span><span class="p">,)))</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">W_23</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">I_2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span> <span class="o">+</span> <span class="n">b_3</span> <span class="c1"># output layer</span>
+
+<span class="c1"># truth</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_of_classes</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Using the digits MNIST data set I ran a comparison between a DNN using the conventional central-threshold neurons and the proposed multi-threshold neurons.<sup id="fnref-3"><a class="footnote-ref" href="#fn-3">3</a></sup></p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensorflow.examples.tutorials.mnist</span> <span class="kn">import</span> <span class="n">input_data</span>
+<span class="n">mnist</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">read_data_sets</span><span class="p">(</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">one_hot</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Results</h2>
+<p>It is trainable! I actually though this would just crash and burn so I was very happy to see that loss go down :).</p>
+<p>I calculated the cross-entropy loss and accuracy during training and final accuracy in a test set. It is very important to remember that to keep things fair the calculations for both models are using a batch of 1 observation.</p>
+<p>The training period ran for <code>4 epochs</code> with a training set of <code>55000 observations</code>. Normally the loss and accuracy is calculated over the batch, in this case that makes no sense<sup id="fnref-4"><a class="footnote-ref" href="#fn-4">4</a></sup>. Instead what I do is report the average loss and average accuracy over every <code>1100 observations</code> <sup id="fnref-5"><a class="footnote-ref" href="#fn-5">5</a></sup>.</p>
+<p>The score of my model consisted of calculating the accuracy over a test set of <code>10000 observations</code>.</p>
+<p><strong>Training loss and accuracy</strong></p>
+<p><img alt="accuracy_vs_rate_and_type" src="/images/blog/tech/multi-threshold-neuron/accuracy_and_loss_curves.png"></p>
+<p>There are many things that can be discussed from Figure 2 but here are the main points:</p>
+<ul>
+<li>Cross-entropy loss decreases with iterations which means the model is trainable.</li>
+<li>When the <code>central-threshold</code> model is performing well its loss is much lower than the <code>multi-threshold</code>. Notice that this is the case since the beginning of the training period, a sort of a shift. This could be because our images contain consistent white areas (edges) where the cross-entropy benefits from having sparse activations in our neural network.</li>
+<li>The <code>multi-threshold</code> model seems to be more robust against higher learning rates. Moreover, it seems to prefer higher learning rates.</li>
+<li>As I mentioned before I would expect the <code>multi-threshold</code> model to have less sparse activations which in turn should result in a faster learning <sup id="fnref-6"><a class="footnote-ref" href="#fn-6">6</a></sup>. This can be observed for learning rate <code>.0005</code> and <code>.001</code>.</li>
+</ul>
+<p><strong>Test Accuracy</strong></p>
+<p><img alt="accuracy_vs_rate_and_type" src="/images/blog/tech/multi-threshold-neuron/accuracy_vs_rate_and_type.png"></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th align="center">Learning rate</th>
+<th align="center">Central-threshold</th>
+<th align="center">Multi-threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">0.0005</td>
+<td align="center">0.8571</td>
+<td align="center">0.8757</td>
+</tr>
+<tr>
+<td align="center">0.001</td>
+<td align="center">0.8958</td>
+<td align="center">0.8879</td>
+</tr>
+<tr>
+<td align="center">0.005</td>
+<td align="center">0.2554</td>
+<td align="center">0.9085</td>
+</tr>
+<tr>
+<td align="center">0.01</td>
+<td align="center">0.1028</td>
+<td align="center">0.773</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
+<ul>
+<li>As seen in the training report above, the <code>multi-threshold</code> model seems to be more robust against higher learning rates. It could be that this is just a sort of shift and for even bigger learning rates it will show the same behavior as the <code>central-threshold</code>.</li>
+<li>The <code>multi-threshold</code> model does not overfit in these examples. Even more, for learning rate 0.005 it achieves a loss 2 orders of magnitude higher than the <code>central-threshold</code> but a higher accuracy in the test set.</li>
+</ul>
+<h2>Adios</h2>
+<p>This was a pretty fun blog to make. I have some final remarks:</p>
+<ul>
+<li>The proposed model is trainable, but I cannot say much of the specifics since that requires more investigation that I have not done.</li>
+<li>A very important point is that since at the moment I can only use batches of 1, the training time is painfully slow, definitely not something for realistic applications.</li>
+<li>Finally, I know that Figure 3 seems quite promising but let's not forget that this is done with a batch of a single observation.</li>
+<li>In part II of this blog I'll try to come up with the functionality of having more observations per update and use a convolutional layer to make a more realistic comparison.</li>
+</ul>
+<p><img style="float: right;" src="/images/blog/tech/ml-pyapp/dog_developer.jpg" hspace="20"></p>
+<p>You can find the code <a href="https://github.com/rragundez/multi-threshold-neuron">here</a>.</p>
+<p>If you have any other questions just ping me in twitter <a href="https://twitter.com/rragundez">@rragundez</a>.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-1">
+<p>This is also happening in the current neural network implementations, since in reality there is no reason for different neurons to have the same threshold, nevertheless commonly a single activation function is used on all neurons.&#160;<a class="footnote-backref" href="#fnref-1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn-2">
+<p>It is a one line function, I know I know, but I can already sense there will be more to it later since this just works for a single input example.&#160;<a class="footnote-backref" href="#fnref-2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn-3">
+<p>Since at the moment the multi-threshold neuron model uses only a single example at a time, to make a fair comparison both DNN weights are updated on each example (batches of size 1), <code>x, y = mnist.train.next_batch(1, shuffle=True)</code>.&#160;<a class="footnote-backref" href="#fnref-3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn-4">
+<p>If you do that the accuracy and loss will be all over the place as it will be dependent on a single observation. This could make difficult to assess if the model is indeed getting better on each iteration by seeing the loss monotonically decrease.&#160;<a class="footnote-backref" href="#fnref-4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn-5">
+<p>You don't want this number to be too high since you expect an average lower loss and higher accuracy for observations at the end. If there are too many observations your standard deviation will increase and the reported average can be meaningless.&#160;<a class="footnote-backref" href="#fnref-5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn-6">
+<p>The weights of a neural network using <code>relu</code> activations where the neuron output is zero cannot learn because the back-propagated derivative is zero.&#160;<a class="footnote-backref" href="#fnref-6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></p>
+        </div>
+    </div>
+
+<div class="fh5co-narrow-content">
+<div class="animate-box" data-animate-effect="fadeInLeft">
+    <h2><!-- <i class="icon-speech-bubble"></i>  -->Comments</h2>
+</div>
+<div class="animate-box" data-animate-effect="fadeInLeft">
+    <div id="disqus_thread"></div>
+</div>
+
+<script>
+var disqus_config = function () { 
+  this.language = "en";
+};
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://gitcd-dev.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript><a href="https://disqus.com/?ref_noscript">Please enable JavaScript to view the comments powered by Disqus.</a></noscript>
+<div class="fh5co-footer">
+    <p><small>&copy; 2016 Blend Free HTML5. All Rights Reserved.</span> <span>Designed by <a href="http://freehtml5.co/" target="_blank">FreeHTML5.co</a></span>
+    <br /><span>Pelican Theme by: <a href="https://github.com/claudio-walser/pelican-fh5co-marble" target="_blank">Claudio Walser</a></span></small></p>
+
+</div>                
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/theme/js/jquery.min.js"></script>
+    <!-- jQuery Easing -->
+    <script src="/theme/js/jquery.easing.1.3.js"></script>
+    <!-- Bootstrap -->
+    <script src="/theme/js/bootstrap.min.js"></script>
+    <!-- Waypoints -->
+    <script src="/theme/js/jquery.waypoints.min.js"></script>
+    <!-- Flexslider -->
+    <script src="/theme/js/jquery.flexslider-min.js"></script>
+
+
+    <!-- MAIN JS -->
+    <script src="/theme/js/main.js"></script>
+    </body>
+</html>
