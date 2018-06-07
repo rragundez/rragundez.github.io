@@ -1,7 +1,7 @@
 Title: Machine Learning Application Skeleton
 Date: 2017-08-23
 Summary: The need of the business to interact and understand the output from custom built machine learning models is increasing, here I provide an application skeleton to do just that with your Python made models.
-Image: /images/blog/tech/blog/life/snow-tent.jpg
+Image: /images/blog/tech/ml-pyapp/iris_performance.png
 Tags:
 Slug: ml-pyapp
 

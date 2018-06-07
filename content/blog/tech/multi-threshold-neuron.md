@@ -1,7 +1,7 @@
 Title: Multi-threshold Neuron Model
 Date: 2018-03-09
 Summary: Inspired by a new biological scientific research, I propose, build and train a Deep Neural Network using a novel neuron model.
-Image: /images/blog/life/snow-tent.jpg
+Image: /images/blog/tech/multi-threshold-neuron/model_proposal.png
 Tags:
 Slug: multi-threshold-neuron
 
