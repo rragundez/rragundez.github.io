@@ -2,8 +2,9 @@ Title: Machine Learning Application Skeleton
 Date: 2017-08-23
 Summary: The need of the business to interact and understand the output from custom built machine learning models is increasing, here I provide an application skeleton to do just that with your Python made models.
 Image: /images/blog/tech/ml-pyapp/iris_performance.png
-Tags:
+Tags: python; flask; docker; gunicorn; front-end
 Slug: ml-pyapp
+Timeline:
 
 
 In this blog post I provide an overview of a Python skeleton application I made. This skeleton can help you bridge the gap between your model and a machine learning application.

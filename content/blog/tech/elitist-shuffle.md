@@ -2,8 +2,9 @@ Title: Elitist shuffle for recommendation systems
 Date: 2018-05-13
 Summary: In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug & play without having to re-engineer your recommendation system.
 Image: /images/blog/tech/elitist-shuffle/shuffle.jpg
-Tags:
+Tags: recommendation systems; python; multi-arm bandit
 Slug: elitist-shuffle
+Timeline:
 
 [This post was originally published in the GoDataDriven blog](https://blog.godatadriven.com/rod-elitist-shuffle)
 

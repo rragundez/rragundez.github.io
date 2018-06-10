@@ -1,9 +1,10 @@
 Title: Facebook's Prophet: Forecasting Stores Transactions
 Date: 2017-02-25
 Summary:  Quick look into the Prophet API for predicting the number of transactions in a shop.
-Image: /images/blog/tech/blog/life/snow-tent.jpg
-Tags:
+Image: /images/blog/tech/prophet-quicklook/widushop_history.png
+Tags: time-series; prophet; regression
 Slug: prophet-quicklook
+Timeline:
 
 [This post was originally published in the GoDataDriven blog](https://blog.godatadriven.com/prophet-quicklook)
 

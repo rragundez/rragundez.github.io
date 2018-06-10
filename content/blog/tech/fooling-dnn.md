@@ -2,8 +2,9 @@ Title: "I Pity the fool", Deep Learning style
 Date: 2017-11-05
 Summary: With deep learning applications blossoming, it is important to understand what makes these models tick. Here I demonstrate, using simple and reproducible examples, how and why deep neural networks can be easily fooled. I also discuss potential solutions.
 Image: /images/blog/tech/fooling-dnn/iris_regions.png
-Tags:
+Tags: deep learning; python; adversarial attacks; scikit-learn; neural networks; support vector machines; classification
 Slug: fool-neural-network
+Timeline:
 
 [This post was originally published in the GoDataDriven blog](https://blog.godatadriven.com/rod-fool-neural-network)
 

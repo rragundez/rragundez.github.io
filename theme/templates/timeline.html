@@ -12,7 +12,7 @@
             {% for article in articles if article.timeline %}
                 <div class="animate-box" data-animate-effect="fadeInLeft">
                     <a href="{{ SITEURL }}/{{ article.url }}"><h2>{{ article.title }}</h2></a>
-                    {{ article.locale_date }}
+                    {{ article.locale_date }} -
                     {{ article.summary }}
                 </div>
             {% endfor %}

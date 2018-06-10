@@ -2,8 +2,9 @@ Title: Multi-threshold Neuron Model
 Date: 2018-03-09
 Summary: Inspired by a new biological scientific research, I propose, build and train a Deep Neural Network using a novel neuron model.
 Image: /images/blog/tech/multi-threshold-neuron/model_proposal.png
-Tags:
+Tags: deep learning; tensorflow; research; classification
 Slug: multi-threshold-neuron
+Timeline:
 
 [This post was originally published in the GoDataDriven blog](https://blog.godatadriven.com/rod-multi-threshold-neuron)
 
