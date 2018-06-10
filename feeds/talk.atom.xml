@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Rodrigo Agundez - talk</title><link href="/" rel="alternate"></link><link href="/feeds/talk.atom.xml" rel="self"></link><id>/</id><updated>2018-09-12T00:00:00+02:00</updated><entry><title>Big Data Expo</title><link href="/2018-09-12-big-data-expo.html" rel="alternate"></link><published>2018-09-12T00:00:00+02:00</published><updated>2018-09-12T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-09-12:/2018-09-12-big-data-expo.html</id><summary type="html">&lt;p&gt;Deep learning, the engine of the AI revolution.&lt;/p&gt;</summary><content type="html">&lt;p&gt;https://www.bigdata-expo.nl/en/program/deep-learning-engine-ai-revolution&lt;/p&gt;
+&lt;p&gt;DEEP LEARNING, THE ENGINE OF THE AI REVOLUTION&lt;/p&gt;
+&lt;p&gt;We all remember the boom of Internet companies in the late 90s, then in the late 2000s mobile companies took center stage and have been dominating ever since. A new type is taken the spotlight, this is the era of AI companies, and like it has been before there are two options: adapt or fade away.&lt;/p&gt;
+&lt;p&gt;In order to adapt is very important to understand the basic concepts that underpinned Artificial Intelligence and grasp how Deep Learning became the catalyzer of the AI tech revolution.
+I’ll take you through a series of explanations with a historical overview of Deep Learning, and shine some light over question like: what’s the difference with classical Machine Learning? What can it do? What can’t it do? Why should my business care?
+I’ll give you concrete examples of revolutionary AI that have converge into products in the areas of  health care, drug discovery, Fin Tech, medicine, supply chain, marketing, recruiting, customer experience and e-commerce.&lt;/p&gt;
+&lt;p&gt;Finally, I’ll communicate my opinion on how the development of an AI feature, AI application or AI business should flow and give my advice on how you create something of value under the shadow of the AI giants like Google, Microsoft, Apple etc.&lt;/p&gt;</content><category term="deep learning"></category><category term="artificial intellegence"></category></entry><entry><title>Spark + AI Summit</title><link href="/2018-06-06-spark-ai-summit.html" rel="alternate"></link><published>2018-06-06T00:00:00+02:00</published><updated>2018-06-06T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2018-06-06:/2018-06-06-spark-ai-summit.html</id><summary type="html">&lt;p&gt;Operation Tulip: Using Deep Learning Models to Automate Auction Processes.&lt;/p&gt;</summary><content type="html">&lt;p&gt;https://databricks.com/session/operation-tulip-using-deep-learning-models-to-automate-auction-processes&lt;/p&gt;
+&lt;p&gt;Operation Tulip: Using Deep Learning Models to Automate Auction Processes
+We are using Deep Learning models to help Royal Flora Holland automate their auction processes. With over 100,000 transactions per day and 400,000 different types of flowers and plants, Royal Flora Holland is the biggest horticulture marketplace and knowledge center in the world. An essential part of their process is having the correct photographs of the flower or plants uploaded by suppliers. These photos are uploaded daily and could have requirements.&lt;/p&gt;
+&lt;p&gt;For example, some images require a ruler to be visible or a tray to be present. Manual inspection is practically impossible. Using Keras with a Tensorflow backend we implemented a Deep Neural Network (DNN) using transfer learning for each screening criteria. We also apply heuristics and business rules. The goal is to give real-time feedback at upload time, this challenged us to run multiple deep learning models in real-enough-time.&lt;/p&gt;
+&lt;p&gt;During the journey of building the Image Detection system we have used specific implementations that can be insightful and helpful to the audience. For example, our models are not only trained in parallel but transfer learning allows us to engineer a single 1st component for all models and then having the flow distribute over each of the DNN (~90% of the work is shared among the DNNs). Our models achieve above 95% accuracy and because of the component-like architecture it’s very flexible.&lt;/p&gt;
+&lt;p&gt;Session hashtag: #AISAIS11&lt;/p&gt;</content><category term="deep learning"></category><category term="transfer learning"></category><category term="classification"></category><category term="keras"></category><category term="tensorflow"></category></entry><entry><title>Seminar Data Science &amp; Sports 2016</title><link href="/2016-04-07-seminar-data-science-and-sports.html" rel="alternate"></link><published>2016-04-07T00:00:00+02:00</published><updated>2016-04-07T00:00:00+02:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2016-04-07:/2016-04-07-seminar-data-science-and-sports.html</id><summary type="html">&lt;p&gt;Predicting Sports Outcomes based on Rankings.&lt;/p&gt;</summary><content type="html">&lt;p&gt;Tools for Predicting Sports Outcomes based on Rankings&lt;/p&gt;
+&lt;p&gt;https://www.universiteitleiden.nl/nieuws/2016/04/data-science-and-sports-a-smart-combination&lt;/p&gt;</content><category term="elo rating"></category><category term="sports"></category><category term="R"></category></entry><entry><title>PyData Amsterdam</title><link href="/2016-03-12-pydata-amsterdam.html" rel="alternate"></link><published>2016-03-12T00:00:00+01:00</published><updated>2016-03-12T00:00:00+01:00</updated><author><name>Rodrigo Agundez</name></author><id>tag:None,2016-03-12:/2016-03-12-pydata-amsterdam.html</id><summary type="html">&lt;p&gt;Building a face recognition system with OpenCV.&lt;/p&gt;</summary><content type="html">&lt;p&gt;https://pydata.org/amsterdam2016/schedule/presentation/21/index.html&lt;/p&gt;
+&lt;p&gt;Building a face recognition system with OpenCV&lt;/p&gt;
+&lt;p&gt;Description
+In this tutorial we will create a face recognition application from scratch, it will provide you hands-on experience on the basics of Face Recognition. We will use the OpenCV library which makes the tutorial accessible to beginners. Together, we'll go from building our face dataset to recognizing faces in a live video. If time permits we will use this face recognition system to classify banking da&lt;/p&gt;
+&lt;p&gt;Abstract
+Building a live face recognition system in the blink of a very slow eye&lt;/p&gt;
+&lt;p&gt;In this hands-on tutorial we will build a live face recognition system from scratch with the use of the OpenCV methods. Since face recognition is the main goal of this tutorial we will form teams of 2-3 people and recognize the faces in a live feed. We will make use of the OpenCV computer vision and machine learning library. OpenCV includes a comprehensive set of both classic and state-of-the-art computer vision and machine learning algorithms. These algorithms can be used to:&lt;/p&gt;
+&lt;p&gt;Detect Faces
+Recognize Faces
+Identify Objects
+Classify human actions in videos
+Track camera movement
+Track moving objects&lt;/p&gt;
+&lt;p&gt;Extract 3D models of objects
+Produce 3D point clouds from stereo cameras
+Stitch images together to produce a high resolution image of an entire scene
+Find similar images from an image database
+Remove red eyes from images taken using flash
+Follow eye movements
+OpenCV is a great tool to have in hand when dealing with data problems related to media. In the case you want to create your own tuned algorithm, due to its simplicity it lets you use the majority of your resources on developing the algorithm itself and not on the manipulation of the data, which can be a pain in the … .&lt;/p&gt;
+&lt;p&gt;OpenCV is not limited to Python but has C++, C, Java and MATLAB interfaces and supports Windows, Linux, Android and Mac OS.&lt;/p&gt;
+&lt;p&gt;Syllabus
+Basics of image and video manipulations
+Let’s take a picture
+OpenCV and Pyplot formats: GBR vs RGB
+Let’s take a video
+Write and read picture from file
+Detecting faces
+Using OpenCV methods to recognize faces in a video
+Draw output rectangle to recognize face
+Let’s take a video
+Extract the face detected
+Build our data set
+Defining image and video manipulation classes
+Normalizing the dataset
+Creating the directory skeleton with our data
+Take pictures of each person in the team
+Train the face recognition algorithm
+Brief in-depth description of algorithm
+Use dataset to train classification algorithm
+Recognize faces in a live video feed
+Apply trained model on detected face in live feed
+Remarks on other OpenCV face recognition methods
+Playing with the OpenCV face recognition algorithm on banking data
+Requiered Packages to follow hands-on
+cv2 (OpenCV)
+Numpy
+os
+matpotlib
+sys
+time
+IPython.display&lt;/p&gt;
+&lt;p&gt;To get the most of the tutorial is highly recommended to have OpenCV installed since compilation from source is required. See you there!&lt;/p&gt;</content><category term="opencv"></category><category term="face recognition"></category><category term="python"></category><category term="classification"></category></entry></feed>
