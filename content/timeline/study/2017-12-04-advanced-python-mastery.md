@@ -1,0 +1,7 @@
+Title: Advanced Python Mastery
+Icon: icon-code-outline
+Date: 2017-12-04
+Tags: python;
+Slug: 2017-12-04-advanced-python-mastery
+Summary: Advanced Python week course with David Beazley in Chicago.
+Timeline: yes
