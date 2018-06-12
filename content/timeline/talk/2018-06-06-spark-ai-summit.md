@@ -3,7 +3,7 @@ Icon: icon-code-outline
 Date: 2018-06-06
 Tags: deep learning; transfer learning; classification; keras; tensorflow
 Slug: 2018-06-06-spark-ai-summit
-Summary: Operation Tulip: Using Deep Learning Models to Automate Auction Processes.
+Summary: Presented Operation Tulip: Using Deep Learning Models to Automate Auction Processes.
 Timeline: yes
 
 https://databricks.com/session/operation-tulip-using-deep-learning-models-to-automate-auction-processes

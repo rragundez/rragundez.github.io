@@ -3,7 +3,7 @@ Icon: icon-code-outline
 Date: 2016-03-12
 Tags: opencv; face recognition; python; classification
 Slug: 2016-03-12-pydata-amsterdam
-Summary: Building a face recognition system with OpenCV.
+Summary: Presented building a face recognition system with OpenCV.
 Timeline: yes
 
 https://pydata.org/amsterdam2016/schedule/presentation/21/index.html

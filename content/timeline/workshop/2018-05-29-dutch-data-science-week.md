@@ -3,7 +3,7 @@ Icon: icon-code-outline
 Date: 2018-05-29
 Tags: deep learning; time-series; nlp; lstm; rnn; cnn
 Slug: 2018-05-29-dutch-data-science-week
-Summary: Advanced deep learning workshop with a focus on RNNs and LSTMs.
+Summary: Gave an advanced deep learning workshop with a focus on RNNs and LSTMs.
 Timeline: yes
 
 

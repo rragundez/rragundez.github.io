@@ -3,7 +3,7 @@ Icon: icon-code-outline
 Date: 2018-05-26
 Tags: deep learning; keras; transfer learning; tensorflow
 Slug: 2018-05-26-pydata-amsterdam
-Summary: Deep learning introductory workshop to Keras.
+Summary: Gave a deep learning introductory workshop to Keras.
 Timeline: yes
 
 

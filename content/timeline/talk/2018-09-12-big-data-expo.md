@@ -3,7 +3,7 @@ Icon: icon-code-outline
 Date: 2018-09-12
 Tags: deep learning; artificial intellegence
 Slug: 2018-09-12-big-data-expo
-Summary: Deep learning, the engine of the AI revolution.
+Summary: Presented deep learning, the engine of the AI revolution.
 Timeline: yes
 
 
