@@ -18,15 +18,14 @@ TIMEZONE = 'Europe/Amsterdam'
 DEFAULT_DATE_FORMAT = '%d %b %Y'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_US'
-STATIC_PATHS = ['images', 'CNAME']
+STATIC_PATHS = ['images', 'CNAME', 'favicon.ico']
 
 # content paths
 PATH = 'content'
 PAGE_PATHS = ['pages']
 ARTICLE_PATHS = ['blog', 'timeline']
 
-# logo path, needs to be stored in PATH Setting
-LOGO = '/images/logo.svg'
+LOGO = '/images/logo.png'
 
 # special content
 HERO = [
