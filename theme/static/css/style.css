@@ -118,14 +118,15 @@ figure figcaption {
   text-align: center;
   font-family: "Roboto", Arial, sans-serif;
   font-weight: 700;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
+  margin-top: 2em;
   text-transform: uppercase;
   font-size: 38px;
 }
 
 
 #fh5co-aside #fh5co-logo img {
-  width: 100px;
+  width: 80px;
 }
 
 #fh5co-aside #fh5co-logo a {
