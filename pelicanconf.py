@@ -30,7 +30,7 @@ LOGO = '/images/logo.png'
 # special content
 HERO = [
     {
-        'image': '/images/hero/background-1.jpg',
+        'image': '/images/hero/spark_ai.jpg',
         # for multilanguage support, create a simple dict
         'title': 'Some special content',
         'text': 'Any special content you want to tease here',
@@ -40,19 +40,19 @@ HERO = [
             'text': 'Github'
         }]
     }, {
-        'image': '/images/hero/background-2.jpg',
+        'image': '/images/hero/football.jpg',
         # keep it a string if you dont need multiple languages
         'title': 'Uh, special too',
         # keep it a string if you dont need multiple languages
         'text': 'Keep hero.text and hero.title a string if you dont need multilanguage.',
         'links': []
     }, {
-        'image': '/images/hero/background-3.jpg',
+        'image': '/images/hero/dutch_data_science_week.jpeg',
         'title': 'No Blogroll yet',
         'text': 'Because of space issues in the man-nav, i didnt implemented Blogroll links yet.',
         'links': []
     }, {
-        'image': '/images/hero/background-4.jpg',
+        'image': '/images/hero/deeplearning_workshop.jpg',
         'title': 'Ads missing as well',
         'text': 'And since i hate any ads, this is not implemented as well',
         'links': []
