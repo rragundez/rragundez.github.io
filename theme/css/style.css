@@ -19,13 +19,13 @@ body {
 }
 
 a {
-  color: #228896;
+  color: #49C0C1;
   -webkit-transition: 0.5s;
   -o-transition: 0.5s;
   transition: 0.5s;
 }
 a:hover, a:active, a:focus {
-  color: #228896;
+  color: #49C0C1;
   outline: none;
   text-decoration: none !important;
 }
@@ -62,17 +62,17 @@ figure figcaption {
 
 ::-webkit-selection {
   color: #fff;
-  background: #228896;
+  background: #49C0C1;
 }
 
 ::-moz-selection {
   color: #fff;
-  background: #228896;
+  background: #49C0C1;
 }
 
 ::selection {
   color: #fff;
-  background: #228896;
+  background: #49C0C1;
 }
 
 #fh5co-page {
@@ -186,7 +186,7 @@ figure figcaption {
   bottom: 7px;
   left: 10px;
   right: 10px;
-  background-color: #228896;
+  background-color: #49C0C1;
   visibility: hidden;
   -webkit-transform: scaleX(0);
   -moz-transform: scaleX(0);
@@ -266,7 +266,7 @@ figure figcaption {
 #fh5co-aside #social li a:hover, #fh5co-aside #social li a:active, #fh5co-aside #social li a:focus {
   text-decoration: none;
   outline: none;
-  color: #228896;
+  color: #49C0C1;
 }
 
 #fh5co-main {
@@ -359,7 +359,7 @@ figure figcaption {
 #fh5co-hero .flexslider .flex-control-nav li a.flex-active {
   cursor: pointer;
   background: transparent;
-  border: 2px solid #228896;
+  border: 2px solid #49C0C1;
 }
 #fh5co-hero .flexslider .flex-direction-nav {
   display: none;
@@ -636,7 +636,7 @@ img {
 }
 
 .fh5co-heading-colored {
-  color: #228896;
+  color: #49C0C1;
   font-size: 30px;
 }
 
@@ -696,7 +696,7 @@ img {
 
 .fh5co-counter .fh5co-number {
   font-size: 100px;
-  color: #228896;
+  color: #49C0C1;
   font-weight: 400;
   margin: 0;
   padding: 0;
@@ -766,12 +766,12 @@ img {
   }
 }
 .fh5co-social li a:hover {
-  color: #228896;
+  color: #49C0C1;
 }
 .fh5co-social li a:hover, .fh5co-social li a:active, .fh5co-social li a:focus {
   outline: none;
   text-decoration: none;
-  color: #228896;
+  color: #49C0C1;
 }
 
 #map {
@@ -812,7 +812,7 @@ img {
 .fh5co-feature .fh5co-icon i {
   display: table-cell;
   vertical-align: middle;
-  color: #228896;
+  color: #49C0C1;
   font-size: 40px;
   height: 100px;
 }
@@ -841,7 +841,7 @@ img {
   margin-top: 30px;
 }
 .fh5co-feature.fh5co-feature-sm .fh5co-icon i {
-  color: #228896;
+  color: #49C0C1;
   font-size: 40px;
 }
 @media screen and (max-width: 1200px) {
@@ -1018,7 +1018,7 @@ img {
 .form-control:active, .form-control:focus {
   outline: none;
   box-shadow: none;
-  border-color: #228896;
+  border-color: #49C0C1;
 }
 
 #message {
