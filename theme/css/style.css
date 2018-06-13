@@ -894,9 +894,9 @@ img {
 }
 
 .btn-primary {
-  background: #228896;
+  background: #49C0C1;
   color: #fff;
-  border: 2px solid #228896;
+  border: 2px solid #49C0C1;
 }
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
   background: #279bab !important;
@@ -904,11 +904,11 @@ img {
 }
 .btn-primary.btn-outline {
   background: transparent;
-  color: #228896;
-  border: 2px solid #228896;
+  color: #49C0C1;
+  border: 2px solid #49C0C1;
 }
 .btn-primary.btn-outline:hover, .btn-primary.btn-outline:focus, .btn-primary.btn-outline:active {
-  background: #228896;
+  background: #49C0C1;
   color: #fff;
 }
 
