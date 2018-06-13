@@ -490,6 +490,7 @@ body.offcanvas #fh5co-main, body.offcanvas .fh5co-nav-toggle {
   width: 100%;
   float: left;
   background: #fff;
+  border-radius: 6px;
 }
 @media screen and (max-width: 768px) {
   .blog-entry {
@@ -897,6 +898,7 @@ img {
   background: #49C0C1;
   color: #fff;
   border: 2px solid #49C0C1;
+  border-radius: 6px;
 }
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
   background: #279bab !important;
