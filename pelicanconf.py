@@ -31,30 +31,23 @@ LOGO = '/images/logo.png'
 HERO = [
     {
         'image': '/images/hero/spark_ai.jpg',
-        # for multilanguage support, create a simple dict
-        'title': 'Some special content',
-        'text': 'Any special content you want to tease here',
-        'links': [{
-            'icon': 'icon-code',
-            'url': 'https://github.com/claudio-walser/pelican-fh5co-marble',
-            'text': 'Github'
-        }]
+        'title': 'Maverick',
+        'text': '"An unorthodox or independent-minded person"',
+        'links': []
     }, {
         'image': '/images/hero/football.jpg',
-        # keep it a string if you dont need multiple languages
-        'title': 'Uh, special too',
-        # keep it a string if you dont need multiple languages
-        'text': 'Keep hero.text and hero.title a string if you dont need multilanguage.',
+        'title': 'Sporter',
+        'text': '',
         'links': []
     }, {
-        'image': '/images/hero/dutch_data_science_week.jpeg',
-        'title': 'No Blogroll yet',
-        'text': 'Because of space issues in the man-nav, i didnt implemented Blogroll links yet.',
+        'image': '/images/hero/ddsw.jpg',
+        'title': 'Trainer',
+        'text': '',
         'links': []
     }, {
-        'image': '/images/hero/deeplearning_workshop.jpg',
-        'title': 'Ads missing as well',
-        'text': 'And since i hate any ads, this is not implemented as well',
+        'image': '/images/hero/nspire.jpg',
+        'title': 'Teamplayer',
+        'text': '',
         'links': []
     }
 ]
