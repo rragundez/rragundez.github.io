@@ -94,7 +94,7 @@ MENUITEMS = [
 
 DIRECT_TEMPLATES = [
     'index',
-    'rod365',
+    'rod360',
     'timeline',
     'blog',
     'categories',
