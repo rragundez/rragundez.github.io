@@ -84,7 +84,7 @@ USE_FOLDER_AS_CATEGORY = True
 PAGE_ORDER_BY = 'order'
 
 MENUITEMS = [
-    ('Rod365', 'rod365.html'),
+    ('Rod360', 'rod360.html'),
     ('Timeline', 'timeline.html'),
     ('Blog', 'blog.html'),
     ('Categories', 'categories.html'),
