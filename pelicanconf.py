@@ -68,7 +68,7 @@ ABOUT = {
     'image': '/images/about/about.jpeg',
     'mail': 'info@rragundez.io',
     # keep it a string if you dont need multiple languages
-    'text': 'Learn more about the creator of this theme or just drop a message.',
+    'text': 'Just drop a message.',
     'link': 'contact.html',
     # the address is also taken for google maps
     'address': 'Amsterdam, The Netherlands',
@@ -84,6 +84,7 @@ USE_FOLDER_AS_CATEGORY = True
 PAGE_ORDER_BY = 'order'
 
 MENUITEMS = [
+    ('Rod365', 'rod365.html'),
     ('Timeline', 'timeline.html'),
     ('Blog', 'blog.html'),
     ('Categories', 'categories.html'),
@@ -93,11 +94,11 @@ MENUITEMS = [
 
 DIRECT_TEMPLATES = [
     'index',
+    'rod365',
     'timeline',
     'blog',
     'categories',
     'tags',
-    'authors',
     'search',  # needed for tipue_search plugin
     'contact'  # needed for the contact form
 ]

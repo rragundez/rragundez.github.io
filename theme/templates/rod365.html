@@ -8,22 +8,66 @@
 {% block content %}
     <div class="fh5co-narrow-content">
         <h1 class="fh5co-heading-colored">{{ _('ROD365') }}</h1>
-        <h2>WORK</h2>
+        <div class="row">
+        {% if 'mail' in ABOUT %}
+        <div class="col-md-4">
+            <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+              <div class="fh5co-icon">
+                  {% if 'image' in ABOUT %}
+                    <img class="about-image" src="{{ ABOUT.image }}" />
+                  {% else %}
+                    <i class="icon-globe"></i>
+                  {% endif %}
+              </div>
+              <div class="fh5co-text">
+                <p>Rodrigo Agundez, PhD<br>32, Mexican</p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="col-md-4">
+            <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                <div class="fh5co-icon">
+                    <i class="icon-microphone2"></i>
+                </div>
+                <div class="fh5co-text">
+                    <p>Spanish - English - Dutch</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                <div class="fh5co-icon">
+                    <i class="icon-download"></i>
+                </div>
+                <div class="fh5co-text">
+                    <p>Curriculum Vitae<br>PDF</p>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <br>
+        <h1 class="fh5co-heading-colored">WORK</h1>
         <div class="archive">
             {% for article in articles if article.category == 'work' %}
                 <div class="animate-box" data-animate-effect="fadeInLeft">
                     <a href="{{ SITEURL }}/{{ article.url }}"><h2>{{ article.title }}</h2></a>
-                    {{ article.category|upper}} - {{ article.locale_date }}
+                    {{ article.locale_date }}
                     {{ article.summary }}
                 </div>
             {% endfor %}
         </div>
-        <h2>STUDY</h2>
+
+        <br>
+        <h1 class="fh5co-heading-colored">STUDY</h1>
         <div class="archive">
             {% for article in articles if article.category == 'study ' %}
                 <div class="animate-box" data-animate-effect="fadeInLeft">
                     <a href="{{ SITEURL }}/{{ article.url }}"><h2>{{ article.title }}</h2></a>
-                    {{ article.category|upper}} - {{ article.locale_date }}
+                    {{ article.locale_date }}
                     {{ article.summary }}
                 </div>
             {% endfor %}
