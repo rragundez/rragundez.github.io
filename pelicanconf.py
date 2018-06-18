@@ -25,7 +25,7 @@ PATH = 'content'
 PAGE_PATHS = ['pages']
 ARTICLE_PATHS = ['blog', 'timeline']
 
-LOGO = '/images/logo.png'
+LOGO = '/images/logo.svg'
 
 # special content
 HERO = [
