@@ -108,4 +108,4 @@ DISQUS_SHORTNAME = 'gitcd-dev'
 DISQUS_ON_PAGES = False  # if true its just displayed on every static page, like this you can still enable it per page
 
 # setup google maps
-GOOGLE_MAPS_KEY = 'AIzaSyCefOgb1ZWqYtj7raVSmN4PL2WkTrc-KyA'
+GOOGLE_MAPS_KEY = 'AIzaSyDtLsg5TViozEWlHg4RihNiuUv9T8IPm90'

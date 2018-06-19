@@ -7,7 +7,7 @@
 
 {% block content %}
     <div class="fh5co-narrow-content">
-        <h1 class="fh5co-heading-colored">{{ _('Rod360°') }}</h1>
+        <h1 class="fh5co-heading-colored"><i class="icon-user"></i>  {{ _('Rod360°') }}</h1>
         <div class="row">
         {% if 'mail' in ABOUT %}
         <div class="col-md-4">
@@ -50,7 +50,24 @@
         </div>
 
         <br>
-        <h1 class="fh5co-heading-colored">WORK</h1>
+        <div class="row">
+        <div class="col-md-8 col-md-offset-2 text-center slider-text animated fadeInLeft">
+            <div class="slider-text-inner">
+                <h1 class="fh5co-heading-colored"><i class="icon-code"></i></h1>
+                <h2>During his academic years, Rodrigo obtained two master's degrees in the
+            area of Nanoscience, followed by a PhD in Theoretical Physics from
+            TUDelft university with a focus on Quantum Mechanics and Quantum
+            Computing.<br>
+            Equipped with a solution driven attitude, programming skills and a strong
+            mathematical toolset, he turned into the exciting world of Data Science, his
+            new passion. In addition to his technical qualifications, he enjoys the
+            personal side and camaraderie of working in a team.</h2>
+            <h1 class="fh5co-heading-colored"><i class="icon-code"></i></h1>
+            </div>
+        </div>
+        </div>
+
+        <h1 class="fh5co-heading-colored">EXPERIENCE</h1>
         <div class="archive">
             {% for article in articles if article.category == 'work' %}
                 <div class="animate-box" data-animate-effect="fadeInLeft">
@@ -62,9 +79,21 @@
         </div>
 
         <br>
-        <h1 class="fh5co-heading-colored">STUDY</h1>
+        <h1 class="fh5co-heading-colored">EDUCATION</h1>
         <div class="archive">
-            {% for article in articles if article.category == 'study ' %}
+            {% for article in articles if article.category == 'study' %}
+                <div class="animate-box" data-animate-effect="fadeInLeft">
+                    <a href="{{ SITEURL }}/{{ article.url }}"><h2>{{ article.title }}</h2></a>
+                    {{ article.locale_date }}
+                    {{ article.summary }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <br>
+        <h1 class="fh5co-heading-colored">TALKS & WORKSHOPS</h1>
+        <div class="archive">
+            {% for article in articles if article.category in ['talk', 'workshop'] %}
                 <div class="animate-box" data-animate-effect="fadeInLeft">
                     <a href="{{ SITEURL }}/{{ article.url }}"><h2>{{ article.title }}</h2></a>
                     {{ article.locale_date }}
