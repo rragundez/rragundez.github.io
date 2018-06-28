@@ -5,7 +5,9 @@ Tags: deep learning; time-series; nlp; lstm; rnn; cnn
 Slug: 2018-05-29-dutch-data-science-week
 Summary: Gave an advanced deep learning workshop with a focus on RNNs and LSTMs.
 Timeline: yes
+Video: <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://www.youtube.com/embed/msUqbcWz6n0?rel=0&amp;showinfo=0&amp;start=10" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/msUqbcWz6n0?rel=0&amp;showinfo=0&amp;start=10" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 https://www.eventbrite.nl/e/tickets-training-special-deep-learning-dutch-data-science-week-2018-44832464107#
 

@@ -5,6 +5,9 @@ Tags: opencv; face recognition; python; classification
 Slug: 2016-03-12-pydata-amsterdam
 Summary: Presented building a face recognition system with OpenCV.
 Timeline: yes
+Video: <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://www.youtube.com/embed/MDaZtJPv3Ik?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MDaZtJPv3Ik?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 https://pydata.org/amsterdam2016/schedule/presentation/21/index.html
 

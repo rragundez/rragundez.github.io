@@ -41,12 +41,12 @@ HERO = [
         'links': []
     }, {
         'image': '/images/hero/restart_network.jpg',
-        'title': 'Knowledge Sharing',
+        'title': 'Leader',
         'text': '',
         'links': []
     }, {
         'image': '/images/hero/ddsw.jpg',
-        'title': 'Trainer',
+        'title': 'Knowledge Sharing',
         'text': '',
         'links': []
     }, {
