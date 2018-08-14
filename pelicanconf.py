@@ -86,7 +86,7 @@ PAGE_ORDER_BY = 'order'
 MENUITEMS = [
     ('Rod360°', 'rod360.html'),
     ('Timeline', 'timeline.html'),
-    ('Blog', 'blog.html'),
+    # ('Blog', 'blog.html'),
     ('Categories', 'categories.html'),
     ('Tags', 'tags.html'),
     ('Contact', 'contact.html')

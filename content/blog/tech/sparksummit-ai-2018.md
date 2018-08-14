@@ -5,6 +5,7 @@ Image: /images/blog/tech/spark-summit-ai-2018/keynotes.jpg
 Tags: spark; time-series; recommendation systems; fraud detection
 Slug: spark-summit-ai-2018
 Timeline:
+Video: <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://player.vimeo.com/video/274687341" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 [This post was originally published in the GoDataDriven blog](https://blog.godatadriven.com/rod-spark-summit-ai-2018)
 
