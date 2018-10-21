@@ -126,12 +126,12 @@
 <p>Last Tuesday and Wednesday <a href="https://godatadriven.com/players/ivo-everts">Ivo Everts</a> and I attended the Spark+AI Summit 2018 conference in San Francisco. Ivo gave a presentation about <a href="https://databricks.com/session/predictive-maintenance-at-the-dutch-railways">Predictive Maintenance at the Dutch Railways</a> and I presented the AI case GDD implemented at Royal FloraHolland <a href="https://databricks.com/session/operation-tulip-using-deep-learning-models-to-automate-auction-processes">Operation Tulip: Using Deep Learning Models to Automate Auction Processes</a>.</p>
 <p><img alt="Spark+AI Summit" src="images/blog/tech/spark-summit-ai-2018/keynotes.jpg"></p>
 <p>As a data scientist, I really appreciated that there was a data science track, a deep learning track, and an AI track. Initially, expected to be mostly engineering, but as you will see below, there was plenty of good data science around.</p>
-<p>Here are the highlights of the talks I attended each day. <sup id="fnref-1"><a class="footnote-ref" href="#fn-1">1</a></sup></p>
+<p>Here are the highlights of the talks I attended each day. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup></p>
 <p>Note: for those non-technical readers I list some non-tech talks.</p>
 <h1>Day 1</h1>
 <h2><a href="https://databricks.com/session/databricks-keynote-2">Project Hydrogen: Unifying State-of-the-art AI and Big Data in Apache Spark</a></h2>
 <p><sup style="top:-1.75em;">Reynold Xin (Co-founder and Chief Architect @ Databricks)</sup></p>
-<p>Databricks unveiled project Hydrogen, which aims to solve the fact that distributed ETL Spark jobs don't play well together with deep learning frameworks. As Databricks Chief Architect Reynold Xin says, there's a fundamental incompatibility between the Spark scheduler and the way distributed machine learning frameworks work. <sup id="fnref-2"><a class="footnote-ref" href="#fn-2">2</a></sup> Project Hydrogen introduces <a href="https://en.wikipedia.org/wiki/Gang_scheduling">gang scheduling</a> which makes possible to have a single framework for ETL data pipelines and deep learning models. In addition, it aims to provide hardware awareness at the task level such that the ETL data pipeline runs in commodity CPU but the deep learning model runs in GPUs for example.</p>
+<p>Databricks unveiled project Hydrogen, which aims to solve the fact that distributed ETL Spark jobs don't play well together with deep learning frameworks. As Databricks Chief Architect Reynold Xin says, there's a fundamental incompatibility between the Spark scheduler and the way distributed machine learning frameworks work. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup> Project Hydrogen introduces <a href="https://en.wikipedia.org/wiki/Gang_scheduling">gang scheduling</a> which makes possible to have a single framework for ETL data pipelines and deep learning models. In addition, it aims to provide hardware awareness at the task level such that the ETL data pipeline runs in commodity CPU but the deep learning model runs in GPUs for example.</p>
 <p><img alt="project hydrogen" src="images/blog/tech/spark-summit-ai-2018/project_hydrogen.png"></p>
 <h2><a href="https://databricks.com/session/unifying-data-and-ai-for-better-data-products">Infrastructure for the Complete ML Lifecycle</a></h2>
 <p><sup style="top:-1.75em;">Matei Zaharia (Co-founder and CTO @ Databricks &amp; creator of Spark)</sup></p>
@@ -184,7 +184,7 @@ Your browser does not support the video tag.
 <p>Together with the time-series talk the most beneficial for a data scientist. The talk from Nick was very well structured and explained. He started from the basic methods like item-item and matrix factorization which are based on feature and explicit interactions or events. He then set the landscape of the current most common case which involves explicit, implicit, social and intent events. He then addressed the cold start problem and explained why the standard/old collaborative filtering models break down with the current need of applications.</p>
 <p><img src="images/blog/tech/spark-summit-ai-2018/implicit.jpg" width="50%" align="left" height="250">
 <img src="images/blog/tech/spark-summit-ai-2018/cold_start.jpg" width="50%" align="right" height="250"></p>
-<p>Then deep learning approaches were covered and explained how implicit events can be used in the loss function of a neural network. Then he followed by showing the state-of-the-art deep learning implementations like <a href="https://arxiv.org/abs/1703.04247">DeepFM</a>.<sup id="fnref-3"><a class="footnote-ref" href="#fn-3">3</a></sup></p>
+<p>Then deep learning approaches were covered and explained how implicit events can be used in the loss function of a neural network. Then he followed by showing the state-of-the-art deep learning implementations like <a href="https://arxiv.org/abs/1703.04247">DeepFM</a>.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup></p>
 <p><img src="images/blog/tech/spark-summit-ai-2018/mf_dl.jpg" width="50%" align="left" height="250">
 <img src="images/blog/tech/spark-summit-ai-2018/dl_rec.jpg" width="50%" align="right" height="250"></p>
 <p>The next part was even sort of new to me, he added session-based recommendations plus the content discussed before by using recurrent neural networks on top of the networks before.</p>
@@ -198,7 +198,7 @@ Your browser does not support the video tag.
 <img src="images/blog/tech/spark-summit-ai-2018/russian_emb.jpg" width="50%" align="right" height="250"></p>
 <p>I don't know how well did the algorithm worked for most of the words in general but the approach and little sample result shown was quite nice.</p>
 <h2>Adiós</h2>
-<p>In conclusion I was happy with the content of the conference and will recommended to data scientist to take a look next year, also the network I made during discussing is priceless.<sup id="fnref-4"><a class="footnote-ref" href="#fn-4">4</a></sup></p>
+<p>In conclusion I was happy with the content of the conference and will recommended to data scientist to take a look next year, also the network I made during discussing is priceless.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4" rel="footnote">4</a></sup></p>
 <p>It was also fun to talk at the conference, I left with a good feeling and was able to deliver some good jokes 😉.</p>
 <p><img src="images/blog/tech/spark-summit-ai-2018/ivo.jpg" width="50%" align="left" height="225">
 <img src="images/blog/tech/spark-summit-ai-2018/rod.jpeg" width="50%" align="right" height="225"></p>
@@ -208,17 +208,17 @@ Your browser does not support the video tag.
 <div class="footnote">
 <hr>
 <ol>
-<li id="fn-1">
-<p>The slides and presentations haven't been uploaded yet. I'll update the links once they are released.&#160;<a class="footnote-backref" href="#fnref-1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<li id="fn:1">
+<p>The slides and presentations haven't been uploaded yet. I'll update the links once they are released.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
-<li id="fn-2">
-<p>Spark divides jobs into independent tasks (embarrassingly parallel), this differs from how distributed machine learning frameworks work, which sometimes use <a href="https://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a> or custom <a href="https://en.wikipedia.org/wiki/Remote_procedure_call">RPCs</a> for doing communication.&#160;<a class="footnote-backref" href="#fnref-2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<li id="fn:2">
+<p>Spark divides jobs into independent tasks (embarrassingly parallel), this differs from how distributed machine learning frameworks work, which sometimes use <a href="https://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a> or custom <a href="https://en.wikipedia.org/wiki/Remote_procedure_call">RPCs</a> for doing communication.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
-<li id="fn-3">
-<p>I would recommend you to first start with the LightFM implementation described <a href="https://arxiv.org/abs/1507.08439">here</a>.&#160;<a class="footnote-backref" href="#fnref-3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<li id="fn:3">
+<p>I would recommend you to first start with the LightFM implementation described <a href="https://arxiv.org/abs/1507.08439">here</a>.&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
-<li id="fn-4">
-<p>As a side note, in the talks of the big companies I saw a LOT of tensorflow inside Spark. It made me wish that NL companies would have that much volume of data.&#160;<a class="footnote-backref" href="#fnref-4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<li id="fn:4">
+<p>As a side note, in the talks of the big companies I saw a LOT of tensorflow inside Spark. It made me wish that NL companies would have that much volume of data.&#160;<a class="footnote-backref" href="#fnref:4" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></p>
