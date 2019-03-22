@@ -6,8 +6,5 @@ Slug: 2017-05-01-data-scientist-nle
 Summary: As a consultant from GoDataDriven working as a data scientist for the Dutch energy company (Nederlandse Energie Maatschappij).
 Timeline: yes
 
-Rodrigo worked as the senior data scientist optimizing an existing
-shelf-replenisher prediction system. He also developed a customer
-predictive algorithm to use as an input to improve the shelf-replenisher
-predictions. In addition he migrated all scheduled jobs to Airflow, and
-helped built a dashboard to monitor the model performance in production.
+In this project I was responsible for adding a model to an existing Spark pipeline. This model assigns customer conversion probabilities to different price offering strategies. The type of model does not exist in Spark, therefore a customized implementation was built which could integrate seemingly to the already existing SparkML pipeline.
+
