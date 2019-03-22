@@ -1,4 +1,4 @@
-Title: Collaborator/committer @ Keras
+Title: Collaborator / committer @ Keras
 Icon: icon-code-outline
 Date: 2019-01-15
 Tags: data science; deep learning; keras
