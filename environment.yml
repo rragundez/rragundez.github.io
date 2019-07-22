@@ -1,0 +1,11 @@
+name: website
+channels:
+  - defaults
+dependencies:
+  - beautifulsoup4
+  - pip
+  - python=3.7.3
+  - pip:
+    - ghp-import>=0.5.5
+    - markdown>=3.1.1
+    - pelican>=4.1.0
