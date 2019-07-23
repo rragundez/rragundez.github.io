@@ -18,7 +18,7 @@ TIMEZONE = 'Europe/Amsterdam'
 DEFAULT_DATE_FORMAT = '%d %b %Y'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_US'
-STATIC_PATHS = ['images', 'CNAME', 'favicon.ico']
+STATIC_PATHS = ['images', 'CNAME', 'favicon.ico', 'documents']
 
 # content paths
 PATH = 'content'
