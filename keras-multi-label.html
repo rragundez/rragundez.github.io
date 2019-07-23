@@ -127,7 +127,7 @@
 <p><img alt="city" src="/images/blog/tech/keras-multi-label/city.jpeg"></p>
 <p>Images taken in the wild are extremely complex. In order to really "understand" an image there are many factors that play a role, like the amount of objects in the image, their dynamics, the relation between frames, the positions of the objects, etc. In order to make AI capable of understanding images in the wild as we do, we must empower AI with all those capabilities. This empowerment may come in different ways, such like multi-class classification, multi-label classification, object detection (bounding boxes), segmentation, pose estimation, optical flow, etc.</p>
 <p>After a small discussion with collaborators of the <code>keras-preprocessing</code> package we decided to start empowering <code>Keras</code> users with some of these use cases through the known <code>ImageDataGenerator</code> class. In particular, thanks to the flexibility of the <code>DataFrameIterator</code> class added by <a href="https://github.com/Vijayabhaskar96">@Vijayabhaskar</a> this should be possible.</p>
-<p>Then, during our last GDD Friday at GoDataDriven I decided to go ahead and start adding the multi-class classification use case.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> The end result was this <a href="https://github.com/keras-team/keras-preprocessing/pull/136">PR</a>.</p>
+<p>Then, during our last GDD Friday at GoDataDriven I decided to go ahead and start adding the multi-class classification use case.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> The end result was this <a href="https://github.com/keras-team/keras-preprocessing/pull/136">PR</a>.</p>
 <p>But first... What is multi-label classification?</p>
 <blockquote>
 <p>Not to be confused with multi-class classification, in a multi-label problem some observations can be associated with 2 or more classes.</p>
@@ -147,12 +147,12 @@
 <p>Relative paths: If you only state the filenames of the images you will have to use the <code>directory</code> argument later on when calling the method <code>flow_from_dataframe</code>.</p>
 </li>
 <li>
-<p>Absolute paths: In this case you can ditch the <code>directory</code> argument. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup></p>
+<p>Absolute paths: In this case you can ditch the <code>directory</code> argument. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
 </li>
 </ul>
 <p><img alt="dataframe" src="/images/blog/tech/keras-multi-label/dataframe.png"></p>
 <h4>2. Instantiate <code>DataFrameIterator</code></h4>
-<p>Create the generator of the images batches. This is done by instantiating <code>DataFrameIterator</code> via the <code>flow_from_dataframe</code> method of <code>ImageDataGenerator</code>. Supposing we ingested the filenames as relative paths, the simplest instantantiation would look like this:<sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup></p>
+<p>Create the generator of the images batches. This is done by instantiating <code>DataFrameIterator</code> via the <code>flow_from_dataframe</code> method of <code>ImageDataGenerator</code>. Supposing we ingested the filenames as relative paths, the simplest instantantiation would look like this:<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.preprocessing.image</span> <span class="kn">import</span> <span class="n">ImageDataGenerator</span>
 
 <span class="n">img_iter</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span>
@@ -167,13 +167,13 @@
 
 <p>The actual logic of creating the batches and handling data augmentation is managed by the <code>DataFrameIterator</code> class. You can look up other available arguments in <a href="https://github.com/keras-team/keras-preprocessing/blob/master/keras_preprocessing/image/dataframe_iterator.py">here</a>.</p>
 <h4>3. Train the model</h4>
-<p>Train the model using the <code>fit_generator</code> method.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4" rel="footnote">4</a></sup></p>
+<p>Train the model using the <code>fit_generator</code> method.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></p>
 <div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit_generator</span><span class="p">(</span><span class="n">img_iter</span><span class="p">)</span>
 </pre></div>
 
 
 <p>This will yield batches directly from disk, allowing you to train on much more data than it can fit in your memory.</p>
-<p><strong>That's it!<sup id="fnref:5"><a class="footnote-ref" href="#fn:5" rel="footnote">5</a></sup></strong></p>
+<p><strong>That's it!<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></strong></p>
 <h2>Rundown example with VOC2012</h2>
 <p>In this part I'll walk you through a multi-class classification problem step by step. The example will use the <a href="http://host.robots.ox.ac.uk/pascal/VOC/voc2012/">VOC2012</a> dataset which consist of ~17,000 images and 20 classes.</p>
 <p>Just by looking at the images below you can quickly observe that this is a quite diverse and difficult dataset. Perfect! The closer to a real-life example the better.</p>
@@ -256,10 +256,10 @@
 <p>Let's now plot the labels count.</p>
 <p><img alt="VOC2012 images" src="/images/blog/tech/keras-multi-label/count_vs_labels.png"></p>
 <p>No bueno, no bueno at all! There are two types of imbalances in the dataset. Imbalance across different classes, and imbalance between positive and negative examples in some classes. The former imbalance type can produce overfitting to highly represented classes, <code>person</code> in this case. The latter imbalance type can produce that a class is always flagged as negative i.e. if <code>cow</code> will always be flagged negative this will yield a 97% accuracy on that class.</p>
-<p>So what can we do about it?... pray. I won't go into detail but one way to counter the imbalances is with a combination of class weights and sample weights.<sup id="fnref:6"><a class="footnote-ref" href="#fn:6" rel="footnote">6</a></sup></p>
+<p>So what can we do about it?... pray. I won't go into detail but one way to counter the imbalances is with a combination of class weights and sample weights.<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup></p>
 <p>Next step is to look at the shape and size distribution across the different images.</p>
 <p><img alt="VOC2012 images" src="/images/blog/tech/keras-multi-label/images_size.png"></p>
-<p>As illustrated above, the dataset contains images of different heights and widths. I won't go into detail, but this is not really a problem if at the end of the feature extraction via convolutional layers a <a href="https://keras.io/layers/pooling/">global pooling layer</a> is applied. Unfortunately, there is another problem, when using <code>flow_from_dataframe</code> all images need to be standardized  to the same width and height.<sup id="fnref:7"><a class="footnote-ref" href="#fn:7" rel="footnote">7</a></sup> This is specified via the <code>target_size</code> parameter.</p>
+<p>As illustrated above, the dataset contains images of different heights and widths. I won't go into detail, but this is not really a problem if at the end of the feature extraction via convolutional layers a <a href="https://keras.io/layers/pooling/">global pooling layer</a> is applied. Unfortunately, there is another problem, when using <code>flow_from_dataframe</code> all images need to be standardized  to the same width and height.<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup> This is specified via the <code>target_size</code> parameter.</p>
 <p>The lower histogram plot is good to have because it can give us an approximate indication of the maximum batch and <a href="https://keras.io/models/model/#fit_generator">queue</a> size our memory can fit when using the generator. In this example, I don't really use the plot though.</p>
 <h4>Training the model</h4>
 <p>First, we need to instantiate the <code>ImageDataGenerator</code>. I'll do this with a simple setup just normalizing the pixel values. I also included a validation split to use it for validation stats during training after each epoch.</p>
@@ -294,7 +294,7 @@
 </pre></div>
 
 
-<p>I will use the <code>ResNet50</code> pre-trained model in this example. I will replace the last fully connected layers of the network by an output layer with 20 neurons, one for each class.<sup id="fnref:8"><a class="footnote-ref" href="#fn:8" rel="footnote">8</a></sup> In addition, pay attention to the output activation function, I won't go into detail, but for multi-class classification the probability of each class should be independent, hence the use of the <code>sigmoid</code> function and not the <code>softmax</code> function which is used for multi-class problems.</p>
+<p>I will use the <code>ResNet50</code> pre-trained model in this example. I will replace the last fully connected layers of the network by an output layer with 20 neurons, one for each class.<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> In addition, pay attention to the output activation function, I won't go into detail, but for multi-class classification the probability of each class should be independent, hence the use of the <code>sigmoid</code> function and not the <code>softmax</code> function which is used for multi-class problems.</p>
 <div class="highlight"><pre><span></span><span class="n">base_model</span> <span class="o">=</span> <span class="n">ResNet50</span><span class="p">(</span>
     <span class="n">include_top</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
     <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;imagenet&#39;</span><span class="p">,</span>
@@ -363,14 +363,14 @@
 
 
 <p>During the training time you should see validation metrics at the end of each epoch, something like this:</p>
-<div class="highlight"><pre><span></span>Epoch 10/10
-250/250 [==============================] - 261s 1s/step - loss: 5.0277 - val_f1_score: 0.28546 - val_precision: 0.21283 - val_recall: 0.58719
+<div class="highlight"><pre><span></span><span class="n">Epoch</span> <span class="mi">10</span><span class="o">/</span><span class="mi">10</span>
+<span class="mi">250</span><span class="o">/</span><span class="mi">250</span> <span class="p">[</span><span class="o">==============================</span><span class="p">]</span> <span class="o">-</span> <span class="mi">261</span><span class="n">s</span> <span class="mi">1</span><span class="n">s</span><span class="o">/</span><span class="n">step</span> <span class="o">-</span> <span class="n">loss</span><span class="p">:</span> <span class="mi">5</span><span class="p">.</span><span class="mi">0277</span> <span class="o">-</span> <span class="n">val_f1_score</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">28546</span> <span class="o">-</span> <span class="n">val_precision</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">21283</span> <span class="o">-</span> <span class="n">val_recall</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">58719</span>
 </pre></div>
 
 
 <p>If your memory melts during training reduce the <code>batch_size</code>, the <code>target_size</code> or the <code>max_queue_size</code> parameters.</p>
 <h4>Post-mortem investigation</h4>
-<p>In the case of a multi-class problem, it is already of big help to plot the confusion matrix, in that way we can identify very clearly where the model is "confusing" one class for another and address the problems directly. Due to the multi-label nature of the problem makes no sense to do the same. Instead a confusion matrix per class can be reviewed.<sup id="fnref:9"><a class="footnote-ref" href="#fn:9" rel="footnote">9</a></sup></p>
+<p>In the case of a multi-class problem, it is already of big help to plot the confusion matrix, in that way we can identify very clearly where the model is "confusing" one class for another and address the problems directly. Due to the multi-label nature of the problem makes no sense to do the same. Instead a confusion matrix per class can be reviewed.<sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup></p>
 <p>This functionality is only in the development version of <code>scikit-learn</code>, you can get that version by</p>
 <div class="highlight"><pre><span></span>pip install git+https://www.github.com/scikit-learn/scikit-learn.git --upgrade
 </pre></div>
@@ -394,31 +394,31 @@
 <hr>
 <ol>
 <li id="fn:1">
-<p>This was possible before but in a hacky not very API friendly way. You can read about it <a href="https://github.com/keras-team/keras-preprocessing/issues/135">here</a>.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>This was possible before but in a hacky not very API friendly way. You can read about it <a href="https://github.com/keras-team/keras-preprocessing/issues/135">here</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>Tha absolute path format gives you more flexibility as you can build a dataset from several directories.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>Tha absolute path format gives you more flexibility as you can build a dataset from several directories.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>In the case of multi-class classification make sure to use <code>class_mode='categorical'</code>.&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>In the case of multi-class classification make sure to use <code>class_mode='categorical'</code>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p>For multi-class classification make sure the output layer of the model has a <code>sigmoid</code> activation function and that the loss function is <code>binary_crossentropy</code>.&#160;<a class="footnote-backref" href="#fnref:4" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p>For multi-class classification make sure the output layer of the model has a <code>sigmoid</code> activation function and that the loss function is <code>binary_crossentropy</code>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p>I hope you appreciate the simplicity of it :)&#160;<a class="footnote-backref" href="#fnref:5" rev="footnote" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+<p>I hope you appreciate the simplicity of it :)&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p>Sample weights are not yet implemented in <code>flow_from_dataframe</code>. I'm waiting on <a href="https://github.com/keras-team/keras-preprocessing/issues/147">this person</a>, but if you would like to contribute please do!&#160;<a class="footnote-backref" href="#fnref:6" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p>Sample weights are not yet implemented in <code>flow_from_dataframe</code>. I'm waiting on <a href="https://github.com/keras-team/keras-preprocessing/issues/147">this person</a>, but if you would like to contribute please do!&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:7">
-<p>This is a requirement because each batch of images is loaded into a numpy array, therefore each loaded image should have the same array dimensions. Moreover, this will be a great feature to have, a PR would be quite cumbersome though, but go for it!&#160;<a class="footnote-backref" href="#fnref:7" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+<p>This is a requirement because each batch of images is loaded into a numpy array, therefore each loaded image should have the same array dimensions. Moreover, this will be a great feature to have, a PR would be quite cumbersome though, but go for it!&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 <li id="fn:8">
-<p>The output layer from <code>ResNet50</code> if <code>include_top=False</code> has size 2048, I wouldn't normally followed with a fully connected layer of 20 neurons, but for this example is sufficient to show functionality. Normally I try dropping the output units by 1/3 on every layer or 1/10 if 1/3 is not sufficient.&#160;<a class="footnote-backref" href="#fnref:8" rev="footnote" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+<p>The output layer from <code>ResNet50</code> if <code>include_top=False</code> has size 2048, I wouldn't normally followed with a fully connected layer of 20 neurons, but for this example is sufficient to show functionality. Normally I try dropping the output units by 1/3 on every layer or 1/10 if 1/3 is not sufficient.&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
 </li>
 <li id="fn:9">
-<p>There are several things that a confusion matrix per class will miss but it's a good first approach.&#160;<a class="footnote-backref" href="#fnref:9" rev="footnote" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+<p>There are several things that a confusion matrix per class will miss but it's a good first approach.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div></p>

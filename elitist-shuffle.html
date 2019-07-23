@@ -142,12 +142,12 @@
     </div>
 </div>
 
-<p>This can be because YouTube re-scores items in a very short time <code>T</code> or runs an online algorithm.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> What can you do to achieve something similar if your recommendation system has a <code>T</code> in the order of hours?</p>
+<p>This can be because YouTube re-scores items in a very short time <code>T</code> or runs an online algorithm.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> What can you do to achieve something similar if your recommendation system has a <code>T</code> in the order of hours?</p>
 <p>In this blog post, I propose a simple solution based on a non-uniform shuffling algorithm that you can basically plug &amp; play or build on top off.</p>
 <h3>Example scenario</h3>
-<p>Suppose you have 10,000 items in total that can be recommended to your user, you run the recommendation system over all the items and those 10,000 items get ranked in order of relevance of the content.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup></p>
+<p>Suppose you have 10,000 items in total that can be recommended to your user, you run the recommendation system over all the items and those 10,000 items get ranked in order of relevance of the content.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
 <p>The application shows 5 items on the entry screen. The first time the user opens the application after the re-scoring process the top 5 ranked items are shown. It is decided that from now on (based on user control groups, investigation, AB testing, etc.) until the next re-scoring process the entry screen should not be the same every time and remain relevant for the user.</p>
-<p>Based on an investigation from the data scientist it turns out that somewhat relevant items appear until item 100.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup> Then the idea is to somehow shuffle those 100 items such that the top 5 items shown are still relevant but not the same.</p>
+<p>Based on an investigation from the data scientist it turns out that somewhat relevant items appear until item 100.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> Then the idea is to somehow shuffle those 100 items such that the top 5 items shown are still relevant but not the same.</p>
 <p>In order for the figures of this blog post to be more readable and understandable, I'll use a hypothetical threshold of <strong>20</strong> items and not 100.</p>
 <h3>Fisher–Yates shuffle / uniform</h3>
 <p>Shuffling in Python is a very common action and can be done using the <code>random</code> module which contains the <a href="https://github.com/python/cpython/blob/master/Lib/random.py#L286"><code>shuffle</code> function</a>.</p>
@@ -176,7 +176,7 @@
 </pre></div>
 
 
-<p>This shuffle method uses the optimized <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher–Yates algorithm</a> introduced by Richard Durstenfield in 1964 which reduced the running time from <span class="math">\(O(n^2)\)</span> to <span class="math">\(O(n)\)</span>. By default the algorithm produces a uniform shuffle of an array in which every permutation is equally likely. This means that an item has equal probability to end up in any position.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4" rel="footnote">4</a></sup> Below you can find an animation of the results of the <code>random.shuffle</code> default algorithm. I show the initial position of an item in red and the expected probability distribution of landing in any position after <strong>5000</strong> shuffling simulations.</p>
+<p>This shuffle method uses the optimized <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher–Yates algorithm</a> introduced by Richard Durstenfield in 1964 which reduced the running time from <span class="math">\(O(n^2)\)</span> to <span class="math">\(O(n)\)</span>. By default the algorithm produces a uniform shuffle of an array in which every permutation is equally likely. This means that an item has equal probability to end up in any position.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> Below you can find an animation of the results of the <code>random.shuffle</code> default algorithm. I show the initial position of an item in red and the expected probability distribution of landing in any position after <strong>5000</strong> shuffling simulations.</p>
 <p><img alt="random uniform shuffle" src="/images/blog/tech/elitist-shuffle/random_uniform_shuffle.gif"></p>
 <p>This type of shuffle is not beneficial for our purpose as there is the same probability of the least recommended item to appear on top than any other, this is definitely not the way to go since we can end up with very poor recommendations on top.</p>
 <h3>Fisher–Yates shuffle / non-uniform</h3>
@@ -193,12 +193,12 @@
 
 
 <p>If you try to <a href="https://eli.thegreenplace.net/2010/05/28/the-intuition-behind-fisher-yates-shuffling/">understand the Fisher-Yates algorithm</a> and then look at the source code, you notice that the <code>random</code> parameter affects the location where intermediate swaps will happen and that the effect of a non-uniform <code>random</code> distribution parameter is quite difficult to predict. It kept my mind busy for some hours.</p>
-<p>I tried different functions to pass to the <code>random</code> parameter but they all behaved strange and unexpected in one way or another, for example let's try a <a href="https://en.wikipedia.org/wiki/Beta_distribution"><span class="math">\(\beta\)</span> distribution</a> such that the first draws are very likely to be swapped with elements at the end (higher probability near 1.0).<sup id="fnref:5"><a class="footnote-ref" href="#fn:5" rel="footnote">5</a></sup></p>
+<p>I tried different functions to pass to the <code>random</code> parameter but they all behaved strange and unexpected in one way or another, for example let's try a <a href="https://en.wikipedia.org/wiki/Beta_distribution"><span class="math">\(\beta\)</span> distribution</a> such that the first draws are very likely to be swapped with elements at the end (higher probability near 1.0).<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></p>
 <p><img alt="beta distribution" src="/images/blog/tech/elitist-shuffle/beta_distribution.png"></p>
-<p>The simulation below uses the <span class="math">\(\beta\)</span>-distribution as the <code>random</code> parameter. This approach does allocate higher probabilities towards higher positions for higher initially ranked items, but the distribution is highly non-symmetrical and very different for different initial positions. I find it surprising that at some point the initial position does not have the maximum probability.<sup id="fnref:6"><a class="footnote-ref" href="#fn:6" rel="footnote">6</a></sup> Also, I find it very hard to explain the relation between the given <span class="math">\(\beta\)</span>-distribution and the resulting probability distribution . I played with the parameters and other distributions but still noticed strange behavior. This will make it quite difficult to explain the expected impact on the recommended items to the user.</p>
+<p>The simulation below uses the <span class="math">\(\beta\)</span>-distribution as the <code>random</code> parameter. This approach does allocate higher probabilities towards higher positions for higher initially ranked items, but the distribution is highly non-symmetrical and very different for different initial positions. I find it surprising that at some point the initial position does not have the maximum probability.<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup> Also, I find it very hard to explain the relation between the given <span class="math">\(\beta\)</span>-distribution and the resulting probability distribution . I played with the parameters and other distributions but still noticed strange behavior. This will make it quite difficult to explain the expected impact on the recommended items to the user.</p>
 <p><img alt="random uniform shuffle" src="/images/blog/tech/elitist-shuffle/random_non_uniform_shuffle.gif"></p>
 <h3>Elitist shuffle</h3>
-<p>This is actually a simple approach, I shuffle the items by choosing items with a weighted probability (this is the same as sampling from a <a href="https://en.wikipedia.org/wiki/Multinomial_distribution">multinomial distribution</a> without replacement). I won't go into the details but the function <a href="https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.random.choice.html"><code>numpy.random.choice</code></a> with the parameter <code>replace=False</code> does what we want, it is just a matter of choosing the appropriate weight probabilities. In this case I choose to set the weights by transforming the reverse position as <code>np.linspace(1, 0, num=len(items), endpoint=False)</code>.<sup id="fnref:7"><a class="footnote-ref" href="#fn:7" rel="footnote">7</a></sup> Then I introduce a parameter called <code>inequality</code> as a knob to tune the weight probability difference between positions.</p>
+<p>This is actually a simple approach, I shuffle the items by choosing items with a weighted probability (this is the same as sampling from a <a href="https://en.wikipedia.org/wiki/Multinomial_distribution">multinomial distribution</a> without replacement). I won't go into the details but the function <a href="https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.random.choice.html"><code>numpy.random.choice</code></a> with the parameter <code>replace=False</code> does what we want, it is just a matter of choosing the appropriate weight probabilities. In this case I choose to set the weights by transforming the reverse position as <code>np.linspace(1, 0, num=len(items), endpoint=False)</code>.<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup> Then I introduce a parameter called <code>inequality</code> as a knob to tune the weight probability difference between positions.</p>
 <div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">elitist_shuffle</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">elitist_shuffle</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">inequality</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Shuffle array with bias over initial ranks</span>
@@ -254,25 +254,25 @@
 <hr>
 <ol>
 <li id="fn:1">
-<p>Some other user similar to me might have done some actions that affect my recommendations, or simply not clicking on the items affects my own recommendations.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Some other user similar to me might have done some actions that affect my recommendations, or simply not clicking on the items affects my own recommendations.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>There can be an exploration-exploitation step after.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>There can be an exploration-exploitation step after.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>It can also be a dynamic threshold based on the scores from the recommendation system.&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>It can also be a dynamic threshold based on the scores from the recommendation system.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p>This algorithm is also used by <a href="https://github.com/numpy/numpy/blob/master/numpy/random/mtrand/mtrand.pyx#L4852">numpy</a>.&#160;<a class="footnote-backref" href="#fnref:4" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p>This algorithm is also used by <a href="https://github.com/numpy/numpy/blob/master/numpy/random/mtrand/mtrand.pyx#L4852">numpy</a>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p>This is what we want since the algorithm first swaps elements from the end (look at <code>reversed</code> in <a href="https://github.com/python/cpython/blob/master/Lib/random.py#L303">line 303</a>.&#160;<a class="footnote-backref" href="#fnref:5" rev="footnote" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+<p>This is what we want since the algorithm first swaps elements from the end (look at <code>reversed</code> in <a href="https://github.com/python/cpython/blob/master/Lib/random.py#L303">line 303</a>.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p>It is not a matter of increasing the number of simulations. I did that and found the same behavior.&#160;<a class="footnote-backref" href="#fnref:6" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p>It is not a matter of increasing the number of simulations. I did that and found the same behavior.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 <li id="fn:7">
-<p>You might be tempted to use <code>np.arange(len(items), 0, step=-1)</code> which is not numerically robust for a big <code>inequality</code> parameter.&#160;<a class="footnote-backref" href="#fnref:7" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+<p>You might be tempted to use <code>np.arange(len(items), 0, step=-1)</code> which is not numerically robust for a big <code>inequality</code> parameter.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>

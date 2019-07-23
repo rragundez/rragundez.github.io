@@ -210,7 +210,7 @@
 <p><center><img alt="cow" src="/images/blog/tech/multi-threshold-neuron/spherical_cow.gif"></center></p>
 <p>I am a theoretical physicist and as such it's impossible for me to resist the <a href="https://en.wikipedia.org/wiki/Spherical_cow">spherical cow</a>.</p>
 <p><strong>Single threshold value</strong></p>
-<p>The multi-threshold neuron model contains different threshold parameter values (<span class="math">\(t_i\)</span>). Mathematically a threshold has the same effect if I take it as a constant and instead the input signal is moved up or down by the connecting weight parameters. Hence, the neuronal equation becomes: <sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup></p>
+<p>The multi-threshold neuron model contains different threshold parameter values (<span class="math">\(t_i\)</span>). Mathematically a threshold has the same effect if I take it as a constant and instead the input signal is moved up or down by the connecting weight parameters. Hence, the neuronal equation becomes: <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
 <div class="math">$$I=\sum_{i=1}^N\Theta(W_i\cdot I_i - t)$$</div>
 <p><strong>ReLu activation function</strong></p>
 <p>I'll replace the Heaviside step function (<span class="math">\(\Theta\)</span>) with threshold <span class="math">\(t\)</span> by a <a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)">Rectified Linear unit</a> (<span class="math">\(\mathcal{R}\)</span>).</p>
@@ -325,7 +325,7 @@ $$</div>
 </pre></div>
 
 
-<p>Notice that <code>b</code> and <code>I_0</code> are one dimensional tensors, this allows me to take advantage of the <code>tensorflow</code> broadcasting feature. Using the code above I can then define a neural network layer consisting of multi-threshold neurons<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>.</p>
+<p>Notice that <code>b</code> and <code>I_0</code> are one dimensional tensors, this allows me to take advantage of the <code>tensorflow</code> broadcasting feature. Using the code above I can then define a neural network layer consisting of multi-threshold neurons<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">multi_threshold_neuron_layer</span><span class="p">(</span><span class="n">input_values</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">activation</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">input_values</span><span class="p">,</span> <span class="n">weights</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
 </pre></div>
@@ -354,7 +354,7 @@ $$</div>
 </pre></div>
 
 
-<p>Using the digits MNIST data set I ran a comparison between a DNN using the conventional central-threshold neurons and the proposed multi-threshold neurons.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup></p>
+<p>Using the digits MNIST data set I ran a comparison between a DNN using the conventional central-threshold neurons and the proposed multi-threshold neurons.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensorflow.examples.tutorials.mnist</span> <span class="kn">import</span> <span class="n">input_data</span>
 <span class="n">mnist</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">read_data_sets</span><span class="p">(</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">one_hot</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
@@ -363,7 +363,7 @@ $$</div>
 <h2>Results</h2>
 <p>It is trainable! I actually though this would just crash and burn so I was very happy to see that loss go down :).</p>
 <p>I calculated the cross-entropy loss and accuracy during training and final accuracy in a test set. It is very important to remember that to keep things fair the calculations for both models are using a batch of 1 observation.</p>
-<p>The training period ran for <code>4 epochs</code> with a training set of <code>55000 observations</code>. Normally the loss and accuracy is calculated over the batch, in this case that makes no sense<sup id="fnref:4"><a class="footnote-ref" href="#fn:4" rel="footnote">4</a></sup>. Instead what I do is report the average loss and average accuracy over every <code>1100 observations</code> <sup id="fnref:5"><a class="footnote-ref" href="#fn:5" rel="footnote">5</a></sup>.</p>
+<p>The training period ran for <code>4 epochs</code> with a training set of <code>55000 observations</code>. Normally the loss and accuracy is calculated over the batch, in this case that makes no sense<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup>. Instead what I do is report the average loss and average accuracy over every <code>1100 observations</code> <sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>.</p>
 <p>The score of my model consisted of calculating the accuracy over a test set of <code>10000 observations</code>.</p>
 <p><strong>Training loss and accuracy</strong></p>
 <p><img alt="accuracy_vs_rate_and_type" src="/images/blog/tech/multi-threshold-neuron/accuracy_and_loss_curves.png"></p>
@@ -372,7 +372,7 @@ $$</div>
 <li>Cross-entropy loss decreases with iterations which means the model is trainable.</li>
 <li>When the <code>central-threshold</code> model is performing well its loss is much lower than the <code>multi-threshold</code>. Notice that this is the case since the beginning of the training period, a sort of a shift. This could be because our images contain consistent white areas (edges) where the cross-entropy benefits from having sparse activations in our neural network.</li>
 <li>The <code>multi-threshold</code> model seems to be more robust against higher learning rates. Moreover, it seems to prefer higher learning rates.</li>
-<li>As I mentioned before I would expect the <code>multi-threshold</code> model to have less sparse activations which in turn should result in a faster learning <sup id="fnref:6"><a class="footnote-ref" href="#fn:6" rel="footnote">6</a></sup>. This can be observed for learning rate <code>.0005</code> and <code>.001</code>.</li>
+<li>As I mentioned before I would expect the <code>multi-threshold</code> model to have less sparse activations which in turn should result in a faster learning <sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup>. This can be observed for learning rate <code>.0005</code> and <code>.001</code>.</li>
 </ul>
 <p><strong>Test Accuracy</strong></p>
 <p><img alt="accuracy_vs_rate_and_type" src="/images/blog/tech/multi-threshold-neuron/accuracy_vs_rate_and_type.png"></p>
@@ -428,22 +428,22 @@ $$</div>
 <hr>
 <ol>
 <li id="fn:1">
-<p>This is also happening in the current neural network implementations, since in reality there is no reason for different neurons to have the same threshold, nevertheless commonly a single activation function is used on all neurons.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>This is also happening in the current neural network implementations, since in reality there is no reason for different neurons to have the same threshold, nevertheless commonly a single activation function is used on all neurons.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>It is a one line function, I know I know, but I can already sense there will be more to it later since this just works for a single input example.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>It is a one line function, I know I know, but I can already sense there will be more to it later since this just works for a single input example.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>Since at the moment the multi-threshold neuron model uses only a single example at a time, to make a fair comparison both DNN weights are updated on each example (batches of size 1), <code>x, y = mnist.train.next_batch(1, shuffle=True)</code>.&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>Since at the moment the multi-threshold neuron model uses only a single example at a time, to make a fair comparison both DNN weights are updated on each example (batches of size 1), <code>x, y = mnist.train.next_batch(1, shuffle=True)</code>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
-<p>If you do that the accuracy and loss will be all over the place as it will be dependent on a single observation. This could make difficult to assess if the model is indeed getting better on each iteration by seeing the loss monotonically decrease.&#160;<a class="footnote-backref" href="#fnref:4" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+<p>If you do that the accuracy and loss will be all over the place as it will be dependent on a single observation. This could make difficult to assess if the model is indeed getting better on each iteration by seeing the loss monotonically decrease.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
 </li>
 <li id="fn:5">
-<p>You don't want this number to be too high since you expect an average lower loss and higher accuracy for observations at the end. If there are too many observations your standard deviation will increase and the reported average can be meaningless.&#160;<a class="footnote-backref" href="#fnref:5" rev="footnote" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+<p>You don't want this number to be too high since you expect an average lower loss and higher accuracy for observations at the end. If there are too many observations your standard deviation will increase and the reported average can be meaningless.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
 </li>
 <li id="fn:6">
-<p>The weights of a neural network using <code>relu</code> activations where the neuron output is zero cannot learn because the back-propagated derivative is zero.&#160;<a class="footnote-backref" href="#fnref:6" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+<p>The weights of a neural network using <code>relu</code> activations where the neuron output is zero cannot learn because the back-propagated derivative is zero.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
