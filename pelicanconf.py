@@ -66,13 +66,13 @@ SOCIAL = (
 
 ABOUT = {
     'image': '/images/about/about.jpeg',
-    'mail': 'info@rragundez.io',
+    'mail': 'rragundez@gmail.com',
     # keep it a string if you dont need multiple languages
     'text': 'Just drop a message.',
     'link': 'contact.html',
     # the address is also taken for google maps
     'address': 'Amsterdam, The Netherlands',
-    'phone': '+31-mexicano'
+    #'phone': '+31-mexicano'
 }
 
 # navigation and homepage options
