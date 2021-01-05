@@ -1,10 +1,11 @@
 Title: Collaborator / committer @ Keras
 Icon: icon-code-outline
 Date: 2019-01-15
-Tags: data science; deep learning; keras
-Slug: 2019-01-15-keras-preprocessing-collaborator
+Tags: data science; deep learning; keras.
+Slug: 2019-10-01-keras-preprocessing-collaborator
 Summary: Part of the core development team of the keras preprocessing component of the Keras framework.
 Timeline: yes
+
 
 Keras is one of the most used Deep Learning frameworks and I am a part of the core development team for the keras preprocessing component of the framework. The responsibilities are:
 
