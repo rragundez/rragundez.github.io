@@ -159,10 +159,9 @@ algorithms or gradient ascent to produce the adversarial images.<sup id="fnref:1
 <p>Putting everything into shape this is how the data looks like</p>
 <p><img alt="iris dataset sample" src="/images/blog/tech/fooling-dnn/iris_df_sample.png"></p>
 <p>This dataset contains only 150 observations, I will fit the model to all the data using a cross-entropy loss function and a L2 regularization term. This is just a plug and play from the amazing scikit-learn.</p>
-<div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;lbfgs&#39;</span><span class="p">,</span> <span class="n">multi_class</span><span class="o">=</span><span class="s1">&#39;multinomial&#39;</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;lbfgs&#39;</span><span class="p">,</span> <span class="n">multi_class</span><span class="o">=</span><span class="s1">&#39;multinomial&#39;</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">iris</span><span class="o">.</span><span class="n">columns</span> <span class="o">!=</span> <span class="s1">&#39;flower&#39;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">iris</span><span class="o">.</span><span class="n">flower</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The mean accuracy of the model is <span class="math">\(96.6\%\)</span>. This score is based on the training data and can be misleading, even if I am using a regularization term I can still be overfitting.<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></p>
 <p>Let's now look at our predictions and at how our model is drawing the classification boundaries.</p>
@@ -210,21 +209,19 @@ algorithms or gradient ascent to produce the adversarial images.<sup id="fnref:1
 <p>If I can perform those steps I should end with an input which is nothing like my observations but still is classified with high probability by the DNN, giving me an adversarial example.</p>
 <h4>MNIST</h4>
 <p>I chose the <a href="http://yann.lecun.com/exdb/mnist/">MNIST</a> digits since it is a straight forward dataset to perform classification and it is complex enough to apply a DNN. I only take 4 classes, the numbers <span class="math">\({0, 1, 2, 3}\)</span>. The final dataset consists of a bit more than 28,000 observations with 28x28=784 features.</p>
-<div class="highlight"><pre><span></span><span class="n">digits</span> <span class="o">=</span> <span class="n">fetch_mldata</span><span class="p">(</span><span class="s2">&quot;MNIST original&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">digits</span> <span class="o">=</span> <span class="n">fetch_mldata</span><span class="p">(</span><span class="s2">&quot;MNIST original&quot;</span><span class="p">)</span>
 <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">digits</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="n">digits</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
 <span class="n">digits</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">target</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-</pre></div>
+</code></pre></div>
 
-
-<div class="highlight"><pre><span></span><span class="nb">Number</span> <span class="k">of</span> <span class="n">observations</span><span class="p">:</span> <span class="mi">28911</span>
-<span class="n">Nr</span><span class="p">.</span> <span class="n">observations</span> <span class="n">per</span> <span class="k">class</span><span class="p">:</span>
-<span class="mi">1</span><span class="p">.</span><span class="mi">0</span>    <span class="mi">7877</span>
-<span class="mi">3</span><span class="p">.</span><span class="mi">0</span>    <span class="mi">7141</span>
-<span class="mi">2</span><span class="p">.</span><span class="mi">0</span>    <span class="mi">6990</span>
-<span class="mi">0</span><span class="p">.</span><span class="mi">0</span>    <span class="mi">6903</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="err">Number of observations: 28911</span>
+<span class="err">Nr. observations per class:</span>
+<span class="err">1.0    7877</span>
+<span class="err">3.0    7141</span>
+<span class="err">2.0    6990</span>
+<span class="err">0.0    6903</span>
+</code></pre></div>
 
 <p>A sample view of our observations:</p>
 <p><img alt="digits sample" src="/images/blog/tech/fooling-dnn/digits_sample.png"></p>
@@ -238,32 +235,30 @@ algorithms or gradient ascent to produce the adversarial images.<sup id="fnref:1
 <li>Stochastic gradient descent optimizer (sgd).</li>
 <li>Adaptive learning rate.</li>
 </ul>
-<div class="highlight"><pre><span></span><span class="n">dnn_identity</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="n">dnn_identity</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">(</span>
     <span class="n">hidden_layer_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
     <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;identity&#39;</span><span class="p">,</span>
     <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;sgd&#39;</span><span class="p">,</span>
-    <span class="n">learning_rate</span> <span class="o">=</span> <span class="s1">&#39;adaptive&#39;</span><span class="p">,</span> <span class="n">learning_rate_init</span><span class="o">=.</span><span class="mo">00005</span><span class="p">,</span>
+    <span class="n">learning_rate</span> <span class="o">=</span> <span class="s1">&#39;adaptive&#39;</span><span class="p">,</span> <span class="n">learning_rate_init</span><span class="o">=.</span><span class="mi">00005</span><span class="p">,</span>
     <span class="n">random_state</span><span class="o">=</span><span class="mi">21</span>
 <span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The DNN achieved close to 95% accuracy and reached conversion quite nicely as shown in Figure 6. For comparison and for use in my arguments I built another DNN with an activation function <span class="math">\(tanh\)</span> using the Adam optimizer.</p>
-<div class="highlight"><pre><span></span><span class="n">dnn_tanh</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="n">dnn_tanh</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">(</span>
     <span class="n">hidden_layer_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
     <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;tanh&#39;</span><span class="p">,</span>
     <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span>
-    <span class="n">learning_rate_init</span><span class="o">=.</span><span class="mo">0001</span><span class="p">,</span>
+    <span class="n">learning_rate_init</span><span class="o">=.</span><span class="mi">0001</span><span class="p">,</span>
     <span class="n">random_state</span><span class="o">=</span><span class="mi">21</span>
 <span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The second DNN with the activation function achieved an accuracy of 98%, the loss curve in Figure 7 reveals that the training can be further improved but for now this is good enough.</p>
 <p><img alt="loss curve" src="/images/blog/tech/fooling-dnn/loss_curve.png"></p>
 <h4>Extract feature encoding from the last hidden layer</h4>
 <p>Once the model is trained we can retrieve the coefficients connecting all the layers. We use these coefficients to "manually" propagate our observations input up to the last hidden layer and then plot some of them in a 2D graph. This small function propagates the input layer up to a specified layer.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">propagate</span><span class="p">(</span><span class="n">input_layer</span><span class="p">,</span> <span class="n">layer_nr</span><span class="p">,</span> <span class="n">dnn</span><span class="p">,</span> <span class="n">activation_function</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">propagate</span><span class="p">(</span><span class="n">input_layer</span><span class="p">,</span> <span class="n">layer_nr</span><span class="p">,</span> <span class="n">dnn</span><span class="p">,</span> <span class="n">activation_function</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Obtain the activation values of any intermediate layer of the deep neural network.&quot;&quot;&quot;</span>
     <span class="n">layer</span> <span class="o">=</span> <span class="n">input_layer</span>
     <span class="k">for</span> <span class="n">intercepts</span><span class="p">,</span> <span class="n">weights</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dnn</span><span class="o">.</span><span class="n">intercepts_</span><span class="p">[:</span><span class="n">layer_nr</span><span class="p">],</span> <span class="n">dnn</span><span class="o">.</span><span class="n">coefs_</span><span class="p">[:</span><span class="n">layer_nr</span><span class="p">]):</span>
@@ -272,8 +267,7 @@ algorithms or gradient ascent to produce the adversarial images.<sup id="fnref:1
 
 <span class="n">hl_identity</span> <span class="o">=</span> <span class="n">propagate</span><span class="p">(</span><span class="n">digits</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">dnn_identity</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
 <span class="n">hl_tanh</span> <span class="o">=</span> <span class="n">propagate</span><span class="p">(</span><span class="n">digits</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">dnn_tanh</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The representation of the observations under the encoding of the last 2D hidden layer is shown on Figure 8 and 9. The identity DNN, as shown in Figure 8, has encoded our observations by creating hidden features which separate them in the hidden layer dimensionality (2D in this case). The more sophisticated <span class="math">\(tanh\)</span> DNN achieves better performance because it is capable of coming up with hidden features which separate in a better way our observations as shown in Figure 9. Nevertheless Figures 10 and 11 reveal that in both cases linear classification boundaries are being constructed to separate our category regions. Similar to the multinomial logistic regression, this is caused by the dot product (linear Kernel) between the last hidden layer and the final weights which connect the hidden layer with the output layer. This means that these regions extend far away from where our observations lie, even more these regions have a high probability as shown in Figure 12 and 13.</p>
 <p>So now the only thing to do is to grab a point from Figure 8 (for example: -200, 200), do all the inverse operations to bring back the encoding to the input layer and reshape the vector into an image which of course will look nothing like a <span class="math">\(1\)</span> but will be classified as a <span class="math">\(1\)</span> with very high probability by our DNN.</p>
@@ -290,15 +284,14 @@ algorithms or gradient ascent to produce the adversarial images.<sup id="fnref:1
 <p>The problem (of course) is that non-square matrices do not have an inverse. In the DNN context, what is happening is that we are losing information by compacting our observations in a lower dimensional space. This means there is no way to exactly trace back layers, simply because we don't have enough information. This does not mean that we cannot find a vector representing <span class="math">\(L^i_N\)</span> which satisfies <span class="math">\(L_{N}^i\times \Theta_{N\times M}=L_{M}^{i+1}\)</span> given the layer <span class="math">\(L^{i+1}_M\)</span> and the coefficients <span class="math">\(\Theta_{N\times M}\)</span>, which means that such vector is not unique.</p>
 <p>A solution for the layer <span class="math">\(L_{N}^i\)</span> can be derived using the pseudoinverse, in particular the <a href="https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse">Moore–Penrose inverse</a> is adequate for our type of problem, and best of all it is implemented in Numpy!</p>
 <p>Below I define a function which inverts the propagation from a hidden layer to the input layer with an identity activation function.<sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup></p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">invert_propagation</span><span class="p">(</span><span class="n">hidden_layer</span><span class="p">,</span> <span class="n">layer_nr</span><span class="p">,</span> <span class="n">dnn</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">invert_propagation</span><span class="p">(</span><span class="n">hidden_layer</span><span class="p">,</span> <span class="n">layer_nr</span><span class="p">,</span> <span class="n">dnn</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Obtain the input layer from a hidden layer of a deep neural network&quot;&quot;&quot;</span>
     <span class="n">layer</span> <span class="o">=</span> <span class="n">hidden_layer</span>
     <span class="k">for</span> <span class="n">intercepts</span><span class="p">,</span> <span class="n">weights</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">intercepts_</span><span class="p">[</span><span class="n">layer_nr</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">nn</span><span class="o">.</span><span class="n">coefs_</span><span class="p">[</span><span class="n">layer_nr</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
         <span class="n">inv_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
         <span class="n">layer</span> <span class="o">=</span> <span class="p">(</span><span class="n">layer</span> <span class="o">-</span> <span class="n">intercepts</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv_weight</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">layer</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Finally, the moment of truth. I choose a nonsense value for each region by looking at Figures 10 and 12. In particular I choose:</p>
 <ul>
@@ -308,30 +301,28 @@ algorithms or gradient ascent to produce the adversarial images.<sup id="fnref:1
 <li>Region 3: (-1000, 900)</li>
 </ul>
 <p>Now I invert the propagation for each point, obtain the input layer, reshape the input to a 28x28 image and show it together with the prediction from the DNN and the probability of such prediction.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pity_the_fool</span><span class="p">(</span><span class="n">hidden_vector</span><span class="p">,</span> <span class="n">dnn</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">pity_the_fool</span><span class="p">(</span><span class="n">hidden_vector</span><span class="p">,</span> <span class="n">dnn</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
     <span class="n">input_vector</span> <span class="o">=</span> <span class="n">invert_propagation</span><span class="p">(</span><span class="n">hidden_vector</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dnn_identity</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">input_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
 
     <span class="n">prediction</span> <span class="o">=</span> <span class="n">dnn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">input_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">probability</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dnn</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">input_vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)))</span>
 
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Prediction: {:.0f}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                 <span class="s2">&quot;Probability: {:.3f}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                 <span class="s2">&quot;Hiden vector: {}&quot;</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Prediction: </span><span class="si">{:.0f}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                 <span class="s2">&quot;Probability: </span><span class="si">{:.3f}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                 <span class="s2">&quot;Hiden vector: </span><span class="si">{}</span><span class="s2">&quot;</span>
                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">probability</span><span class="p">,</span> <span class="n">hidden_vector</span><span class="p">))</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p><img alt="adversarial examples" src="/images/blog/tech/fooling-dnn/adversarial_examples_1.png"></p>
 <p>The figures above clearly show that I have managed to fool the DNN. It is like the DNN had some Mexican peyote or something. The labels are consistent with the regions we took the points from and are classified with almost 100% probability. There is no way a human eye can tell that those images are a 0, a 1, a 2 and a 3. Not even to tell that there are numbers.</p>
 <h2>Light at the end of the tunnel</h2>
 <p>I have stated that the main problem is the linear classification boundaries, is there a way we can avoid this? Well, I left a hint out there when I mentioned that the dot product presented is nothing more than a linear kernel. I will not go into the details of how the <a href="https://en.wikipedia.org/wiki/Kernel_method">kernel trick</a> works, but in summary it lets us perform dot products in higher dimensional spaces of our features without ever computing the new features in that high-dimensional space. If you never heard about it, it can be a bit of a weird thing. Just to mess more with your cerebro, if for example we were to use the <a href="https://en.wikipedia.org/wiki/Radial_basis_function_kernel">Gaussian kernel</a>, this is equal to performing calculations in an infinite high-dimensional space, yes infinite! <sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup></p>
 <p>By using these kernels the model is not restricted to linear classification boundaries. Below I compare a support vector machine model (SVM) with a linear kernel and a Gaussian kernel using the iris dataset.</p>
-<div class="highlight"><pre><span></span><span class="n">svm_linear</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">svm_gaussian</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;rbf&#39;</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">svm_linear</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">svm_gaussian</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;rbf&#39;</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
 
 <p>Both SVM models obtain an accuracy of <span class="math">\(\approx 96.6%\)</span>.</p>
 <p><img alt="svm predictions" src="/images/blog/tech/fooling-dnn/svm_predictions.png"></p>

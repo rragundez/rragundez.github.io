@@ -313,7 +313,7 @@ $$</div>
 <li><code>relu</code></li>
 </ul>
 <p>The <code>relu_layer</code> function already assumes a layer architecture with central-threshold neurons. The <code>relu</code> function on the other hand can operate on each entry of a tensor.</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
 
 <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
@@ -322,19 +322,17 @@ $$</div>
 <span class="n">I_1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">I_0</span><span class="p">,</span> <span class="n">w</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
 <span class="n">I_1</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">sess</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">array</span><span class="p">([</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Notice that <code>b</code> and <code>I_0</code> are one dimensional tensors, this allows me to take advantage of the <code>tensorflow</code> broadcasting feature. Using the code above I can then define a neural network layer consisting of multi-threshold neurons<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">multi_threshold_neuron_layer</span><span class="p">(</span><span class="n">input_values</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">multi_threshold_neuron_layer</span><span class="p">(</span><span class="n">input_values</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">activation</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">input_values</span><span class="p">,</span> <span class="n">weights</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
-</pre></div>
-
+</code></pre></div>
 
 <p><strong>MNIST - 2 hidden layer multi-threshold neural network</strong></p>
 <p>With this basic implementation, my goal was to see if the model is actually trainable. I just wanted to observe the loss decrease with each iteration. As you probably noticed, the <code>multi_threshold_neuron_layer</code> can only take 1 example at a time, this is the complication I mentioned, simple matrix multiplication taking several observations is no longer possible for now. In part II of the blog I hope to expand to a more efficient implementation.</p>
 <p>The multi-threshold neural network is then:</p>
-<div class="highlight"><pre><span></span><span class="c1"># Construct model</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Construct model</span>
 <span class="n">I_0</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_size</span><span class="p">,))</span> <span class="c1"># input layer</span>
 
 <span class="n">W_01</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="n">hidden_layers_sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_size</span><span class="p">)))</span>
@@ -351,14 +349,12 @@ $$</div>
 
 <span class="c1"># truth</span>
 <span class="n">target</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_of_classes</span><span class="p">))</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Using the digits MNIST data set I ran a comparison between a DNN using the conventional central-threshold neurons and the proposed multi-threshold neurons.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensorflow.examples.tutorials.mnist</span> <span class="kn">import</span> <span class="n">input_data</span>
-<span class="n">mnist</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">read_data_sets</span><span class="p">(</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">one_hot</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow.examples.tutorials.mnist</span> <span class="kn">import</span> <span class="n">input_data</span>
+<span class="n">mnist</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">read_data_sets</span><span class="p">(</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="n">one_hot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
 
 <h2>Results</h2>
 <p>It is trainable! I actually though this would just crash and burn so I was very happy to see that loss go down :).</p>

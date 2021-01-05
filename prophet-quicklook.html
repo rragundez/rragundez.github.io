@@ -135,7 +135,7 @@
 <p>The holidays provided to the API are the same I use in our model. They contain from school vacations or large periods, to single holidays like Christmas Eve. In total, the data contains 46 different holidays.</p>
 <h2>Code</h2>
 <p>If the data is in a nice format (this is a big if), Prophet provides a very easy to use API. In particular, once I cleaned, aggregated and dumped the data, the calculation consisted on these two pieces of code:</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">tseries</span><span class="p">,</span> <span class="n">predict_date</span><span class="p">,</span> <span class="n">holidays</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">tseries</span><span class="p">,</span> <span class="n">predict_date</span><span class="p">,</span> <span class="n">holidays</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">Prophet</span><span class="p">(</span><span class="n">holidays</span><span class="o">=</span><span class="n">holidays</span><span class="p">)</span>
     <span class="c1"># train on data until 3 days before</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tseries</span><span class="p">[</span><span class="n">tseries</span><span class="o">.</span><span class="n">ds</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">predict_date</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">))])</span>
@@ -150,8 +150,7 @@
 
 <span class="n">predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">pred_holidays</span><span class="p">),</span>
                        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;ds&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;_hol&#39;</span><span class="p">))</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The forecast is done for 2016 with and without holiday data. Our production model gets trained daily via an <a href="https://airflow.incubator.apache.org/">Airflow</a> job, to make a fair comparison, I train a Prophet model for each date in 2016 using the data until 3 days before the date to be forecast. This is because the order for a product needs to be submitted 2 days before, which means it uses the data available until then.</p>
 <p>Prophet leveraged the full capacity of my laptop using all 8 cores. The calculation took around 45 minutes per shop, which means a single day with or without holidays takes around 4 seconds.</p>

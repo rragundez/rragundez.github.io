@@ -134,9 +134,8 @@
 </blockquote>
 <p><strong>NOTE</strong></p>
 <p>This functionality has just been released in PyPI yesterday in the <code>keras-preprocessing</code> <a href="https://github.com/keras-team/keras-preprocessing/releases/tag/1.0.6">1.0.6 version.</a> You can update <code>keras</code> to have the newest version by:</p>
-<div class="highlight"><pre><span></span>pip install -U keras
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>pip install -U keras
+</code></pre></div>
 
 <h2>Multi-class classification in 3 steps</h2>
 <p>In this part will quickly demonstrate the use of <code>ImageDataGenerator</code> for multi-class classification.</p>
@@ -153,7 +152,7 @@
 <p><img alt="dataframe" src="/images/blog/tech/keras-multi-label/dataframe.png"></p>
 <h4>2. Instantiate <code>DataFrameIterator</code></h4>
 <p>Create the generator of the images batches. This is done by instantiating <code>DataFrameIterator</code> via the <code>flow_from_dataframe</code> method of <code>ImageDataGenerator</code>. Supposing we ingested the filenames as relative paths, the simplest instantantiation would look like this:<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.preprocessing.image</span> <span class="kn">import</span> <span class="n">ImageDataGenerator</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">keras.preprocessing.image</span> <span class="kn">import</span> <span class="n">ImageDataGenerator</span>
 
 <span class="n">img_iter</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span>
     <span class="n">img_metadata_df</span><span class="p">,</span>
@@ -162,15 +161,13 @@
     <span class="n">y_col</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span>
     <span class="n">class_mode</span><span class="o">=</span><span class="s1">&#39;categorical&#39;</span>
 <span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The actual logic of creating the batches and handling data augmentation is managed by the <code>DataFrameIterator</code> class. You can look up other available arguments in <a href="https://github.com/keras-team/keras-preprocessing/blob/master/keras_preprocessing/image/dataframe_iterator.py">here</a>.</p>
 <h4>3. Train the model</h4>
 <p>Train the model using the <code>fit_generator</code> method.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></p>
-<div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit_generator</span><span class="p">(</span><span class="n">img_iter</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">fit_generator</span><span class="p">(</span><span class="n">img_iter</span><span class="p">)</span>
+</code></pre></div>
 
 <p>This will yield batches directly from disk, allowing you to train on much more data than it can fit in your memory.</p>
 <p><strong>That's it!<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></strong></p>
@@ -179,11 +176,11 @@
 <p>Just by looking at the images below you can quickly observe that this is a quite diverse and difficult dataset. Perfect! The closer to a real-life example the better.</p>
 <p><img alt="VOC2012 images" src="/images/blog/tech/keras-multi-label/images.png"></p>
 <p>Let's start by downloading the data into <code>~/.keras/datasets</code> from <a href="http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar">here</a>.</p>
-<div class="highlight"><pre><span></span><span class="o">~/.</span><span class="n">keras</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="n">VOC2012</span>
+<div class="highlight"><pre><span></span><code><span class="o">~/.</span><span class="n">keras</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="n">VOC2012</span>
 <span class="err">├──</span> <span class="n">Annotations</span>
-<span class="err">│</span>   <span class="err">├──</span> <span class="mi">2010</span><span class="n">_000002</span><span class="o">.</span><span class="n">xml</span>
-<span class="err">│</span>   <span class="err">├──</span> <span class="mi">2010</span><span class="n">_000003</span><span class="o">.</span><span class="n">xml</span>
-<span class="err">│</span>   <span class="err">├──</span> <span class="mi">2011</span><span class="n">_000002</span><span class="o">.</span><span class="n">xml</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="mf">2010_000002.</span><span class="n">xml</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="mf">2010_000003.</span><span class="n">xml</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="mf">2011_000002.</span><span class="n">xml</span>
 <span class="err">│</span>   <span class="err">└──</span> <span class="o">...</span>
 <span class="err">├──</span> <span class="n">ImageSets</span>
 <span class="err">│</span>   <span class="err">├──</span> <span class="n">Action</span>
@@ -191,23 +188,22 @@
 <span class="err">│</span>   <span class="err">├──</span> <span class="n">Main</span>
 <span class="err">│</span>   <span class="err">└──</span> <span class="n">Segmentation</span>
 <span class="err">├──</span> <span class="n">JPEGImages</span>
-<span class="err">│</span>   <span class="err">├──</span> <span class="mi">2010</span><span class="n">_000002</span><span class="o">.</span><span class="n">jpg</span>
-<span class="err">│</span>   <span class="err">├──</span> <span class="mi">2010</span><span class="n">_000003</span><span class="o">.</span><span class="n">jpg</span>
-<span class="err">│</span>   <span class="err">├──</span> <span class="mi">2011</span><span class="n">_000002</span><span class="o">.</span><span class="n">jpg</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="mf">2010_000002.</span><span class="n">jpg</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="mf">2010_000003.</span><span class="n">jpg</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="mf">2011_000002.</span><span class="n">jpg</span>
 <span class="err">│</span>   <span class="err">└──</span> <span class="o">...</span>
 <span class="err">├──</span> <span class="n">SegmentationClass</span>
-<span class="err">│</span>   <span class="err">├──</span> <span class="mi">2010</span><span class="n">_000002</span><span class="o">.</span><span class="n">png</span>
-<span class="err">│</span>   <span class="err">├──</span> <span class="mi">2010</span><span class="n">_000003</span><span class="o">.</span><span class="n">png</span>
-<span class="err">│</span>   <span class="err">└──</span> <span class="mi">2011</span><span class="n">_000003</span><span class="o">.</span><span class="n">png</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="mf">2010_000002.</span><span class="n">png</span>
+<span class="err">│</span>   <span class="err">├──</span> <span class="mf">2010_000003.</span><span class="n">png</span>
+<span class="err">│</span>   <span class="err">└──</span> <span class="mf">2011_000003.</span><span class="n">png</span>
 <span class="err">└──</span> <span class="n">SegmentationObject</span>
-    <span class="err">├──</span> <span class="mi">2010</span><span class="n">_000002</span><span class="o">.</span><span class="n">png</span>
-    <span class="err">├──</span> <span class="mi">2010</span><span class="n">_000003</span><span class="o">.</span><span class="n">png</span>
+    <span class="err">├──</span> <span class="mf">2010_000002.</span><span class="n">png</span>
+    <span class="err">├──</span> <span class="mf">2010_000003.</span><span class="n">png</span>
     <span class="err">└──</span> <span class="o">...</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>We will use the <code>Annotations</code> directory to extract the images metadata. Each image can also have repeated associated labels, the argument <code>unique_labels</code> of the function below regulates if we keep repeated labels. We will not, trust me, the problem is hard enough.</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">as</span> <span class="nn">ET</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="k">def</span> <span class="nf">xml_to_labels</span><span class="p">(</span><span class="n">xml_data</span><span class="p">,</span> <span class="n">unique_labels</span><span class="p">):</span>
@@ -223,35 +219,31 @@
                     <span class="n">labels_add</span><span class="p">(</span><span class="n">subchild</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">img_filename</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">get_labels</span><span class="p">(</span><span class="n">annotations_dir</span><span class="p">,</span> <span class="n">unique_labels</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_labels</span><span class="p">(</span><span class="n">annotations_dir</span><span class="p">,</span> <span class="n">unique_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">annotation_file</span> <span class="ow">in</span> <span class="n">annotations_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">annotation_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">xml_to_labels</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">unique_labels</span><span class="p">)</span>
 
 <span class="n">annotations_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;~/.keras/datasets/VOC2012/Annotations&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
 <span class="n">img_metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_labels</span><span class="p">(</span><span class="n">annotations_dir</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">])</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>After extraction we end up with a dataframe with relative paths as shown below.</p>
 <p><img alt="VOC2012 images" src="/images/blog/tech/keras-multi-label/dataframe_0.png"></p>
 <p>The filenames are then relative to</p>
-<div class="highlight"><pre><span></span><span class="n">images_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;~/.keras/datasets/VOC2012/JPEGImages&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">images_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;~/.keras/datasets/VOC2012/JPEGImages&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+</code></pre></div>
 
 <h4>Scan the dataset</h4>
 <p>Let's now have a quick look at how the labels are distributed accross the dataset. These counts can be easily be computed with a <code>Counter</code> object.</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 <span class="n">labels_count</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">label</span> <span class="k">for</span> <span class="n">lbs</span> <span class="ow">in</span> <span class="n">img_metadata</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">lbs</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>From here we can easily compute the <code>class_weights</code> for later use.</p>
-<div class="highlight"><pre><span></span><span class="n">total_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">labels_count</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<div class="highlight"><pre><span></span><code><span class="n">total_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">labels_count</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 <span class="n">class_weights</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="p">:</span> <span class="n">total_count</span> <span class="o">/</span> <span class="n">count</span> <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">labels_count</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Let's now plot the labels count.</p>
 <p><img alt="VOC2012 images" src="/images/blog/tech/keras-multi-label/count_vs_labels.png"></p>
@@ -263,14 +255,13 @@
 <p>The lower histogram plot is good to have because it can give us an approximate indication of the maximum batch and <a href="https://keras.io/models/model/#fit_generator">queue</a> size our memory can fit when using the generator. In this example, I don't really use the plot though.</p>
 <h4>Training the model</h4>
 <p>First, we need to instantiate the <code>ImageDataGenerator</code>. I'll do this with a simple setup just normalizing the pixel values. I also included a validation split to use it for validation stats during training after each epoch.</p>
-<div class="highlight"><pre><span></span><span class="n">img_gen</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">(</span><span class="n">rescale</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">img_gen</span> <span class="o">=</span> <span class="n">ImageDataGenerator</span><span class="p">(</span><span class="n">rescale</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">255</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</code></pre></div>
 
 <p>We can now create the training and validation <code>DataFrameIterator</code> by specifying <code>subset</code> as <code>"training"</code> or <code>"validation"</code> respectively. In the case of multi-label classification the <code>class_mode</code> should be <code>"categorical"</code> (the default value).</p>
-<div class="highlight"><pre><span></span><span class="n">img_iter</span> <span class="o">=</span> <span class="n">img_gen</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="n">img_iter</span> <span class="o">=</span> <span class="n">img_gen</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span>
     <span class="n">img_metadata</span><span class="p">,</span>
-    <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">directory</span><span class="o">=</span><span class="n">images_dir</span><span class="p">,</span>
     <span class="n">x_col</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span>
     <span class="n">y_col</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span>
@@ -282,7 +273,7 @@
 
 <span class="n">img_iter_val</span> <span class="o">=</span> <span class="n">img_gen</span><span class="o">.</span><span class="n">flow_from_dataframe</span><span class="p">(</span>
     <span class="n">img_metadata</span><span class="p">,</span>
-    <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">directory</span><span class="o">=</span><span class="n">images_dir</span><span class="p">,</span>
     <span class="n">x_col</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span>
     <span class="n">y_col</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span>
@@ -291,36 +282,33 @@
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
     <span class="n">subset</span><span class="o">=</span><span class="s1">&#39;validation&#39;</span>
 <span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>I will use the <code>ResNet50</code> pre-trained model in this example. I will replace the last fully connected layers of the network by an output layer with 20 neurons, one for each class.<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> In addition, pay attention to the output activation function, I won't go into detail, but for multi-class classification the probability of each class should be independent, hence the use of the <code>sigmoid</code> function and not the <code>softmax</code> function which is used for multi-class problems.</p>
-<div class="highlight"><pre><span></span><span class="n">base_model</span> <span class="o">=</span> <span class="n">ResNet50</span><span class="p">(</span>
-    <span class="n">include_top</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="n">base_model</span> <span class="o">=</span> <span class="n">ResNet50</span><span class="p">(</span>
+    <span class="n">include_top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;imagenet&#39;</span><span class="p">,</span>
-    <span class="n">input_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">input_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">pooling</span><span class="o">=</span><span class="s1">&#39;avg&#39;</span>
 <span class="p">)</span>
 <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">base_model</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
-    <span class="n">layer</span><span class="o">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">layer</span><span class="o">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="n">predictions</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">)(</span><span class="n">base_model</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">base_model</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">predictions</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Next we compile the model using <code>"binary_crossentropy"</code> loss. Why binary cross-entropy and not categorical cross-entropy you ask? well, again, I won't go into detail, but if you use <code>categorical_crossentropy</code> you are basically not penalizing for false positives (if you are more of a code person than a math person <a href="https://github.com/keras-team/keras/blob/f42d9e0179f11871179bc9ee4e8c138cd016612b/keras/backend/numpy_backend.py#L333">here you go</a>).</p>
-<div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
     <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;binary_crossentropy&#39;</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span>
 <span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p><strong>NOTE</strong>: Even though I just said that for <code>multi-label</code> the math dictates sigmoid and binary cross-entropy, there are cases out there where softmax and categorical cross-entropy worked better. <a href="https://research.fb.com/wp-content/uploads/2018/05/exploring_the_limits_of_weakly_supervised_pretraining.pdf?">Like this one</a>.</p>
 <p>Train the model already! Not yet... patience, "<a href="https://translate.google.com/#view=home&amp;op=translate&amp;sl=es&amp;tl=en&amp;text=lento%20pero%20seguro">lento pero seguro</a>". Let's talk about metrics for a multi-label problem like this. I hope it is obvious that accuracy is not the way to go. Instead, let's use <code>f1_score</code>, <code>recall_score</code> and <code>precision_score</code>. There is a slight problem though, yes life is a bitch, these metrics were removed from the keras metrics with a good <a href="https://github.com/keras-team/keras/issues/5794">reason</a>.</p>
 <p>The correct way to implement these metrics is to write a callback function that calculates them at the end of each epoch over the validation data. Something like this:</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">tee</span>  <span class="c1"># finally! I found something useful for it</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">tee</span>  <span class="c1"># finally! I found something useful for it</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
 
 <span class="k">class</span> <span class="nc">Metrics</span><span class="p">(</span><span class="n">Callback</span><span class="p">):</span>
@@ -345,13 +333,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">val_f1_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">val_recalls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">recall</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">val_precisions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot; - val_f1_score: {f1:.5f} - val_precision: {precision:.5f} - val_recall: {recall:.5f}&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - val_f1_score: </span><span class="si">{</span><span class="n">f1</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> - val_precision: </span><span class="si">{</span><span class="n">precision</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> - val_recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Finally! we are ready to train the model. FYI: I did little to no effort to optimize the model.</p>
-<div class="highlight"><pre><span></span><span class="n">metrics</span> <span class="o">=</span> <span class="n">Metrics</span><span class="p">(</span><span class="n">img_iter_val</span><span class="p">,</span> <span class="n">validation_steps</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">metrics</span> <span class="o">=</span> <span class="n">Metrics</span><span class="p">(</span><span class="n">img_iter_val</span><span class="p">,</span> <span class="n">validation_steps</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 <span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_generator</span><span class="p">(</span>
     <span class="n">img_iter</span><span class="p">,</span>
     <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -359,27 +346,23 @@
     <span class="n">class_weight</span><span class="o">=</span><span class="n">class_weights</span><span class="p">,</span>
     <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">metrics</span><span class="p">]</span>
 <span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>During the training time you should see validation metrics at the end of each epoch, something like this:</p>
-<div class="highlight"><pre><span></span><span class="n">Epoch</span> <span class="mi">10</span><span class="o">/</span><span class="mi">10</span>
-<span class="mi">250</span><span class="o">/</span><span class="mi">250</span> <span class="p">[</span><span class="o">==============================</span><span class="p">]</span> <span class="o">-</span> <span class="mi">261</span><span class="n">s</span> <span class="mi">1</span><span class="n">s</span><span class="o">/</span><span class="n">step</span> <span class="o">-</span> <span class="n">loss</span><span class="p">:</span> <span class="mi">5</span><span class="p">.</span><span class="mi">0277</span> <span class="o">-</span> <span class="n">val_f1_score</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">28546</span> <span class="o">-</span> <span class="n">val_precision</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">21283</span> <span class="o">-</span> <span class="n">val_recall</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">58719</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="err">Epoch 10/10</span>
+<span class="err">250/250 [==============================] - 261s 1s/step - loss: 5.0277 - val_f1_score: 0.28546 - val_precision: 0.21283 - val_recall: 0.58719</span>
+</code></pre></div>
 
 <p>If your memory melts during training reduce the <code>batch_size</code>, the <code>target_size</code> or the <code>max_queue_size</code> parameters.</p>
 <h4>Post-mortem investigation</h4>
 <p>In the case of a multi-class problem, it is already of big help to plot the confusion matrix, in that way we can identify very clearly where the model is "confusing" one class for another and address the problems directly. Due to the multi-label nature of the problem makes no sense to do the same. Instead a confusion matrix per class can be reviewed.<sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup></p>
 <p>This functionality is only in the development version of <code>scikit-learn</code>, you can get that version by</p>
-<div class="highlight"><pre><span></span>pip install git+https://www.github.com/scikit-learn/scikit-learn.git --upgrade
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>pip install git+https://www.github.com/scikit-learn/scikit-learn.git --upgrade
+</code></pre></div>
 
 <p>after that you should be able to</p>
-<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">multilabel_confusion_matrix</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">multilabel_confusion_matrix</span>
+</code></pre></div>
 
 <p>I wrote a wrapper plot function <code>plot_multiclass_confusion_matrix</code> around <code>multilabel_confusion_matrix</code>, which you can find in the <a href="https://gist.github.com/rragundez/ae3a17428bfec631d1b35dcdc6296a85">code</a>. The output from it looks like this:</p>
 <p><img alt="VOC2012 images" src="/images/blog/tech/keras-multi-label/confusion_matrices.png"></p>

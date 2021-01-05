@@ -151,8 +151,8 @@
 <p>In order for the figures of this blog post to be more readable and understandable, I'll use a hypothetical threshold of <strong>20</strong> items and not 100.</p>
 <h3>Fisher–Yates shuffle / uniform</h3>
 <p>Shuffling in Python is a very common action and can be done using the <code>random</code> module which contains the <a href="https://github.com/python/cpython/blob/master/Lib/random.py#L286"><code>shuffle</code> function</a>.</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Shuffle list x in place, and return None.</span>
 
 <span class="sd">    Optional argument random is a 0-argument function returning a</span>
@@ -161,7 +161,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">random</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">random</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">randbelow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_randbelow</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))):</span>
             <span class="c1"># pick an element in x[:i+1] with which to exchange x[i]</span>
@@ -173,15 +173,14 @@
             <span class="c1"># pick an element in x[:i+1] with which to exchange x[i]</span>
             <span class="n">j</span> <span class="o">=</span> <span class="n">_int</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
             <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>This shuffle method uses the optimized <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher–Yates algorithm</a> introduced by Richard Durstenfield in 1964 which reduced the running time from <span class="math">\(O(n^2)\)</span> to <span class="math">\(O(n)\)</span>. By default the algorithm produces a uniform shuffle of an array in which every permutation is equally likely. This means that an item has equal probability to end up in any position.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> Below you can find an animation of the results of the <code>random.shuffle</code> default algorithm. I show the initial position of an item in red and the expected probability distribution of landing in any position after <strong>5000</strong> shuffling simulations.</p>
 <p><img alt="random uniform shuffle" src="/images/blog/tech/elitist-shuffle/random_uniform_shuffle.gif"></p>
 <p>This type of shuffle is not beneficial for our purpose as there is the same probability of the least recommended item to appear on top than any other, this is definitely not the way to go since we can end up with very poor recommendations on top.</p>
 <h3>Fisher–Yates shuffle / non-uniform</h3>
 <p>Notice that the <a href="https://github.com/numpy/numpy/blob/d7d5cb3feccc1fc6cf57159e8b9fe0a733968706/numpy/random/mtrand/mtrand.pyx#L4778"><code>shuffle</code> function</a> shown above has the parameter <code>random</code> which is described in the docstring as follows:</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Shuffle list x in place, and return None.</span>
 
 <span class="sd">    Optional argument random is a 0-argument function returning a</span>
@@ -189,8 +188,7 @@
 <span class="sd">    standard random.random will be used.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>If you try to <a href="https://eli.thegreenplace.net/2010/05/28/the-intuition-behind-fisher-yates-shuffling/">understand the Fisher-Yates algorithm</a> and then look at the source code, you notice that the <code>random</code> parameter affects the location where intermediate swaps will happen and that the effect of a non-uniform <code>random</code> distribution parameter is quite difficult to predict. It kept my mind busy for some hours.</p>
 <p>I tried different functions to pass to the <code>random</code> parameter but they all behaved strange and unexpected in one way or another, for example let's try a <a href="https://en.wikipedia.org/wiki/Beta_distribution"><span class="math">\(\beta\)</span> distribution</a> such that the first draws are very likely to be swapped with elements at the end (higher probability near 1.0).<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></p>
@@ -199,7 +197,7 @@
 <p><img alt="random uniform shuffle" src="/images/blog/tech/elitist-shuffle/random_non_uniform_shuffle.gif"></p>
 <h3>Elitist shuffle</h3>
 <p>This is actually a simple approach, I shuffle the items by choosing items with a weighted probability (this is the same as sampling from a <a href="https://en.wikipedia.org/wiki/Multinomial_distribution">multinomial distribution</a> without replacement). I won't go into the details but the function <a href="https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.random.choice.html"><code>numpy.random.choice</code></a> with the parameter <code>replace=False</code> does what we want, it is just a matter of choosing the appropriate weight probabilities. In this case I choose to set the weights by transforming the reverse position as <code>np.linspace(1, 0, num=len(items), endpoint=False)</code>.<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup> Then I introduce a parameter called <code>inequality</code> as a knob to tune the weight probability difference between positions.</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">elitist_shuffle</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">elitist_shuffle</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">elitist_shuffle</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">inequality</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Shuffle array with bias over initial ranks</span>
 
@@ -214,13 +212,12 @@
 <span class="sd">            sequence.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">inequality</span>
     <span class="p">)</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
-</pre></div>
-
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+</code></pre></div>
 
 <p>As the simulation below shows, this approach gives a clearer picture of what's going on and it let us tune the algorithm using the <code>inequality</code> parameter according to the requirements of our application. This is an animation based on <code>5000</code> simulations with <code>inequality=10</code></p>
 <p><img alt="elitist shuffle" src="/images/blog/tech/elitist-shuffle/elitist_shuffle.gif"></p>
