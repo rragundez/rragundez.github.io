@@ -1,5 +1,5 @@
 {% if HERO|length > 0 %}
-<aside id="fh5co-hero" class="js-fullheight">
+<aside id="fh5co-hero" class="js-almostFullHeight">
     <div class="flexslider js-fullheight">
         <ul class="slides">
             {% for hero in HERO %}
@@ -25,11 +25,6 @@
                                             </a>
                                         {% endfor %}
                                     </p>
-    <div style="width: 100%; margin: 0 auto; text-align:center; bottom:0px; position:absolute;">
-        <i class="icon-arrow-down" style="font-size: 50px; color:rgba(255, 255, 255);"></i>
-        <i class="icon-arrow-down" style="font-size: 50px; color:rgba(255, 255, 255);"></i>
-        <i class="icon-arrow-down" style="font-size: 50px; color:rgba(255, 255, 255);"></i>
-    </div>
                                 </div>
                             </div>
                         </div>
@@ -40,3 +35,8 @@
     </div>
 </aside>
 {% endif %}
+<div style="width: 100%; margin: 0 auto; text-align:center; bottom:0px;">
+    <i class="icon-arrow-down" style="font-size: 50px; color:rgba(39, 155, 171);"></i>
+    <i class="icon-arrow-down" style="font-size: 50px; color:rgba(39, 155, 171);"></i>
+    <i class="icon-arrow-down" style="font-size: 50px; color:rgba(39, 155, 171);"></i>
+</div>

@@ -36,6 +36,18 @@
 
 	};
 
+
+	var almostFullHeight = function() {
+
+		if ( !isMobile.any() ) {
+			$('.js-fullheight').css('height', $(window).height() - 50);
+			$(window).resize(function(){
+				$('.js-fullheight').css('height', $(window).height() - 50);
+			});
+		}
+
+	};
+
 	// Animations
 
 	var contentWayPoint = function() {
@@ -196,6 +208,7 @@
 	// Document on load.
 	$(function(){
 		fullHeight();
+		almostFullHeight();
 		contentWayPoint();
 		burgerMenu();
 		mobileMenuOutsideClick();
