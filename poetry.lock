@@ -52,6 +52,20 @@ python-versions = ">=3.6"
 pytz = ">=0a"
 
 [[package]]
+name = "ghp-import"
+version = "2.1.0"
+description = "Copy your docs directly to the gh-pages branch."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+python-dateutil = ">=2.8.1"
+
+[package.extras]
+dev = ["wheel", "flake8", "markdown", "twine"]
+
+[[package]]
 name = "importlib-metadata"
 version = "4.12.0"
 description = "Read metadata from Python packages"
@@ -206,7 +220,7 @@ docs = ["jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "jaraco.packaging (>=9)
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "5bf7f667ad91b7882451d0a7c5477272b5be4ccb81a37c8355a1d6be50363851"
+content-hash = "9a8fb89201bb3f5e8b43ca11f454f0e3405db0444efbbbb83615cfd27a05fdfe"
 
 [metadata.files]
 beautifulsoup4 = []
@@ -214,6 +228,7 @@ blinker = []
 commonmark = []
 docutils = []
 feedgenerator = []
+ghp-import = []
 importlib-metadata = []
 jinja2 = [
     {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},

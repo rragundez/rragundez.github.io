@@ -10,5 +10,5 @@ poetry run make html && poetry run make serve
 
 ## Deploy using github pages
 ```
-make github
+poetry run make github
 ```
