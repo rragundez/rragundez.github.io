@@ -736,6 +736,9 @@
 .icon-arrow-down:before {
   content: "\ea1c";
 }
+.icon-zigzag-down:before {
+  content: "\21AF";
+}
 .icon-gift:before {
   content: "\ea1d";
 }
