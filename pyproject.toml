@@ -8,6 +8,7 @@ authors = ["Your Name <you@example.com>"]
 python = "^3.9"
 beautifulsoup4 = "^4.11.1"
 pelican = "^4.8.0"
+Markdown = "^3.4.1"
 
 [tool.poetry.dev-dependencies]
 

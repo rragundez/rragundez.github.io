@@ -1,11 +1,39 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*- #
-from __future__ import unicode_literals
-
 AUTHOR = 'Rodrigo Agundez'
 SITENAME = 'Rodrigo Agundez'
-SITEDESCRIPTION = ''
 SITEURL = ''
+
+# content paths
+PATH = 'content'
+PAGE_PATHS = ['pages']
+ARTICLE_PATHS = ['blog', 'timeline']
+
+LOGO = '/images/logo.svg'
+
+TIMEZONE = 'Europe/Rome'
+
+DEFAULT_LANG = 'en'
+
+# Feed generation is usually not desired when developing
+FEED_ALL_ATOM = None
+CATEGORY_FEED_ATOM = None
+TRANSLATION_FEED_ATOM = None
+AUTHOR_FEED_ATOM = None
+AUTHOR_FEED_RSS = None
+
+# Blogroll
+LINKS = (('Pelican', 'https://getpelican.com/'),
+         ('Python.org', 'https://www.python.org/'),
+         ('Jinja2', 'https://palletsprojects.com/p/jinja/'),
+         ('You can modify those links in your config file', '#'),)
+
+# Social widget
+SOCIAL = (('You can add links in your config file', '#'),
+          ('Another social link', '#'),)
+
+DEFAULT_PAGINATION = False
+
+# Uncomment following line if you want document-relative URLs when developing
+#RELATIVE_URLS = True
 
 # plugins
 PLUGIN_PATHS = ['plugins']
@@ -19,13 +47,6 @@ DEFAULT_DATE_FORMAT = '%d %b %Y'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_US'
 STATIC_PATHS = ['images', 'CNAME', 'favicon.ico', 'documents']
-
-# content paths
-PATH = 'content'
-PAGE_PATHS = ['pages']
-ARTICLE_PATHS = ['blog', 'timeline']
-
-LOGO = '/images/logo.svg'
 
 # special content
 HERO = [

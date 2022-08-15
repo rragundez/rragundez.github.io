@@ -7,7 +7,7 @@ Summary: Lead Data Scientist of a team of 14 people in VodafoneZiggo.
 Timeline: yes
 
 
-VodafoneZiggo is one of the biggest telecom companies in The Netherlands, it provides internet, mobile and video on demand services. I am currently the Lead Data Scientist for the Advanced Analytics department with 16 people, a combination of Data Scientist and Data Engineers. Some of my accountabilities are:
+VodafoneZiggo is one of the biggest telecom companies in The Netherlands, it provides internet, mobile and video on demand services. I worked as the Lead Data Scientist for the Advanced Analytics department with 16 people, a combination of Data Scientist and Data Engineers. Some of my accountabilities are:
 
 - Find, assess and kickstart use cases in the company;
 - Elevate the WoW of the team with best practices;

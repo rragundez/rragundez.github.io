@@ -1,11 +1,10 @@
 # Rodrigo Agundez Website
 
-## Locally
+## Local development
 
 ```
-conda env create -f environment.yml
-conda activate website
-make html && make serve
+poetry install
+poetry run make html && poetry run make serve
 ```
 
 
