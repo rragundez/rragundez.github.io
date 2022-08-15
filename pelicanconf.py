@@ -53,7 +53,12 @@ HERO = [
     {
         'image': '/images/hero/spark_ai.jpg',
         'title': 'Maverick',
-        'text': '"An unorthodox or independent-minded person"',
+        'text': '"An unorthodox and independent-minded person"',
+        'links': []
+    }, {
+        'image': '/images/hero/geek.jpg',
+        'title': 'Geek',
+        'text': '',
         'links': []
     }, {
         'image': '/images/hero/football.jpg',
@@ -67,7 +72,7 @@ HERO = [
         'links': []
     }, {
         'image': '/images/hero/ddsw.jpg',
-        'title': 'Knowledge Sharing',
+        'title': 'Mentor',
         'text': '',
         'links': []
     }, {
