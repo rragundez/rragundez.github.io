@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Elitist shuffle for recommendation systems</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="author" content="Rodrigo Agundez" />
+    <meta name="description" content="In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug & play without having to re-engineer your recommendation system." />
+    <meta name="keywords" content="recommendation systems, python, multi-arm bandit">
+<!-- Facebook and Twitter integration -->
+<meta property="og:site_name" content="Rodrigo Agundez"/>
+<meta property="og:title" content="Elitist shuffle for recommendation systems"/>
+<meta property="og:description" content="In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug & play without having to re-engineer your recommendation system."/>
+<meta property="og:url" content="/elitist-shuffle.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2018-05-13 00:00:00+02:00"/>
+<meta property="article:modified_time" content=""/>
+<meta property="article:author" content="/author/rodrigo-agundez.html">
+<meta property="article:section" content="tech"/>
+    <meta property="article:tag" content="recommendation systems"/>
+    <meta property="article:tag" content="python"/>
+    <meta property="article:tag" content="multi-arm bandit"/>
+    <meta property="og:image" content="//images/blog/tech/elitist-shuffle/shuffle.jpg">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="/theme/css/animate.css">
+    <!-- Icomoon Icon Fonts-->
+    <link rel="stylesheet" href="/theme/css/icomoon.css">
+    <!-- Bootstrap  -->
+    <link rel="stylesheet" href="/theme/css/bootstrap.css">
+    <!-- Flexslider  -->
+    <link rel="stylesheet" href="/theme/css/flexslider.css">
+    <!-- Theme style  -->
+    <link rel="stylesheet" href="/theme/css/style.css">
+    <!-- Custom style  -->
+    <link rel="stylesheet" href="/theme/css/custom.css">
+    <!-- pygments code highlight -->
+    <link rel="stylesheet" href="/theme/css/pygments.css">
+    <!-- tipue search -->
+    <link rel="stylesheet" href="/theme/tipuesearch/css/tipuesearch.css">
+
+    <!-- Modernizr JS -->
+    <script src="/theme/js/modernizr-2.6.2.min.js"></script>
+    <!-- FOR IE9 below -->
+    <!--[if lt IE 9]>
+    <script src="/theme/js/respond.min.js"></script>
+    <![endif]-->
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Rodrigo Agundez Atom">
+
+
+
+    </head>
+    <body>
+    <div id="fh5co-page">
+        <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+        <aside id="fh5co-aside" role="complementary" class="border js-fullheight">
+
+            <nav class="fh5co-main-menu" role="navigation">
+            </nav>
+            <div class="clearfix"></div>
+            <h1  id="fh5co-logo">
+                <a href="/index.html">
+                    <img src="/images/logo.svg" />
+                </a>
+            </h1>
+            <nav class="fh5co-main-menu" role="navigation">
+<ul>
+    <!-- home link -->
+    <li><a href="/">Home</a></li>
+
+    <!-- page links -->
+
+    <!-- additional menu items from config -->
+        <!-- <li class="nav-title">Misc</li> -->
+            <li><a href="/rod360.html">Rod360°</a></li>
+            <li><a href="/timeline.html">Timeline</a></li>
+            <li><a href="/blog.html">Blog</a></li>
+            <li><a href="/categories.html">Categories</a></li>
+            <li><a href="/tags.html">Tags</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+
+</ul><ul><li><form id="searchform" action="/search.html">
+    <input id="tipue_search_input" data-siteurl="" type="text" size="60" class="form-control search-field" name="q">
+
+    <button type="submit" class="btn btn-primary search-submit"><i class="icon-search4"></i></button>
+</form></li></ul>
+            </nav>
+
+<ul id="social">
+            <li><a href="https://www.github.com/rragundez" alt="Github"><i class="icon-github"></i></a></li>
+
+            <li><a href="https://www.twitter.com/rragundez" alt="Twitter"><i class="icon-twitter2"></i></a></li>
+
+            <li><a href="https://www.linkedin.com/in/rodrigo-agundez-2b727258" alt="LinkedIn"><i class="icon-linkedin2"></i></a></li>
+
+</ul>
+        </aside>
+
+        <div id="fh5co-main">
+
+    <div class="fh5co-narrow-content article-content">
+        <h1 class="fh5co-heading-colored">Elitist shuffle for recommendation systems</h1>
+
+        <div>by
+                <a href="author/rodrigo-agundez.html">Rodrigo Agundez</a> - 13 May 2018
+        </div>
+
+            <div><span>Tags: </span>
+                    <span><a href="/tag/recommendation-systems.html">#recommendation systems</a> </span>
+                    <span><a href="/tag/python.html">#python</a> </span>
+                    <span><a href="/tag/multi-arm-bandit.html">#multi-arm bandit</a> </span>
+            </div>
+
+        <div class="animate-box" data-animate-effect="fadeInLeft">
+            <p class="animate-box" data-animate-effect="fadeInLeft"><p><a href="https://blog.godatadriven.com/rod-elitist-shuffle">This post was originally published in the GoDataDriven blog</a></p>
+<p>In today's high pace user experience it is expected that new recommended items appear every time the user opens the application, but what to do if your recommendation system runs every hour or every day? I give a solution that you can plug &amp; play without having to re-engineer your recommendation system.</p>
+<p><img alt="card shuffling" src="/images/blog/tech/elitist-shuffle/shuffle.jpg"></p>
+<p>The common practice to update recommended items is to have the recommendation system re-score the available items every period of time <code>T</code>. This means that for a whole period <code>T</code>, the end-user faces the same content in the application's entry screen. In today's high pace user experience if <code>T</code> is even a few hours, let alone a day, the user can get bored of the same content displayed every time it opens the application during the period <code>T</code>. There can be many ways this scenario can happen but imagine the user opens the application and doesn't like the recommended items and is too lazy or busy to scroll or search for something else. If the user opens the application again some minutes later to find exactly the same content as before this might have a big (negative) impact on the retention for this user.</p>
+<p>An obvious solution to this problem is to shuffle the content in such a way that it remains relevant to the user while new content appears on the screen each time the user re-opens the application.</p>
+<p>Below there are two screen shots from my YouTube account a couple of seconds apart with no interaction, just clicking the refresh button. We can notice several things:</p>
+<ul>
+<li>Content is still relevant.</li>
+<li>Content is not the same.</li>
+<li>Some content has changed position.</li>
+<li>Some new content has appeared.</li>
+</ul>
+<div>
+    <div style="float: left; width: 50%;">
+        <img src="/images/blog/tech/elitist-shuffle/recommendations_0.png" style="width:100%">
+    </div>
+    <div style="float: left; width: 50%;">
+        <img src="/images/blog/tech/elitist-shuffle/recommendations_1.png" style="width:100%">
+    </div>
+</div>
+
+<p>This can be because YouTube re-scores items in a very short time <code>T</code> or runs an online algorithm.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> What can you do to achieve something similar if your recommendation system has a <code>T</code> in the order of hours?</p>
+<p>In this blog post, I propose a simple solution based on a non-uniform shuffling algorithm that you can basically plug &amp; play or build on top off.</p>
+<h3>Example scenario</h3>
+<p>Suppose you have 10,000 items in total that can be recommended to your user, you run the recommendation system over all the items and those 10,000 items get ranked in order of relevance of the content.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p>The application shows 5 items on the entry screen. The first time the user opens the application after the re-scoring process the top 5 ranked items are shown. It is decided that from now on (based on user control groups, investigation, AB testing, etc.) until the next re-scoring process the entry screen should not be the same every time and remain relevant for the user.</p>
+<p>Based on an investigation from the data scientist it turns out that somewhat relevant items appear until item 100.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> Then the idea is to somehow shuffle those 100 items such that the top 5 items shown are still relevant but not the same.</p>
+<p>In order for the figures of this blog post to be more readable and understandable, I'll use a hypothetical threshold of <strong>20</strong> items and not 100.</p>
+<h3>Fisher–Yates shuffle / uniform</h3>
+<p>Shuffling in Python is a very common action and can be done using the <code>random</code> module which contains the <a href="https://github.com/python/cpython/blob/master/Lib/random.py#L286"><code>shuffle</code> function</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shuffle list x in place, and return None.</span>
+
+<span class="sd">    Optional argument random is a 0-argument function returning a</span>
+<span class="sd">    random float in [0.0, 1.0); if it is the default None, the</span>
+<span class="sd">    standard random.random will be used.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">random</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">randbelow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_randbelow</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))):</span>
+            <span class="c1"># pick an element in x[:i+1] with which to exchange x[i]</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">randbelow</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_int</span> <span class="o">=</span> <span class="nb">int</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))):</span>
+            <span class="c1"># pick an element in x[:i+1] with which to exchange x[i]</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">_int</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</code></pre></div>
+
+<p>This shuffle method uses the optimized <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher–Yates algorithm</a> introduced by Richard Durstenfield in 1964 which reduced the running time from $O(n^2)$ to $O(n)$. By default the algorithm produces a uniform shuffle of an array in which every permutation is equally likely. This means that an item has equal probability to end up in any position.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> Below you can find an animation of the results of the <code>random.shuffle</code> default algorithm. I show the initial position of an item in red and the expected probability distribution of landing in any position after <strong>5000</strong> shuffling simulations.</p>
+<p><img alt="random uniform shuffle" src="/images/blog/tech/elitist-shuffle/random_uniform_shuffle.gif"></p>
+<p>This type of shuffle is not beneficial for our purpose as there is the same probability of the least recommended item to appear on top than any other, this is definitely not the way to go since we can end up with very poor recommendations on top.</p>
+<h3>Fisher–Yates shuffle / non-uniform</h3>
+<p>Notice that the <a href="https://github.com/numpy/numpy/blob/d7d5cb3feccc1fc6cf57159e8b9fe0a733968706/numpy/random/mtrand/mtrand.pyx#L4778"><code>shuffle</code> function</a> shown above has the parameter <code>random</code> which is described in the docstring as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shuffle list x in place, and return None.</span>
+
+<span class="sd">    Optional argument random is a 0-argument function returning a</span>
+<span class="sd">    random float in [0.0, 1.0); if it is the default None, the</span>
+<span class="sd">    standard random.random will be used.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+
+<p>If you try to <a href="https://eli.thegreenplace.net/2010/05/28/the-intuition-behind-fisher-yates-shuffling/">understand the Fisher-Yates algorithm</a> and then look at the source code, you notice that the <code>random</code> parameter affects the location where intermediate swaps will happen and that the effect of a non-uniform <code>random</code> distribution parameter is quite difficult to predict. It kept my mind busy for some hours.</p>
+<p>I tried different functions to pass to the <code>random</code> parameter but they all behaved strange and unexpected in one way or another, for example let's try a <a href="https://en.wikipedia.org/wiki/Beta_distribution">$\beta$ distribution</a> such that the first draws are very likely to be swapped with elements at the end (higher probability near 1.0).<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></p>
+<p><img alt="beta distribution" src="/images/blog/tech/elitist-shuffle/beta_distribution.png"></p>
+<p>The simulation below uses the $\beta$-distribution as the <code>random</code> parameter. This approach does allocate higher probabilities towards higher positions for higher initially ranked items, but the distribution is highly non-symmetrical and very different for different initial positions. I find it surprising that at some point the initial position does not have the maximum probability.<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup> Also, I find it very hard to explain the relation between the given $\beta$-distribution and the resulting probability distribution . I played with the parameters and other distributions but still noticed strange behavior. This will make it quite difficult to explain the expected impact on the recommended items to the user.</p>
+<p><img alt="random uniform shuffle" src="/images/blog/tech/elitist-shuffle/random_non_uniform_shuffle.gif"></p>
+<h3>Elitist shuffle</h3>
+<p>This is actually a simple approach, I shuffle the items by choosing items with a weighted probability (this is the same as sampling from a <a href="https://en.wikipedia.org/wiki/Multinomial_distribution">multinomial distribution</a> without replacement). I won't go into the details but the function <a href="https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.random.choice.html"><code>numpy.random.choice</code></a> with the parameter <code>replace=False</code> does what we want, it is just a matter of choosing the appropriate weight probabilities. In this case I choose to set the weights by transforming the reverse position as <code>np.linspace(1, 0, num=len(items), endpoint=False)</code>.<sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup> Then I introduce a parameter called <code>inequality</code> as a knob to tune the weight probability difference between positions.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">elitist_shuffle</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">elitist_shuffle</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">inequality</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shuffle array with bias over initial ranks</span>
+
+<span class="sd">    A higher ranked content has a higher probability to end up higher</span>
+<span class="sd">    ranked after the shuffle than an initially lower ranked one.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        items (numpy.array): Items to be shuffled</span>
+<span class="sd">        inequality (int/float): how biased you want the shuffle to be.</span>
+<span class="sd">            A higher value will yield a lower probabilty of a higher initially</span>
+<span class="sd">            ranked item to end up in a lower ranked position in the</span>
+<span class="sd">            sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">inequality</span>
+    <span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+</code></pre></div>
+
+<p>As the simulation below shows, this approach gives a clearer picture of what's going on and it let us tune the algorithm using the <code>inequality</code> parameter according to the requirements of our application. This is an animation based on <code>5000</code> simulations with <code>inequality=10</code></p>
+<p><img alt="elitist shuffle" src="/images/blog/tech/elitist-shuffle/elitist_shuffle.gif"></p>
+<p>From the animation we notice:</p>
+<ul>
+<li>The maximum probability remains on the initial position.</li>
+<li>Probability decays monotonically with the distance from the initial position.</li>
+<li>The distribution is non-symmetrical but smoother than the previous example.</li>
+<li>Higher ranked items have a higher chance of being moved from their initial position.</li>
+</ul>
+<p>A big win is that the <code>inequality</code> parameter has a direct understandable impact on the resulting distributions, want higher items to be more probable to remain on top? Increase inequality. In addition, the behavior translates into the desired functionality:</p>
+<ul>
+<li>Top content would still be relevant after shuffle.</li>
+<li>Content is not the same.</li>
+<li>Some content has changed position.</li>
+<li>Some new content has appeared.</li>
+</ul>
+<h3>Drawback</h3>
+<p>The <code>elitist_shuffle</code> function is much slower than <code>np.random.shuffle</code>, but still fast for a common application. Coming back to the example scenario where the items to shuffle are <strong>100</strong>, the <code>elitist_shuffle</code> function takes around <strong>1.8ms</strong>.</p>
+<p>If this is too slow for you I would recommend to first try <a href="https://numba.pydata.org/">numba</a> with the <code>no_python</code> parameter enabled and then if necessary try a <a href="http://cython.org/">Cython</a> implementation.</p>
+<h3>Adiós</h3>
+<p>As final remarks, I advise you to:</p>
+<ul>
+<li>First, discuss with your team if you need a feature like this. There are applications where the user might be expecting to find the same items it saw last time. Perhaps trigger this behavior if more than x seconds have passed.</li>
+<li>Add the recommendation system scores to the calculation of the weight probabilities. This could just be setting the weights to the scores before the exponentiation and $l^1$ normalization 😉.</li>
+</ul>
+<p><img style="float: right;" src="/images/blog/tech/elitist-shuffle/dog_developer.jpg" hspace="20"></p>
+<p>As always I'm happy to discuss and answer any questions, just ping me on twitter <a href="https://twitter.com/rragundez">@rragundez</a>.</p>
+<p>You can find the code <a href="https://github.com/rragundez/elitist-shuffle">here</a>.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Some other user similar to me might have done some actions that affect my recommendations, or simply not clicking on the items affects my own recommendations.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>There can be an exploration-exploitation step after.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>It can also be a dynamic threshold based on the scores from the recommendation system.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>This algorithm is also used by <a href="https://github.com/numpy/numpy/blob/master/numpy/random/mtrand/mtrand.pyx#L4852">numpy</a>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p>This is what we want since the algorithm first swaps elements from the end (look at <code>reversed</code> in <a href="https://github.com/python/cpython/blob/master/Lib/random.py#L303">line 303</a>.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:6">
+<p>It is not a matter of increasing the number of simulations. I did that and found the same behavior.&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:7">
+<p>You might be tempted to use <code>np.arange(len(items), 0, step=-1)</code> which is not numerically robust for a big <code>inequality</code> parameter.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></p>
+        </div>
+    </div>
+
+
+            <!-- <div class="fh5co-footer">
+    <p><small>&copy; 2016 Blend Free HTML5. All Rights Reserved.</span> <span>Designed by <a href="http://freehtml5.co/" target="_blank">FreeHTML5.co</a></span>
+    <br /><span>Pelican Theme by: <a href="https://github.com/claudio-walser/pelican-fh5co-marble" target="_blank">Claudio Walser</a></span></small></p>
+
+</div> -->
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/theme/js/jquery.min.js"></script>
+    <!-- jQuery Easing -->
+    <script src="/theme/js/jquery.easing.1.3.js"></script>
+    <!-- Bootstrap -->
+    <script src="/theme/js/bootstrap.min.js"></script>
+    <!-- Waypoints -->
+    <script src="/theme/js/jquery.waypoints.min.js"></script>
+    <!-- Flexslider -->
+    <script src="/theme/js/jquery.flexslider-min.js"></script>
+
+
+    <!-- MAIN JS -->
+    <script src="/theme/js/main.js"></script>
+    </body>
+</html>
