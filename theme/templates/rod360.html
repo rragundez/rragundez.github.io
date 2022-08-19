@@ -9,47 +9,95 @@
     <div class="fh5co-narrow-content">
         <h1 class="fh5co-heading-colored"><i class="icon-user"></i>  {{ _('Rod360°') }}</h1>
         <div class="row">
-        {% if 'mail' in ABOUT %}
-        <div class="col-md-4">
-            <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
-              <div class="fh5co-icon">
-                  {% if 'image' in ABOUT %}
-                    <img class="about-image" src="{{ ABOUT.image }}" />
-                  {% else %}
-                    <i class="icon-globe"></i>
-                  {% endif %}
-              </div>
-              <div class="fh5co-text">
-                <p>Rodrigo Agundez, PhD</p>
-              </div>
+            {% if 'mail' in ABOUT %}
+            <div class="col-md-4">
+                <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                  <div class="fh5co-icon">
+                      {% if 'image' in ABOUT %}
+                        <img class="about-image" src="{{ ABOUT.image }}" />
+                      {% else %}
+                        <i class="icon-globe"></i>
+                      {% endif %}
+                  </div>
+                  <div class="fh5co-text">
+                    <p>Rodrigo Agundez, PhD</p>
+                  </div>
+                </div>
             </div>
-          </div>
-        {% endif %}
+            {% endif %}
 
-        <div class="col-md-4">
-            <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
-                <div class="fh5co-icon">
-                    <i class="icon-microphone2"></i>
+            <div class="col-md-4">
+                <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                    <div class="fh5co-icon">
+                        <i class="icon-microphone2"></i>
+                    </div>
+                    <div class="fh5co-text">
+                        <p>Spanish - English - Dutch</p>
+                    </div>
                 </div>
-                <div class="fh5co-text">
-                    <p>Spanish - English - Dutch</p>
+            </div>
+
+            <div class="col-md-4">
+              <a href="/documents/CV.pdf">
+                <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                    <div class="fh5co-icon">
+                        <i class="icon-download"></i>
+                    </div>
+                    <div class="fh5co-text">
+                        <p>Curriculum Vitae<br>PDF</p>
+                    </div>
+                </div>
+              </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                    <div class="fh5co-icon">
+                        <i class="icon-git"></i>
+                    </div>
+                    <div class="fh5co-text">
+                        <p><b>9</b> years of coding and software engineering</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                    <div class="fh5co-icon">
+                        <i class="icon-lab2"></i>
+                    </div>
+                    <div class="fh5co-text">
+                        <p><b>6</b> years of Machine Learning</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                    <div class="fh5co-icon">
+                        <i class="icon-user2"></i>
+                    </div>
+                    <div class="fh5co-text">
+                        <p><b>4</b> years of leadership and team management</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
+                    <div class="fh5co-icon">
+                        <i class="icon-cloud4"></i>
+                    </div>
+                    <div class="fh5co-text">
+                        <p><b>4</b> years of cloud</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-          <a href="/documents/CV.pdf">
-            <div class="fh5co-feature fh5co-feature-sm animate-box" data-animate-effect="fadeInLeft">
-                <div class="fh5co-icon">
-                    <i class="icon-download"></i>
-                </div>
-                <div class="fh5co-text">
-                    <p>Curriculum Vitae<br>PDF</p>
-                </div>
-            </div>
-          </a>
-        </div>
-        </div>
+
         <div align="center">
             <iframe src="https://drive.google.com/file/d/1RfemPHOYaXWUBDsnSr4yhZBoMOw_oa_K/preview" width="700" height="480"></iframe>
         </div>

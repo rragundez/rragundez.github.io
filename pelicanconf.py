@@ -61,8 +61,8 @@ HERO = [
         'text': '',
         'links': []
     }, {
-        'image': '/images/hero/football.jpg',
-        'title': 'Sporter',
+        'image': '/images/hero/ddsw.jpg',
+        'title': 'Mentor',
         'text': '',
         'links': []
     }, {
@@ -71,8 +71,8 @@ HERO = [
         'text': '',
         'links': []
     }, {
-        'image': '/images/hero/ddsw.jpg',
-        'title': 'Mentor',
+        'image': '/images/hero/football.jpg',
+        'title': 'Sporter',
         'text': '',
         'links': []
     }, {
